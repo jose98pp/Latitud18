@@ -18,6 +18,11 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+// En entorno serverless de Vercel (sistema de archivos de solo lectura), redirigir almacenamiento a /tmp
+if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') || str_contains(dirname(__DIR__), '/var/task')) {
+    $app->useStoragePath('/tmp/storage');
+}
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

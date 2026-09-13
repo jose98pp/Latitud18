@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "framework": null,
   "outputDirectory": "public",
   "functions": {
     "api/index.php": {
@@ -9,7 +8,16 @@
   },
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/build/(.*)",
+      "dest": "/build/$1"
+    },
+    {
+      "src": "/(images|css|js|fonts|storage)/(.*)",
+      "dest": "/$1/$2"
+    },
+    {
+      "src": "/(favicon.ico|robots.txt|manifest.json|sw.js)",
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
@@ -18,14 +26,10 @@
   ],
   "env": {
     "APP_ENV": "production",
-    "APP_CONFIG_CACHE": "/tmp/config.php",
-    "APP_EVENTS_CACHE": "/tmp/events.php",
-    "APP_PACKAGES_CACHE": "/tmp/packages.php",
-    "APP_ROUTES_CACHE": "/tmp/routes.php",
-    "APP_SERVICES_CACHE": "/tmp/services.php",
-    "VIEW_COMPILED_PATH": "/tmp/views",
+    "VERCEL": "1",
     "CACHE_DRIVER": "array",
     "LOG_CHANNEL": "stderr",
-    "SESSION_DRIVER": "cookie"
+    "SESSION_DRIVER": "cookie",
+    "VIEW_COMPILED_PATH": "/tmp/storage/framework/views"
   }
 }

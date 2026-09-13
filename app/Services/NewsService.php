@@ -22,7 +22,8 @@ class NewsService
      */
     public function getHomePageData()
     {
-        return Cache::remember('homepage_data', 300, function () {
+        try {
+            return Cache::remember('homepage_data', 300, function () {
             // 1. Obtener noticias para el carrusel principal (priorizar marcadas como destacada_hero)
             $heroNoticias = Noticia::hero()
                 ->orderBy('created_at', 'desc')
@@ -135,7 +136,22 @@ class NewsService
                 'banners' => $banners,
             ];
         });
+    } catch (\Throwable $e) {
+        \Log::warning('Error cargando homepage_data (BD posiblemente no inicializada): ' . $e->getMessage());
+
+        return [
+            'noticias' => collect(),
+            'noticiaInvestigacion' => null,
+            'categorias' => collect(),
+            'ultimasNoticias' => collect(),
+            'noticiasPorCategoria' => [],
+            'masLeidas' => collect(),
+            'articulosOpinion' => collect(),
+            'noticiasConVideo' => collect(),
+            'banners' => collect(),
+        ];
     }
+}
 
     /**
      * Obtener datos para página de categoría con paginación (soporta Slug e ID)
