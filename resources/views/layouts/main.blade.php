@@ -575,7 +575,6 @@
 
   <script src="{{ asset('js/dark-mode.js') }}"></script>
   <script src="{{ asset('js/error-handler.js') }}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
   // Theme
   function toggleTheme(){const h=document.documentElement,c=h.getAttribute('data-theme'),n=c==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('latitud18-theme',n);applyTheme(n)}
