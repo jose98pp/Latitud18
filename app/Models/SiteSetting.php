@@ -20,10 +20,18 @@ class SiteSetting extends Model
      */
     public static function get(string $key, $default = null)
     {
-        return Cache::rememberForever("site_setting_{$key}", function () use ($key, $default) {
-            $setting = static::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
-        });
+        try {
+            return Cache::rememberForever("site_setting_{$key}", function () use ($key, $default) {
+                try {
+                    $setting = static::where('key', $key)->first();
+                    return $setting ? $setting->value : $default;
+                } catch (\Throwable $e) {
+                    return $default;
+                }
+            });
+        } catch (\Throwable $e) {
+            return $default;
+        }
     }
 
     /**
@@ -47,11 +55,15 @@ class SiteSetting extends Model
      */
     public static function getAllGrouped(): array
     {
-        $all = static::all();
-        $grouped = [];
-        foreach ($all as $item) {
-            $grouped[$item->group][$item->key] = $item->value;
+        try {
+            $all = static::all();
+            $grouped = [];
+            foreach ($all as $item) {
+                $grouped[$item->group][$item->key] = $item->value;
+            }
+            return $grouped;
+        } catch (\Throwable $e) {
+            return [];
         }
-        return $grouped;
     }
 }
