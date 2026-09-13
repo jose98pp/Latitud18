@@ -454,7 +454,7 @@
 
                     {{-- ▶ NEW: InDesign-style frames rendering --}}
                     @if(!empty($p['frames']) && count($p['frames']) > 0)
-                        <div style="position:relative; width:794px; min-height:1123px; background:#fff; overflow:hidden; font-family:'Source Sans 3',sans-serif;">
+                        <div style="position:relative; width:100%; min-height:1040px; background:#fff; overflow:hidden; font-family:'Source Sans 3',sans-serif;">
                             @foreach($p['frames'] as $frame)
                                 @php
                                     $ftype  = $frame['type']    ?? 'text';
@@ -471,47 +471,97 @@
                                     left:{{ $fx }}px; top:{{ $fy }}px;
                                     width:{{ $fw }}px; height:{{ $fh }}px;
                                     z-index:{{ $fz }};
-                                    opacity:{{ $fop }};">
+                                    opacity:{{ $fop }}; box-sizing:border-box;">
 
-                                    @if($ftype === 'text')
-                                        <div style="width:100%;height:100%;overflow:hidden;
-                                            font-family:{{ $styles['fontFamily'] ?? "'Source Sans 3',sans-serif" }};
-                                            font-size:{{ $styles['fontSize'] ?? 14 }}px;
-                                            font-weight:{{ $styles['fontWeight'] ?? '400' }};
-                                            line-height:{{ $styles['lineHeight'] ?? '1.5' }};
-                                            color:{{ $styles['color'] ?? '#111111' }};
-                                            text-align:{{ $styles['textAlign'] ?? 'left' }};
-                                            background-color:{{ $styles['backgroundColor'] ?? 'transparent' }};
-                                            {{ isset($styles['columns']) && $styles['columns'] > 1 ? 'column-count:'.$styles['columns'].';column-gap:14px;' : '' }}
-                                            padding:6px;">
-                                            {!! $frame['content'] ?? '' !!}
+                                    @if($ftype === 'masthead')
+                                        <div style="border-bottom:3px solid #0284c7; padding-bottom:4px; font-family:'Inter', sans-serif;">
+                                            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                                <div style="background:#fef9c3; color:#854d0e; padding:4px 8px; border-radius:2px; font-size:9px; font-weight:700; width:140px; line-height:1.2;">
+                                                    {!! nl2br(e($frame['leftEar'] ?? 'CRE 100%')) !!}
+                                                </div>
+                                                <div style="text-align:center; flex:1;">
+                                                    <span style="font-family:'Anton', sans-serif; font-size:46px; color:#0284c7; line-height:1; letter-spacing:1px;">{{ $frame['newspaperName'] ?? 'LA ESTRELLA' }}</span>
+                                                    <span style="background:#D71920; color:#fff; font-family:'Anton', sans-serif; font-size:18px; padding:2px 8px; border-radius:2px; margin-left:4px; vertical-align:middle;">{{ $frame['subBadge'] ?? 'del Oriente' }}</span>
+                                                    <div style="font-size:9px; font-weight:800; letter-spacing:1.5px; color:#64748b; text-transform:uppercase; margin-top:2px;">{{ $frame['motto'] ?? 'EL PRIMER PERIÓDICO DE SANTA CRUZ' }}</div>
+                                                </div>
+                                                <div style="background:#0284c7; color:#fff; padding:4px 8px; border-radius:2px; font-size:9px; font-weight:800; width:130px; text-align:right; line-height:1.2;">
+                                                    {!! nl2br(e($frame['rightEar'] ?? 'DÓLAR: Bs 12,58')) !!}
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; justify-content:space-between; border-top:1px solid #e2e8f0; padding-top:3px; margin-top:4px; font-size:9px; color:#64748b; font-weight:600;">
+                                                <span>{{ $frame['editionDate'] ?? ($edicionActiva['fecha'] ?? 'Santa Cruz de la Sierra') }}</span>
+                                                <span><strong>{{ $frame['editionNumber'] ?? ($edicionActiva['numero_edicion'] ?? 'N° 11.986') }}</strong></span>
+                                                <span>{{ $frame['price'] ?? ($edicionActiva['precio'] ?? 'Bs 7,00') }}</span>
+                                            </div>
+                                        </div>
+
+                                    @elseif($ftype === 'headline')
+                                        <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center;">
+                                            @if(!empty($frame['kicker']))
+                                                <span style="font-size:11px; font-weight:800; color:#D71920; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; font-family:'Inter', sans-serif;">{{ $frame['kicker'] }}</span>
+                                            @endif
+                                            <div style="padding:0; font-family:{{ $styles['fontFamily'] ?? "'Oswald', sans-serif" }}; font-size:{{ $styles['fontSize'] ?? 28 }}px; font-weight:{{ $styles['fontWeight'] ?? '700' }}; line-height:1.1; color:{{ $styles['color'] ?? '#0f172a' }}; text-align:{{ $styles['textAlign'] ?? 'left' }};">
+                                                {!! $frame['content'] ?? 'Titular de Noticia' !!}
+                                            </div>
                                         </div>
 
                                     @elseif($ftype === 'image')
-                                        @if(!empty($frame['src']))
-                                            <img src="{{ $frame['src'] }}"
-                                                 style="width:100%;height:100%;
-                                                    object-fit:{{ $frame['imgFit'] ?? 'cover' }};
-                                                    display:block;
-                                                    border-radius:{{ $frame['borderRadius'] ?? 0 }}px;
-                                                    {{ isset($frame['borderWidth']) && $frame['borderWidth'] > 0 ? 'border:'.$frame['borderWidth'].'px solid '.($frame['borderColor']??'#000').';' : '' }}"
-                                                 alt="">
-                                        @else
-                                            <div style="width:100%;height:100%;background:#F3F4F6;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:0.75rem;">
-                                                <i class="fas fa-image" style="font-size:1.5rem;"></i>
+                                        <div style="width:100%; height:100%; display:flex; flex-direction:column;">
+                                            <div style="flex:1; position:relative; overflow:hidden; border-radius:{{ $frame['borderRadius'] ?? 0 }}px; {{ isset($frame['borderWidth']) && $frame['borderWidth'] > 0 ? 'border:'.$frame['borderWidth'].'px solid '.($frame['borderColor']??'#000').';' : '' }}">
+                                                @if(!empty($frame['src']))
+                                                    <img src="{{ $frame['src'] }}"
+                                                         style="width:100%; height:100%; object-fit:{{ $frame['imgFit'] ?? 'cover' }}; display:block;"
+                                                         alt="{{ $frame['caption'] ?? '' }}">
+                                                @else
+                                                    <div style="width:100%; height:100%; background:#F3F4F6; display:flex; align-items:center; justify-content:center; color:#9CA3AF; font-size:0.75rem;">
+                                                        <i class="fas fa-image" style="font-size:1.5rem;"></i>
+                                                    </div>
+                                                @endif
                                             </div>
-                                        @endif
+                                            @if(!empty($frame['caption']))
+                                                <div style="font-size:9.5px; color:#475569; line-height:1.3; padding-top:4px; font-style:italic;">
+                                                    {{ $frame['caption'] }}
+                                                </div>
+                                            @endif
+                                        </div>
 
-                                    @elseif($ftype === 'line')
-                                        <div style="width:100%;height:{{ $frame['lineWidth'] ?? 2 }}px;
-                                            background:{{ $frame['lineColor'] ?? '#000000' }};
-                                            position:absolute;top:50%;transform:translateY(-50%);"></div>
+                                    @elseif($ftype === 'quote')
+                                        <div style="width:100%; height:100%; border-top:2px solid #D71920; border-bottom:2px solid #D71920; padding:10px 14px; background:#fff7ed; font-family:'Playfair Display', serif; font-style:italic; font-size:15px; font-weight:700; line-height:1.4; color:#1e293b; box-sizing:border-box;">
+                                            {!! $frame['content'] ?? '"Cita destacada..."' !!}
+                                        </div>
+
+                                    @elseif($ftype === 'box')
+                                        <div style="width:100%; height:100%; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; padding:12px; font-size:12px; line-height:1.5; color:#334155; box-sizing:border-box;">
+                                            {!! $frame['content'] ?? 'Caja de contenido' !!}
+                                        </div>
+
+                                    @elseif($ftype === 'divider' || $ftype === 'line')
+                                        <div style="width:100%; height:100%; display:flex; align-items:center;">
+                                            <div style="width:100%; height:{{ $frame['lineWidth'] ?? 2 }}px; background:{{ $frame['color'] ?? ($frame['lineColor'] ?? '#cbd5e1') }};"></div>
+                                        </div>
 
                                     @elseif($ftype === 'rect' || $ftype === 'shape')
-                                        <div style="width:100%;height:100%;
+                                        <div style="width:100%; height:100%;
                                             background:{{ $frame['fillColor'] ?? 'transparent' }};
                                             border-radius:{{ $frame['borderRadius'] ?? 0 }}px;
                                             {{ isset($frame['borderWidth']) && $frame['borderWidth'] > 0 ? 'border:'.$frame['borderWidth'].'px solid '.($frame['borderColor']??'#000').';' : '' }}">
+                                        </div>
+
+                                    @else
+                                        @php
+                                            $cols = $frame['columns'] ?? ($styles['columns'] ?? 1);
+                                        @endphp
+                                        <div style="width:100%; height:100%; overflow:hidden;
+                                            font-family:{{ $styles['fontFamily'] ?? "'Source Sans 3', sans-serif" }};
+                                            font-size:{{ $styles['fontSize'] ?? 12 }}px;
+                                            font-weight:{{ $styles['fontWeight'] ?? '400' }};
+                                            line-height:{{ $styles['lineHeight'] ?? '1.5' }};
+                                            color:{{ $styles['color'] ?? '#1e293b' }};
+                                            text-align:{{ $styles['textAlign'] ?? 'justify' }};
+                                            background-color:{{ $styles['backgroundColor'] ?? 'transparent' }};
+                                            {{ $cols > 1 ? 'column-count:'.$cols.'; column-gap:14px;' : '' }}
+                                            padding:4px; box-sizing:border-box;">
+                                            {!! $frame['content'] ?? 'Texto periodístico...' !!}
                                         </div>
                                     @endif
                                 </div>
