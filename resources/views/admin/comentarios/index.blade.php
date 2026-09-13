@@ -118,7 +118,7 @@
                                     </td>
                                     <td>
                                         @if($c->noticia)
-                                            <a href="{{ route('show', $c->noticia->id) }}" target="_blank" class="text-decoration-none fw-semibold text-dark text-truncate d-block" style="max-width: 240px;" title="{{ $c->noticia->titulo }}">
+                                            <a href="{{ $c->noticia->url }}" target="_blank" class="text-decoration-none fw-semibold text-dark text-truncate d-block" style="max-width: 240px;" title="{{ $c->noticia->titulo }}">
                                                 <i class="fas fa-external-link-alt text-muted me-1" style="font-size: 0.75rem;"></i> {{ $c->noticia->titulo }}
                                             </a>
                                             <small class="badge bg-light text-muted border mt-1">

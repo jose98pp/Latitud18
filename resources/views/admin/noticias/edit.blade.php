@@ -462,7 +462,7 @@
                     <i class="fas fa-times"></i> Cancelar
                 </a>
                 @if($noticia->publicada)
-                    <a href="{{ route('show', $noticia->id) }}" target="_blank" class="btn btn-info btn-lg ml-2">
+                    <a href="{{ $noticia->url }}" target="_blank" class="btn btn-info btn-lg ml-2">
                         <i class="fas fa-eye"></i> Ver Noticia
                     </a>
                 @endif

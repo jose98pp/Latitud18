@@ -313,7 +313,7 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="{{ route('show', $noticia->id) }}" target="_blank">
+                                                        <a class="dropdown-item" href="{{ $noticia->url }}" target="_blank">
                                                             <i class="fas fa-eye me-2"></i>Ver
                                                         </a>
                                                     </li>

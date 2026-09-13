@@ -74,21 +74,15 @@ class PortadaController extends Controller
 
     public function search(Request $request)
     {
-        $query = $request->get('q', '');
-        $perPage = $request->get('per_page', 12);
+        $query = trim($request->get('q', ''));
+        $perPage = (int) $request->get('per_page', 12);
         
         if (empty($query)) {
             return redirect()->route('portada')->with('error', 'Por favor ingresa un término de búsqueda.');
         }
 
-        // Buscar noticias
-        $noticias = Noticia::where('publicada', true)
-            ->where(function ($q) use ($query) {
-                $q->where('titulo', 'LIKE', "%{$query}%")
-                  ->orWhere('contenido', 'LIKE', "%{$query}%");
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        // Buscar noticias optimizado con FullText
+        $noticias = $this->newsService->searchPaginatedNews($query, $perPage);
 
         // Procesar noticias con el servicio
         $noticias->getCollection()->transform(function ($noticia) {

@@ -74,7 +74,7 @@
                             <div id="dropdown-{{ $noticia->id }}" class="actions-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 hidden">
                                 <div class="py-1">
                                     @if($noticia->publicada)
-                                        <a href="{{ route('show', $noticia->id) }}" 
+                                        <a href="{{ $noticia->url }}" 
                                            target="_blank"
                                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <i class="fas fa-eye mr-3 text-blue-500"></i>

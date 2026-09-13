@@ -234,6 +234,18 @@ class NewsService
     }
 
     /**
+     * Buscar noticias paginadas con FullText
+     */
+    public function searchPaginatedNews($term, $perPage = 12)
+    {
+        if (empty(trim($term))) {
+            return \App\Models\Noticia::whereRaw('1 = 0')->paginate($perPage);
+        }
+
+        return $this->noticiaRepository->searchPaginatedNews($term, $perPage);
+    }
+
+    /**
      * Obtener estadísticas del dashboard
      */
     public function getDashboardStats()

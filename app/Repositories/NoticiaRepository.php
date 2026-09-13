@@ -108,18 +108,99 @@ class NoticiaRepository
     }
 
     /**
-     * Buscar noticias por término
+     * Buscar noticias por término con optimización FullText y fallback
      */
     public function searchNews($term, $limit = 10)
     {
-        return Noticia::publicadaActiva()
-            ->where(function ($query) use ($term) {
-                $query->where('titulo', 'LIKE', "%{$term}%")
-                      ->orWhere('contenido', 'LIKE', "%{$term}%");
-            })
-            ->orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
+        $term = trim($term);
+        if (empty($term)) {
+            return collect();
+        }
+
+        preg_match_all('/[\p{L}\p{N}_]+/u', $term, $matches);
+        $words = $matches[0] ?? [];
+        $validWords = array_filter($words, fn($w) => mb_strlen($w) >= 3);
+
+        $query = Noticia::publicadaActiva()->with('category');
+
+        if (!empty($validWords)) {
+            $booleanQuery = implode(' ', array_map(fn($w) => '+' . $w . '*', $validWords));
+            try {
+                $results = (clone $query)->whereRaw(
+                    "MATCH(titulo, contenido) AGAINST(? IN BOOLEAN MODE)",
+                    [$booleanQuery]
+                )->selectRaw(
+                    "noticias.*, (MATCH(titulo) AGAINST(? IN BOOLEAN MODE) * 2 + MATCH(contenido) AGAINST(? IN BOOLEAN MODE)) AS search_relevance",
+                    [$booleanQuery, $booleanQuery]
+                )->orderByDesc('search_relevance')
+                ->orderByDesc('created_at')
+                ->take($limit)
+                ->get();
+
+                if ($results->isNotEmpty()) {
+                    return $results;
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('Fulltext searchNews fallback: ' . $e->getMessage());
+            }
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('titulo', 'LIKE', "%{$term}%")
+              ->orWhere('contenido', 'LIKE', "%{$term}%");
+        })
+        ->orderBy('created_at', 'desc')
+        ->take($limit)
+        ->get();
+    }
+
+    /**
+     * Buscar noticias paginadas por término con optimización FullText y ranking
+     */
+    public function searchPaginatedNews($term, $perPage = 12)
+    {
+        $term = trim($term);
+        if (empty($term)) {
+            return Noticia::whereRaw('1 = 0')->paginate($perPage);
+        }
+
+        preg_match_all('/[\p{L}\p{N}_]+/u', $term, $matches);
+        $words = $matches[0] ?? [];
+        $validWords = array_filter($words, fn($w) => mb_strlen($w) >= 3);
+
+        $query = Noticia::publicadaActiva()->with('category');
+
+        if (!empty($validWords)) {
+            $booleanQuery = implode(' ', array_map(fn($w) => '+' . $w . '*', $validWords));
+            try {
+                $fulltextQuery = (clone $query)->whereRaw(
+                    "MATCH(titulo, contenido) AGAINST(? IN BOOLEAN MODE)",
+                    [$booleanQuery]
+                )->selectRaw(
+                    "noticias.*, (MATCH(titulo) AGAINST(? IN BOOLEAN MODE) * 2 + MATCH(contenido) AGAINST(? IN BOOLEAN MODE)) AS search_relevance",
+                    [$booleanQuery, $booleanQuery]
+                )->orderByDesc('search_relevance')
+                ->orderByDesc('created_at');
+
+                if ((clone $fulltextQuery)->count() > 0) {
+                    return $fulltextQuery->paginate($perPage);
+                }
+            } catch (\Throwable $e) {
+                \Log::warning('Fulltext searchPaginatedNews fallback: ' . $e->getMessage());
+            }
+        }
+
+        return $query->where(function ($q) use ($term, $words) {
+            $q->where('titulo', 'LIKE', "%{$term}%")
+              ->orWhere('contenido', 'LIKE', "%{$term}%");
+            foreach ($words as $word) {
+                if (mb_strlen($word) >= 3) {
+                    $q->orWhere('titulo', 'LIKE', "%{$word}%");
+                }
+            }
+        })
+        ->orderByDesc('created_at')
+        ->paginate($perPage);
     }
 
     /**
