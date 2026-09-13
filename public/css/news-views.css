@@ -1,0 +1,361 @@
+/* News Multiple Views System - Grid and List Views */
+
+/* View Toggle Buttons */
+.view-toggle {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 2px;
+}
+
+.view-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.view-toggle-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.view-toggle-btn.active {
+    background: #4f46e5;
+    color: white;
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+
+.view-toggle-btn i {
+    margin-right: 6px;
+}
+
+/* Grid View Styles */
+.news-container.grid-view .news-cards-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Responsive breakpoints for grid */
+@media (min-width: 640px) {
+    .news-container.grid-view .news-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 28px;
+    }
+}
+
+@media (min-width: 768px) {
+    .news-container.grid-view .news-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 32px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .news-container.grid-view .news-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 36px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .news-container.grid-view .news-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 40px;
+    }
+}
+
+/* Grid view card styles */
+.news-container.grid-view .news-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 400px;
+}
+
+.news-container.grid-view .news-card-image {
+    height: 200px;
+    flex-shrink: 0;
+}
+
+.news-container.grid-view .news-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-container.grid-view .news-card-footer {
+    margin-top: auto;
+}
+
+/* List View Styles */
+.news-container.list-view .news-cards-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.news-container.list-view .news-card {
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    min-height: 120px;
+    max-height: 160px;
+    overflow: hidden;
+}
+
+.news-container.list-view .news-card-image {
+    width: 200px;
+    height: 120px;
+    flex-shrink: 0;
+    border-radius: 8px 0 0 8px;
+}
+
+.news-container.list-view .news-card-content {
+    flex: 1;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.news-container.list-view .news-card-header {
+    margin-bottom: 8px;
+}
+
+.news-container.list-view .news-card-title {
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-container.list-view .news-card-description {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-container.list-view .news-card-footer {
+    margin-top: 0;
+    align-items: center;
+}
+
+/* List view hover effects */
+.news-container.list-view .news-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.news-container.list-view .news-card:hover .news-card-image img {
+    transform: scale(1.02);
+}
+
+/* Responsive adjustments for list view */
+@media (max-width: 768px) {
+    .news-container.list-view .news-card {
+        flex-direction: column;
+        max-height: none;
+    }
+    
+    .news-container.list-view .news-card-image {
+        width: 100%;
+        height: 160px;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .news-container.list-view .news-card-content {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .view-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .view-toggle-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Transition animations between views */
+.news-cards-grid {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.news-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* View change animation */
+.news-container.view-changing .news-card {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
+
+.news-container.view-changed .news-card {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Enhanced grid spacing for better visual hierarchy */
+.news-container.grid-view .news-cards-grid {
+    padding: 8px;
+}
+
+.news-container.list-view .news-cards-grid {
+    padding: 4px;
+}
+
+/* Status badges positioning adjustments for list view */
+.news-container.list-view .news-card-image .absolute {
+    position: absolute;
+}
+
+.news-container.list-view .news-card-image .top-2.right-2 {
+    top: 8px;
+    right: 8px;
+}
+
+.news-container.list-view .news-card-image .top-2.left-2 {
+    top: 8px;
+    left: 8px;
+}
+
+/* Actions dropdown positioning for list view */
+.news-container.list-view .actions-dropdown {
+    position: relative;
+}
+
+.news-container.list-view .actions-menu {
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+}
+
+/* Loading states for view transitions */
+.news-container.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.news-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Accessibility improvements */
+.view-toggle-btn:focus {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .view-toggle {
+        border: 2px solid #000;
+    }
+    
+    .view-toggle-btn.active {
+        background: #000;
+        color: #fff;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .news-cards-grid,
+    .news-card,
+    .view-toggle-btn {
+        transition: none;
+    }
+    
+    .news-container.list-view .news-card:hover {
+        transform: none;
+    }
+}
+
+/* Print styles */
+@media print {
+    .view-toggle {
+        display: none;
+    }
+    
+    .news-container.list-view .news-card {
+        break-inside: avoid;
+        margin-bottom: 20px;
+    }
+}
+
+/* Dark Mode support for news-views */
+.dark .view-toggle {
+    background: #1f2937 !important;
+    border-color: #374151 !important;
+}
+
+.dark .view-toggle-btn {
+    color: #9ca3af !important;
+}
+
+.dark .view-toggle-btn:hover:not(.active) {
+    background: #374151 !important;
+    color: #f9fafb !important;
+}
+
+.dark .view-toggle-btn.active {
+    background: #4f46e5 !important;
+    color: white !important;
+}
+
+/* Also support media query dark mode */
+@media (prefers-color-scheme: dark) {
+    .view-toggle {
+        background: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+
+    .view-toggle-btn {
+        color: #9ca3af !important;
+    }
+
+    .view-toggle-btn:hover:not(.active) {
+        background: #374151 !important;
+        color: #f9fafb !important;
+    }
+
+    .view-toggle-btn.active {
+        background: #4f46e5 !important;
+        color: white !important;
+    }
+}

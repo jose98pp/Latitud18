@@ -1,0 +1,48 @@
+[29-Dec-2024 14:56:19 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:19 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:19 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:22 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:22 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:22 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:34 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:34 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:34 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:37 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:37 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:37 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:56 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:56 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:56:56 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/../UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:9
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 9
+[29-Dec-2024 14:59:32 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 10
+[29-Dec-2024 14:59:32 America/La_Paz] PHP Warning:  require(/home/ultimahora58tv/public_html/UHTV/public/UHTV/vendor/autoload.php): Failed to open stream: No such file or directory in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 10
+[29-Dec-2024 14:59:32 America/La_Paz] PHP Fatal error:  Uncaught Error: Failed opening required '/home/ultimahora58tv/public_html/UHTV/public/UHTV/vendor/autoload.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /home/ultimahora58tv/public_html/UHTV/public/index.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/ultimahora58tv/public_html/UHTV/public/index.php on line 10
+[29-Dec-2024 21:52:05 UTC] PHP Fatal error:  Trait "App\Http\Controllers\Admin\Illuminate\Support\Facades\Storage" not found in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 12
+[02-Jan-2025 14:52:02 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 14:52:03 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 14:52:49 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 14:52:50 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:04:21 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:04:23 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:15:48 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:16:11 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:16:12 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:16:38 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14
+[02-Jan-2025 15:16:45 America/La_Paz] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/ultimahora58tv/public_html/UHTV/app/Http/Controllers/Admin/NoticiaController.php on line 14

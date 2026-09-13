@@ -1,0 +1,332 @@
+/* Dark Mode Styles for UHTV */
+
+/* Variables para modo oscuro */
+:root {
+    --dark-bg-primary: #111827;
+    --dark-bg-secondary: #1f2937;
+    --dark-bg-tertiary: #374151;
+    --dark-text-primary: #f9fafb;
+    --dark-text-secondary: #d1d5db;
+    --dark-text-muted: #9ca3af;
+    --dark-border: #374151;
+    --dark-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos base para modo oscuro */
+.dark {
+    color-scheme: dark;
+}
+
+/* Scrollbar personalizada para modo oscuro */
+.dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #6b7280;
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Mejoras para elementos específicos en modo oscuro */
+.dark .carousel-item img {
+    filter: brightness(0.9);
+}
+
+.dark .carousel-control-prev div,
+.dark .carousel-control-next div {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.dark .carousel-control-prev div:hover,
+.dark .carousel-control-next div:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Indicadores del carrusel en modo oscuro */
+.dark .carousel-indicators button {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.dark .carousel-indicators button.active {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Tarjetas de noticias en modo oscuro */
+.dark .news-card {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border: 1px solid #374151;
+}
+
+.dark .news-card:hover {
+    border-color: #6b7280;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Gradientes para modo oscuro */
+.dark .gradient-overlay {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.6) 50%,
+        transparent 100%
+    );
+}
+
+/* Badges y etiquetas en modo oscuro */
+.dark .badge-category {
+    background: linear-gradient(135deg, #7c3aed, #dc2626);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Botones en modo oscuro */
+.dark .btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #dc2626);
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dark .btn-primary:hover {
+    background: linear-gradient(135deg, #6d28d9, #b91c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Formularios en modo oscuro */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="search"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    background-color: #4b5563;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Paginación en modo oscuro */
+.dark .pagination {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+}
+
+.dark .pagination a {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+}
+
+.dark .pagination a:hover {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark .pagination .active a {
+    background-color: #7c3aed;
+    color: #ffffff;
+    border-color: #7c3aed;
+}
+
+/* Tooltips en modo oscuro */
+.dark .tooltip {
+    background-color: #374151;
+    color: #f9fafb;
+    border: 1px solid #4b5563;
+}
+
+/* Modales en modo oscuro */
+.dark .modal-content {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+}
+
+.dark .modal-header {
+    border-bottom-color: #374151;
+}
+
+.dark .modal-footer {
+    border-top-color: #374151;
+}
+
+/* Dropdowns en modo oscuro */
+.dark .dropdown-menu {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .dropdown-item {
+    color: #d1d5db;
+}
+
+.dark .dropdown-item:hover {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+/* Alertas en modo oscuro */
+.dark .alert {
+    border: 1px solid #374151;
+}
+
+.dark .alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+    color: #6ee7b7;
+}
+
+.dark .alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #fca5a5;
+}
+
+.dark .alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+    color: #fcd34d;
+}
+
+.dark .alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+
+/* Breadcrumbs en modo oscuro */
+.dark .breadcrumb {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+}
+
+.dark .breadcrumb-item a {
+    color: #7c3aed;
+}
+
+.dark .breadcrumb-item.active {
+    color: #9ca3af;
+}
+
+/* Tablas en modo oscuro */
+.dark table {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark th {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+.dark td {
+    border-color: #4b5563;
+}
+
+.dark tbody tr:hover {
+    background-color: #374151;
+}
+
+/* Código en modo oscuro */
+.dark code {
+    background-color: #374151;
+    color: #f9fafb;
+    border: 1px solid #4b5563;
+}
+
+.dark pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    border: 1px solid #374151;
+}
+
+/* Transiciones suaves para el cambio de modo */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Mejoras específicas para elementos de la aplicación */
+.dark .article-content {
+    color: #e5e7eb;
+}
+
+.dark .article-content h1,
+.dark .article-content h2,
+.dark .article-content h3,
+.dark .article-content h4,
+.dark .article-content h5,
+.dark .article-content h6 {
+    color: #f3f4f6;
+}
+
+.dark .article-content blockquote {
+    background-color: #374151;
+    border-left-color: #7c3aed;
+    color: #d1d5db;
+}
+
+.dark .article-content code {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+/* Animaciones específicas para modo oscuro */
+@keyframes darkModeGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(124, 58, 237, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.6); }
+}
+
+.dark .glow-effect {
+    animation: darkModeGlow 2s ease-in-out infinite;
+}
+
+/* Mejoras para la accesibilidad en modo oscuro */
+.dark .focus-visible:focus {
+    outline: 2px solid #a855f7;
+    outline-offset: 2px;
+}
+
+/* Estilos para elementos de carga en modo oscuro */
+.dark .loading-skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+/* Media queries para modo oscuro */
+@media (prefers-color-scheme: dark) {
+    /* Estilos automáticos cuando el sistema prefiere modo oscuro */
+    :root:not(.light) {
+        color-scheme: dark;
+    }
+}
+
+/* Mejoras para impresión en modo oscuro */
+@media print {
+    .dark * {
+        background: white !important;
+        color: black !important;
+    }
+}

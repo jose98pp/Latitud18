@@ -1,0 +1,193 @@
+/* Estilos específicos de modo oscuro para página show */
+
+/* Asegurar que el artículo principal tenga fondo oscuro */
+.dark article.bg-white {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+}
+
+/* Breadcrumb en modo oscuro */
+.dark section.bg-gradient-to-r.from-gray-50 {
+    background: linear-gradient(to right, #374151, #1f2937) !important;
+    border-color: #4b5563 !important;
+}
+
+/* Títulos principales en modo oscuro */
+.dark h1.text-gray-900,
+.dark h2.text-gray-900,
+.dark h3.text-gray-900 {
+    color: #f9fafb !important;
+}
+
+/* Texto de metadata en modo oscuro */
+.dark .text-gray-500 {
+    color: #9ca3af !important;
+}
+
+.dark .text-gray-600 {
+    color: #d1d5db !important;
+}
+
+.dark .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+/* Iconos purple en modo oscuro */
+.dark .text-purple-600 {
+    color: #a855f7 !important;
+}
+
+/* Backgrounds en modo oscuro */
+.dark .bg-gray-50 {
+    background-color: #374151 !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: #4b5563 !important;
+}
+
+/* Borders en modo oscuro */
+.dark .border-gray-200 {
+    border-color: #4b5563 !important;
+}
+
+.dark .border-gray-100 {
+    border-color: #374151 !important;
+}
+
+/* Gradientes específicos para modo oscuro */
+.dark .bg-gradient-to-r.from-purple-50.to-red-50 {
+    background: linear-gradient(to right, rgba(124, 58, 237, 0.1), rgba(220, 38, 38, 0.1)) !important;
+    border-color: #7c3aed !important;
+}
+
+.dark .bg-gradient-to-br.from-gray-50.to-gray-100 {
+    background: linear-gradient(to bottom right, #374151, #111827) !important;
+}
+
+/* Tarjetas de noticias relacionadas */
+.dark .bg-white.rounded-2xl {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+}
+
+/* Figcaption en modo oscuro */
+.dark figcaption.bg-gray-50 {
+    background-color: #374151 !important;
+    color: #9ca3af !important;
+}
+
+/* Tags/etiquetas en modo oscuro */
+.dark .bg-gray-100.text-gray-700 {
+    background-color: #4b5563 !important;
+    color: #d1d5db !important;
+}
+
+/* Contenido del artículo en modo oscuro */
+.dark .article-content {
+    color: #e5e7eb !important;
+}
+
+.dark .article-content h1,
+.dark .article-content h2,
+.dark .article-content h3,
+.dark .article-content h4,
+.dark .article-content h5,
+.dark .article-content h6 {
+    color: #f3f4f6 !important;
+}
+
+.dark .article-content p {
+    color: #d1d5db !important;
+}
+
+.dark .article-content a {
+    color: #a855f7 !important;
+}
+
+.dark .article-content a:hover {
+    color: #c084fc !important;
+}
+
+/* Prose styling para modo oscuro */
+.dark .prose {
+    color: #d1d5db !important;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+    color: #f9fafb !important;
+}
+
+.dark .prose p {
+    color: #d1d5db !important;
+}
+
+.dark .prose strong {
+    color: #f3f4f6 !important;
+}
+
+.dark .prose blockquote {
+    color: #9ca3af !important;
+    border-left-color: #7c3aed !important;
+}
+
+/* Botones de compartir en modo oscuro */
+.dark .bg-blue-400:hover {
+    background-color: #3b82f6 !important;
+}
+
+.dark .bg-blue-600:hover {
+    background-color: #2563eb !important;
+}
+
+.dark .bg-green-500:hover {
+    background-color: #16a34a !important;
+}
+
+.dark .bg-gray-600:hover {
+    background-color: #4b5563 !important;
+}
+
+/* Transiciones suaves */
+.dark * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* Asegurar que los elementos con hover mantengan el estado correcto */
+.dark .hover\:text-purple-600:hover {
+    color: #a855f7 !important;
+}
+
+.dark .hover\:text-purple-800:hover {
+    color: #c084fc !important;
+}
+
+/* Elementos específicos que pueden necesitar corrección */
+.dark time.text-gray-500 {
+    color: #9ca3af !important;
+}
+
+.dark span.text-gray-600 {
+    color: #d1d5db !important;
+}
+
+/* Asegurar que los gradientes de fondo se vean bien */
+.dark .bg-gradient-to-r.from-purple-800 {
+    background: linear-gradient(to right, #581c87, #7c2d12) !important;
+}
+
+/* Correcciones para elementos que pueden no tener las clases correctas */
+.dark section[class*="bg-gray-"] {
+    background-color: #374151 !important;
+}
+
+.dark div[class*="bg-gray-50"] {
+    background-color: #374151 !important;
+}
+
+.dark div[class*="bg-gray-100"] {
+    background-color: #4b5563 !important;
+}

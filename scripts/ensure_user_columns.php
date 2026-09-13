@@ -1,0 +1,52 @@
+<?php
+$envPath = __DIR__ . '/../.env';
+if (!file_exists($envPath)) {
+    echo ".env file not found.\n";
+    exit(1);
+}
+$lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$env = [];
+foreach ($lines as $line) {
+    $line = trim($line);
+    if ($line === '' || $line[0] === '#') continue;
+    if (strpos($line, '=') === false) continue;
+    list($k, $v) = explode('=', $line, 2);
+    $env[trim($k)] = trim($v);
+}
+$dbhost = $env['DB_HOST'] ?? '127.0.0.1';
+$dbport = $env['DB_PORT'] ?? '3306';
+$dbname = $env['DB_DATABASE'] ?? null;
+$dbuser = $env['DB_USERNAME'] ?? null;
+$dbpass = $env['DB_PASSWORD'] ?? null;
+if (!$dbname || !$dbuser) {
+    echo "Missing DB_DATABASE or DB_USERNAME in .env\n";
+    exit(1);
+}
+$pdo = new PDO("mysql:host={$dbhost};port={$dbport};dbname={$dbname};charset=utf8mb4", $dbuser, $dbpass, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
+$cols = [];
+$stmt = $pdo->query("SHOW COLUMNS FROM users");
+foreach ($stmt->fetchAll() as $row) {
+    $cols[$row['Field']] = $row;
+}
+$queries = [];
+if (!isset($cols['avatar'])) {
+    $queries[] = "ALTER TABLE users ADD COLUMN avatar VARCHAR(255) NULL AFTER email_verified_at";
+}
+if (!isset($cols['phone'])) {
+    $queries[] = "ALTER TABLE users ADD COLUMN phone VARCHAR(255) NULL AFTER avatar";
+}
+if (!isset($cols['last_login_at'])) {
+    $queries[] = "ALTER TABLE users ADD COLUMN last_login_at TIMESTAMP NULL AFTER phone";
+}
+if (!isset($cols['is_active'])) {
+    $queries[] = "ALTER TABLE users ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1 AFTER last_login_at";
+}
+if (empty($queries)) {
+    echo "No missing columns detected.\n";
+    exit(0);
+}
+foreach ($queries as $sql) {
+    echo "Running: $sql\n";
+    $pdo->exec($sql);
+}
+echo "Done.\n";

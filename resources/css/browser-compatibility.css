@@ -1,0 +1,264 @@
+/* Browser Compatibility and CSS Optimization Rules */
+
+/* Reset para mejor consistencia entre navegadores */
+*,
+*::before,
+*::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Normalización de elementos base */
+html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Mejorar renderizado de imágenes */
+img {
+    border-style: none;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+/* Normalización de botones */
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+}
+
+button,
+input {
+    overflow: visible;
+}
+
+button,
+select {
+    text-transform: none;
+}
+
+/* Mejorar accesibilidad de focus */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+}
+
+/* Fallbacks para CSS Grid */
+.grid-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+/* Soporte para CSS Grid cuando esté disponible */
+@supports (display: grid) {
+    .grid-container {
+        display: grid;
+    }
+}
+
+/* Fallbacks para CSS Variables */
+.primary-color { color: #7c3aed; }
+.secondary-color { color: #5b21b6; }
+.accent-color { color: #a855f7; }
+
+/* Usar variables cuando estén disponibles */
+@supports (--css: variables) {
+    .primary-color { color: var(--uhtv-purple, #7c3aed); }
+    .secondary-color { color: var(--uhtv-purple-dark, #5b21b6); }
+    .accent-color { color: var(--uhtv-purple-light, #a855f7); }
+}
+
+/* Optimización de animaciones */
+@media (prefers-reduced-motion: no-preference) {
+    .smooth-transition {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+}
+
+/* Mejorar performance de scroll */
+.scroll-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Fallback para scroll-behavior */
+@media (prefers-reduced-motion: reduce) {
+    .scroll-container {
+        scroll-behavior: auto;
+    }
+}
+
+/* Optimización de contenido */
+.text-content {
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Mejorar renderizado de texto */
+.optimized-text {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Contenedores con containment para mejor performance */
+.performance-container {
+    contain: layout style paint;
+}
+
+/* Elementos que van a cambiar frecuentemente */
+.dynamic-content {
+    contain: layout;
+    will-change: contents;
+}
+
+/* Optimización de imágenes lazy loading */
+.lazy-image {
+    opacity: 0;
+    -webkit-transition: opacity 0.3s;
+    -moz-transition: opacity 0.3s;
+    -ms-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+
+.lazy-image.loaded {
+    opacity: 1;
+}
+
+/* Fallback para object-fit */
+.image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-fit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* Usar object-fit cuando esté disponible */
+@supports (object-fit: cover) {
+    .image-fit {
+        position: static;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+        transform: none;
+        width: 100%;
+        height: 100%;
+        -o-object-fit: cover;
+        object-fit: cover;
+    }
+}
+
+/* Mejorar compatibilidad de flexbox */
+.flex-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.flex-center {
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.flex-wrap {
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+/* Optimización de z-index */
+.layer-base { z-index: 1; }
+.layer-content { z-index: 10; }
+.layer-navigation { z-index: 100; }
+.layer-modal { z-index: 1000; }
+.layer-tooltip { z-index: 10000; }
+
+/* Print styles */
+@media print {
+    *,
+    *::before,
+    *::after {
+        background: transparent !important;
+        color: #000 !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+    
+    img {
+        page-break-inside: avoid;
+    }
+    
+    h2,
+    h3,
+    p {
+        orphans: 3;
+        widows: 3;
+    }
+    
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}

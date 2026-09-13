@@ -1,0 +1,360 @@
+/* Performance Optimizations CSS */
+
+/* Lazy Loading Styles */
+.lazy-image {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lazy-image.loaded {
+    opacity: 1;
+}
+
+.lazy-image.error {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+.lazy-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
+                linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
+                linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    animation: placeholder-shimmer 2s infinite linear;
+}
+
+@keyframes placeholder-shimmer {
+    0% { background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
+    100% { background-position: 20px 20px, 20px 30px, 30px 10px, 10px 20px; }
+}
+
+/* Image Error Handling */
+.image-error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.image-error::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ef4444' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E") center/50px no-repeat;
+    opacity: 0.3;
+}
+
+/* Responsive Grid Optimizations */
+.news-cards-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+    .mobile-optimized .news-cards-grid {
+        gap: 1rem;
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-optimized .news-card {
+        transform: none !important;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .mobile-optimized .news-card:hover {
+        transform: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-optimized .news-card.touch-active {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        background-color: #f8fafc;
+    }
+
+    /* Reduce animation complexity on mobile */
+    .mobile-optimized * {
+        animation-duration: 0.2s !important;
+    }
+
+    /* Optimize touch targets */
+    .mobile-optimized .actions-trigger {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Simplify card layout on mobile */
+    .mobile-optimized .news-card-image {
+        height: 200px;
+    }
+
+    .mobile-optimized .news-card-content {
+        padding: 1rem;
+    }
+
+    .mobile-optimized .news-card-title {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+
+    .mobile-optimized .news-card-description {
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .tablet-optimized .news-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .tablet-optimized .news-card-image {
+        height: 220px;
+    }
+
+    /* Optimize for touch on tablets */
+    .tablet-optimized .news-card {
+        cursor: pointer;
+    }
+
+    .tablet-optimized .actions-trigger {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Desktop Optimizations */
+@media (min-width: 1024px) {
+    .news-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+
+    /* Enable advanced hover effects on desktop */
+    .news-card:hover .news-card-image img {
+        transform: scale(1.05) rotate(1deg);
+    }
+
+    .news-card:hover {
+        transform: translateY(-8px) rotateX(5deg);
+    }
+}
+
+/* Performance Optimizations for Slow Connections */
+.low-bandwidth .lazy-image {
+    filter: blur(1px);
+    transition: filter 0.3s ease;
+}
+
+.low-bandwidth .lazy-image.loaded {
+    filter: none;
+}
+
+.medium-bandwidth .news-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.high-bandwidth .news-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slow Loading Optimizations */
+.slow-loading * {
+    animation-duration: 0.1s !important;
+    transition-duration: 0.1s !important;
+}
+
+.slow-loading .news-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Reduce Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .news-card,
+    .lazy-image,
+    .news-card-image img {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .news-card:hover {
+        transform: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .placeholder-shimmer {
+        animation: none !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .news-card {
+        border: 2px solid #000;
+    }
+
+    .lazy-placeholder {
+        background: repeating-linear-gradient(
+            45deg,
+            #000,
+            #000 10px,
+            #fff 10px,
+            #fff 20px
+        );
+    }
+
+    .image-error {
+        background: #ff0000;
+        color: #ffffff;
+    }
+}
+
+/* Print Optimizations */
+@media print {
+    .news-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+        margin-bottom: 1rem;
+    }
+
+    .actions-dropdown,
+    .lazy-placeholder {
+        display: none;
+    }
+
+    .news-card-image {
+        height: auto;
+        max-height: 200px;
+    }
+}
+
+/* Container Query Support (Future-proofing) */
+@supports (container-type: inline-size) {
+    .news-container {
+        container-type: inline-size;
+    }
+
+    @container (max-width: 600px) {
+        .news-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @container (min-width: 601px) and (max-width: 900px) {
+        .news-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @container (min-width: 901px) {
+        .news-cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+    }
+}
+
+/* Loading States */
+.news-container.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.news-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: loading-sweep 1.5s infinite;
+}
+
+@keyframes loading-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Skeleton Loading for Cards */
+.news-card.skeleton {
+    background: #f3f4f6;
+    animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.news-card.skeleton .news-card-image,
+.news-card.skeleton .news-card-title,
+.news-card.skeleton .news-card-description {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-pulse {
+    0% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Intersection Observer Fallback */
+.no-intersection-observer .lazy-image {
+    opacity: 1;
+}
+
+/* Critical CSS Inlining Support */
+.critical-css-loaded .news-card {
+    visibility: visible;
+}
+
+/* Memory Usage Optimization */
+.news-card-image {
+    contain: layout style paint;
+}
+
+.news-card-content {
+    contain: layout style;
+}
+
+/* GPU Acceleration for Smooth Animations */
+.news-card {
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+}
+
+.news-card:hover {
+    will-change: auto;
+}
+
+/* Optimize for Different Pixel Densities */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .lazy-image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Focus Management for Accessibility */
+.news-card:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.news-card:focus-within .actions-trigger {
+    background-color: #e5e7eb;
+}

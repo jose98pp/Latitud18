@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Última Hora TV">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#7c3aed">
+    
+    <title>Portada - Última Hora TV</title>
+    
+    <!-- DNS Prefetch for better performance -->
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+    
+    <!-- Preconnect for critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Critical CSS - Load synchronously -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Non-critical CSS - Load asynchronously -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"></noscript>
+    
+    <!-- Google Fonts with display=swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dashing+Alternate&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'uhtv-purple': {
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        },
+                        'uhtv-red': {
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Optimized CSS - Load with high priority -->
+    <link rel="preload" href="http://127.0.0.1:8000/css/optimized.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="http://127.0.0.1:8000/css/optimized.css" rel="stylesheet"></noscript>
+    
+    <!-- CSS y JS personalizados -->
+        <link rel="preload" as="style" href="http://127.0.0.1:8000/build/css/core/app-0pXdNNmq.css" /><link rel="preload" as="style" href="http://127.0.0.1:8000/build/css/compatibility/browser-compat-B-Qk_zdV.css" /><link rel="preload" as="style" href="http://127.0.0.1:8000/build/css/themes/dark-mode-BFkuSO7S.css" /><link rel="modulepreload" href="http://127.0.0.1:8000/build/js/app-CfnOcgs9.js" /><link rel="modulepreload" href="http://127.0.0.1:8000/build/js/chunks/vendor-react-BVwMe2Zg.js" /><link rel="modulepreload" href="http://127.0.0.1:8000/build/js/chunks/vendor-CJzWRXuu.js" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/css/core/app-0pXdNNmq.css" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/css/compatibility/browser-compat-B-Qk_zdV.css" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/css/themes/dark-mode-BFkuSO7S.css" /><script type="module" src="http://127.0.0.1:8000/build/js/app-CfnOcgs9.js"></script>
+    <!-- Script de inicialización inmediata para modo oscuro -->
+    <script>
+        // Aplicar modo oscuro inmediatamente para evitar flash
+        (function() {
+            try {
+                const DARK_MODE_KEY = 'uhtv-dark-mode';
+                const savedTheme = localStorage.getItem(DARK_MODE_KEY);
+                const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                const shouldBeDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+                
+                if (shouldBeDark) {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                    
+                    // Actualizar meta theme-color inmediatamente
+                    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+                    if (themeColorMeta) {
+                        themeColorMeta.setAttribute('content', '#1f2937');
+                    }
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
+                    
+                    // Actualizar meta theme-color inmediatamente
+                    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+                    if (themeColorMeta) {
+                        themeColorMeta.setAttribute('content', '#7c3aed');
+                    }
+                }
+                
+                // Marcar que la inicialización inmediata se completó
+                window.darkModeImmediateInit = true;
+                window.darkModeInitialState = shouldBeDark;
+                
+            } catch (e) {
+                console.warn('Error in immediate dark mode initialization:', e);
+            }
+        })();
+    </script>
+
+    <!-- Inline critical CSS for immediate rendering -->
+    <style>
+        /* Critical above-the-fold styles */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .d-flex { display: flex; }
+        .justify-content-center { justify-content: center; }
+        .align-items-center { align-items: center; }
+        .text-center { text-align: center; }
+        
+        /* Transiciones suaves para modo oscuro */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Estilos base para modo oscuro */
+        .dark {
+            color-scheme: dark;
+        }
+    </style>
+
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <!-- Header Mejorado - Inspirado en Brújula Digital -->
+  <header class="relative bg-gradient-to-r from-purple-800 via-purple-600 to-red-600 dark:from-purple-900 dark:via-purple-700 dark:to-red-700 bg-cover bg-center min-h-[140px] flex items-center justify-center text-white overflow-hidden" 
+          style="background-image: url('http://127.0.0.1:8000/images/banner.png');">
+    <!-- Overlay con gradiente mejorado -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70 dark:from-black/80 dark:via-black/60 dark:to-black/80"></div>
+    
+    <!-- Elementos decorativos -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-4 left-4 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+      <div class="absolute bottom-4 right-4 w-24 h-24 bg-purple-300 rounded-full blur-2xl"></div>
+    </div>
+    
+    <div class="relative text-center z-10 py-6">
+      <a href="/" class="flex items-center justify-center space-x-4 mb-4 group">
+        <div class="relative">
+          <img src="/images/Logo.jpg" alt="UltimaHoraTV" class="w-20 h-20 rounded-full border-4 border-white/30 shadow-2xl transition-transform duration-300 group-hover:scale-110">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-400/20 to-red-400/20"></div>
+        </div>
+        <div>
+          <h1 class="text-5xl font-bold text-white mb-1 tracking-tight">Estiven<span class="text-red-400">TV</span></h1>
+          <p class="text-purple-200 text-sm font-medium uppercase tracking-widest">Noticias Del Momento</p>
+        </div>
+      </a>
+      
+      <!-- Redes Sociales Mejoradas -->
+      <div class="flex justify-center space-x-3 mt-4">
+        <a href="https://facebook.com/uhtvbolivia" target="_blank" class="bg-white/10 backdrop-blur-sm hover:bg-blue-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+          <i class="fab fa-facebook text-lg"></i>
+        </a>
+        <a href="https://www.youtube.com/@UHTVBolivia" target="_blank" class="bg-white/10 backdrop-blur-sm hover:bg-red-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+          <i class="fab fa-youtube text-lg"></i>
+        </a>
+        <a href="https://instagram.com/uhtvbolivia" target="_blank" class="bg-white/10 backdrop-blur-sm hover:bg-pink-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+          <i class="fab fa-instagram text-lg"></i>
+        </a>
+        <a href="https://x.com/UhtvBol" target="_blank" class="bg-white/10 backdrop-blur-sm hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+          <i class="fab fa-x-twitter text-lg"></i>
+        </a>
+        <a href="https://tiktok.com/@uhtvbolivia" target="_blank" class="bg-white/10 backdrop-blur-sm hover:bg-black text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+          <i class="fab fa-tiktok text-lg"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+<!-- Navbar Mejorada -->
+<nav class="bg-white dark:bg-gray-900 shadow-xl sticky top-0 left-0 w-full z-50 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+ <div class="container mx-auto flex justify-between items-center py-4 px-4">
+  <!-- Logo/Inicio -->
+  <a href="/" class="flex items-center space-x-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300">
+    <i class="fas fa-home text-xl"></i>
+    <span class="text-xl font-bold">Inicio</span>
+  </a>
+  
+  <!-- Botón del menú hamburguesa mejorado -->
+  <button id="hamburgerButton" class="lg:hidden text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 focus:outline-none focus:text-purple-600 dark:focus:text-purple-400 transition-colors duration-300">
+    <div class="w-6 h-6 flex flex-col justify-center items-center">
+      <span class="block w-6 h-0.5 bg-current transition-all duration-300 transform"></span>
+      <span class="block w-6 h-0.5 bg-current mt-1 transition-all duration-300 transform"></span>
+      <span class="block w-6 h-0.5 bg-current mt-1 transition-all duration-300 transform"></span>
+    </div>
+  </button>
+  
+  <!-- Menú para pantallas grandes -->
+  <div class="hidden lg:flex space-x-8 mx-auto">
+          <a href="http://127.0.0.1:8000/categoria/7" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Cultura
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/9" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Deportes
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/3" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Economía
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/8" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Espectáculo
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/4" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Mundo
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/1" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Nacional
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/10" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Negocios
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+          <a href="http://127.0.0.1:8000/categoria/2" 
+         class="text-gray-700 dark:text-gray-300 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 relative group py-2">
+        Política
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-red-600 transition-all duration-300 group-hover:w-full"></span>
+      </a>
+      </div>
+  
+  <!-- Búsqueda y Controles -->
+  <div class="hidden lg:flex items-center space-x-4">
+    <!-- Formulario de búsqueda -->
+    <form action="http://127.0.0.1:8000/buscar" method="GET" class="relative">
+      <input type="text" 
+             name="q" 
+             placeholder="Buscar noticias..." 
+             class="w-64 px-4 py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300">
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm"></i>
+      <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 text-white p-1.5 rounded-full transition-colors duration-300">
+        <i class="fas fa-arrow-right text-xs"></i>
+      </button>
+    </form>
+    
+    <!-- Toggle de modo oscuro -->
+    <button data-dark-mode-toggle class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+      <i class="fas fa-sun sun-icon text-lg hidden"></i>
+      <i class="fas fa-moon moon-icon text-lg"></i>
+    </button>
+  </div>
+</div>
+
+  <!-- Sidebar para móviles mejorado -->
+  <div
+    id="mobileMenu"
+    class="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl transform -translate-x-full transition-all duration-300 lg:hidden z-50"
+  >
+    <!-- Header del menú móvil -->
+    <div class="bg-gradient-to-r from-purple-600 to-red-600 text-white p-6">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <img src="/images/Logo.jpg" alt="UHTV" class="w-10 h-10 rounded-full">
+          <span class="text-xl font-bold">UHTV</span>
+        </div>
+        <button id="closeMenu" class="text-white hover:text-gray-200 focus:outline-none transition-colors duration-300">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Navegación principal -->
+    <div class="p-6">
+      <a href="/" class="flex items-center space-x-3 text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-300 py-3 border-b border-gray-100 dark:border-gray-700">
+        <i class="fas fa-home text-lg"></i>
+        <span class="font-semibold">Inicio</span>
+      </a>
+      
+      <!-- Búsqueda móvil -->
+      <div class="mt-4">
+        <form action="http://127.0.0.1:8000/buscar" method="GET" class="relative">
+          <input type="text" 
+                 name="q" 
+                 placeholder="Buscar noticias..." 
+                 class="w-full px-4 py-3 pl-10 pr-4 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"></i>
+          <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-colors duration-300">
+            <i class="fas fa-arrow-right text-sm"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Categorías -->
+    <div class="px-6">
+      <h3 class="text-gray-500 dark:text-gray-400 uppercase text-sm font-semibold tracking-wide mb-4">Categorías</h3>
+      <div class="space-y-2">
+                  <a href="http://127.0.0.1:8000/categoria/7" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Cultura</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/9" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Deportes</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/3" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Economía</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/8" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Espectáculo</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/4" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Mundo</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/1" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Nacional</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/10" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Negocios</span>
+          </a>
+                  <a href="http://127.0.0.1:8000/categoria/2" 
+             class="flex items-center space-x-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-300 py-3 px-4 rounded-lg">
+            <i class="fas fa-folder text-sm"></i>
+            <span class="font-medium">Política</span>
+          </a>
+              </div>
+    </div>
+    
+    <!-- Redes sociales en el menú móvil -->
+    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <h4 class="text-gray-500 dark:text-gray-400 uppercase text-xs font-semibold tracking-wide mb-3">Síguenos</h4>
+      <div class="flex space-x-3">
+        <a href="https://facebook.com/uhtvbolivia" target="_blank" class="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors duration-300">
+          <i class="fab fa-facebook text-sm"></i>
+        </a>
+        <a href="https://www.youtube.com/@UHTVBolivia" target="_blank" class="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors duration-300">
+          <i class="fab fa-youtube text-sm"></i>
+        </a>
+        <a href="https://instagram.com/uhtvbolivia" target="_blank" class="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors duration-300">
+          <i class="fab fa-instagram text-sm"></i>
+        </a>
+        <a href="https://x.com/UhtvBol" target="_blank" class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition-colors duration-300">
+          <i class="fab fa-x-twitter text-sm"></i>
+        </a>
+        <a href="https://tiktok.com/@uhtvbolivia" target="_blank" class="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300">
+          <i class="fab fa-tiktok text-sm"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Overlay para cerrar el menú -->
+  <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden z-40"></div>
+</nav>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerButton = document.getElementById('hamburgerButton');
+    const closeMenu = document.getElementById('closeMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+    function openMobileMenu() {
+      mobileMenu.classList.remove('-translate-x-full');
+      mobileMenuOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+      
+      // Animación del botón hamburguesa
+      const spans = hamburgerButton.querySelectorAll('span');
+      spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.add('-translate-x-full');
+      mobileMenuOverlay.classList.add('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = '';
+      
+      // Restaurar botón hamburguesa
+      const spans = hamburgerButton.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '';
+      spans[2].style.transform = '';
+    }
+
+    // Event listeners
+    if (hamburgerButton) {
+      hamburgerButton.addEventListener('click', openMobileMenu);
+    }
+
+    if (closeMenu) {
+      closeMenu.addEventListener('click', closeMobileMenu);
+    }
+
+    if (mobileMenuOverlay) {
+      mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Cerrar menú al hacer clic en un enlace
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Cerrar menú con tecla Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !mobileMenu.classList.contains('-translate-x-full')) {
+        closeMobileMenu();
+      }
+    });
+  });
+</script>
+
+    <!-- Contenedor de Publicidad -->
+    <!-- Banner Publicitario -->
+    <!-- Contenedor de Publicidad -->
+    <!-- Banner Publicitario -->
+                        <div class="publicidad w-full flex justify-center items-center my-6 px-4">
+                <a href="https://radiobetania.com/" target="_blank" rel="noopener noreferrer" class="block w-full max-w-5xl transition-transform hover:scale-[1.01] duration-300"> 
+                    <img src="http://127.0.0.1:8000/images/betania.jpg" 
+                         alt="Radio Betania" 
+                         class="w-full h-auto rounded-xl shadow-lg object-cover border border-gray-200 dark:border-gray-700" 
+                         loading="lazy">
+                </a>
+            </div>
+                
+    <!-- Contenido Principal -->
+    <main class="container my-4">
+        <!-- Hero Section con Carrusel Principal - Inspirado en Brújula Digital -->
+<section class="bg-white dark:bg-gray-900 pt-4 pb-1 transition-colors duration-300">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- Carrusel Principal de Noticias -->
+      <div class="lg:col-span-3">
+        <div class="relative bg-white rounded-xl shadow-xl overflow-hidden h-full">
+          <!-- Etiqueta de "ÚLTIMAS NOTICIAS" -->
+          <div class="absolute top-4 left-4 z-20">
+            <span class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wide shadow-lg">
+              <i class="fas fa-bolt mr-2"></i>Últimas Noticias
+            </span>
+          </div>
+          
+          <div id="newsCarousel" class="carousel slide h-full" data-bs-ride="carousel">
+            <div class="carousel-inner h-full">
+                              <div class="carousel-item h-full  active ">
+                  <div class="relative h-full">
+                    <a href="http://127.0.0.1:8000/noticia/3402" class="block h-full">
+                      <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                           alt="Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración" 
+                           class="w-full h-full min-h-[450px] object-cover"
+                           onerror="handleImageError(this)">
+                    </a>
+                    <!-- Overlay con gradiente más suave -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Contenido sobre la imagen -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <div class="mb-3">
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                          Nacional
+                        </span>
+                      </div>
+                      <a href="http://127.0.0.1:8000/noticia/3402" class="text-white no-underline block">
+                        <h2 class="text-3xl font-bold mb-3 leading-tight hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+                          Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración
+                        </h2>
+                        <p class="text-gray-200 text-sm mb-2 line-clamp-2">
+                          Dos mujeres permanecen desaparecidas desde el lunes, cuando se produjeron deslizamientos que afectaron viviendas y vías...
+                        </p>
+                        <div class="flex items-center text-gray-300 text-sm">
+                          <i class="fas fa-clock mr-2"></i>
+                          hace 7 meses
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-eye mr-1"></i>
+                          <span>Leer más</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                              <div class="carousel-item h-full ">
+                  <div class="relative h-full">
+                    <a href="http://127.0.0.1:8000/noticia/3401" class="block h-full">
+                      <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                           alt="Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores" 
+                           class="w-full h-full min-h-[450px] object-cover"
+                           onerror="handleImageError(this)">
+                    </a>
+                    <!-- Overlay con gradiente más suave -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Contenido sobre la imagen -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <div class="mb-3">
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                          Política
+                        </span>
+                      </div>
+                      <a href="http://127.0.0.1:8000/noticia/3401" class="text-white no-underline block">
+                        <h2 class="text-3xl font-bold mb-3 leading-tight hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+                          Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores
+                        </h2>
+                        <p class="text-gray-200 text-sm mb-2 line-clamp-2">
+                          El jefe de Unidad niega que tenga influencia en el Gobierno y responde a críticas del vicepresidente Edmand Lara.El...
+                        </p>
+                        <div class="flex items-center text-gray-300 text-sm">
+                          <i class="fas fa-clock mr-2"></i>
+                          hace 7 meses
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-eye mr-1"></i>
+                          <span>Leer más</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                              <div class="carousel-item h-full ">
+                  <div class="relative h-full">
+                    <a href="http://127.0.0.1:8000/noticia/3400" class="block h-full">
+                      <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                           alt="Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles" 
+                           class="w-full h-full min-h-[450px] object-cover"
+                           onerror="handleImageError(this)">
+                    </a>
+                    <!-- Overlay con gradiente más suave -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Contenido sobre la imagen -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <div class="mb-3">
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                          Deportes
+                        </span>
+                      </div>
+                      <a href="http://127.0.0.1:8000/noticia/3400" class="text-white no-underline block">
+                        <h2 class="text-3xl font-bold mb-3 leading-tight hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+                          Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles
+                        </h2>
+                        <p class="text-gray-200 text-sm mb-2 line-clamp-2">
+                          El tenista cruceño venció en cuartos de final al brasileño Sakamoto (6-4 y 7-5). Su próximo rival será el argentino...
+                        </p>
+                        <div class="flex items-center text-gray-300 text-sm">
+                          <i class="fas fa-clock mr-2"></i>
+                          hace 7 meses
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-eye mr-1"></i>
+                          <span>Leer más</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                              <div class="carousel-item h-full ">
+                  <div class="relative h-full">
+                    <a href="http://127.0.0.1:8000/noticia/3399" class="block h-full">
+                      <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                           alt="Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”" 
+                           class="w-full h-full min-h-[450px] object-cover"
+                           onerror="handleImageError(this)">
+                    </a>
+                    <!-- Overlay con gradiente más suave -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Contenido sobre la imagen -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <div class="mb-3">
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                          Política
+                        </span>
+                      </div>
+                      <a href="http://127.0.0.1:8000/noticia/3399" class="text-white no-underline block">
+                        <h2 class="text-3xl font-bold mb-3 leading-tight hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+                          Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”
+                        </h2>
+                        <p class="text-gray-200 text-sm mb-2 line-clamp-2">
+                          Pese a las críticas del vicepresidente y de sus seguidores, Wilson Santamaría ya realiza sus labores con el...
+                        </p>
+                        <div class="flex items-center text-gray-300 text-sm">
+                          <i class="fas fa-clock mr-2"></i>
+                          hace 7 meses
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-eye mr-1"></i>
+                          <span>Leer más</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                              <div class="carousel-item h-full ">
+                  <div class="relative h-full">
+                    <a href="http://127.0.0.1:8000/noticia/3398" class="block h-full">
+                      <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                           alt="Santa Cruz: Hay ocho agrupaciones departamentales y 27 municipales para ir a las subnacionales" 
+                           class="w-full h-full min-h-[450px] object-cover"
+                           onerror="handleImageError(this)">
+                    </a>
+                    <!-- Overlay con gradiente más suave -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Contenido sobre la imagen -->
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <div class="mb-3">
+                        <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                          Nacional
+                        </span>
+                      </div>
+                      <a href="http://127.0.0.1:8000/noticia/3398" class="text-white no-underline block">
+                        <h2 class="text-3xl font-bold mb-3 leading-tight hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+                          Santa Cruz: Hay ocho agrupaciones departamentales y 27 municipales para ir a las subnacionales
+                        </h2>
+                        <p class="text-gray-200 text-sm mb-2 line-clamp-2">
+                          El país renovará a gobernadores, alcaldes, asambleístas departamentales, concejales, corregidores y otras autoridades,...
+                        </p>
+                        <div class="flex items-center text-gray-300 text-sm">
+                          <i class="fas fa-clock mr-2"></i>
+                          hace 7 meses
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-eye mr-1"></i>
+                          <span>Leer más</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                          </div>
+            
+            <!-- Controles del carrusel mejorados -->
+            <button class="carousel-control-prev absolute left-4 top-1/2 transform -translate-y-1/2 z-10" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+              <div class="bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-3 transition-all duration-300 shadow-lg">
+                <i class="fas fa-chevron-left text-white text-lg"></i>
+              </div>
+              <span class="sr-only">Anterior</span>
+            </button>
+            <button class="carousel-control-next absolute right-4 top-1/2 transform -translate-y-1/2 z-10" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+              <div class="bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-3 transition-all duration-300 shadow-lg">
+                <i class="fas fa-chevron-right text-white text-lg"></i>
+              </div>
+              <span class="sr-only">Siguiente</span>
+            </button>
+            
+            <!-- Indicadores mejorados -->
+            <div class="carousel-indicators">
+                              <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="0" 
+                        class=" active " 
+                        aria-current=" true " 
+                        aria-label="Slide 1"></button>
+                              <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="1" 
+                        class="" 
+                        aria-current=" false " 
+                        aria-label="Slide 2"></button>
+                              <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="2" 
+                        class="" 
+                        aria-current=" false " 
+                        aria-label="Slide 3"></button>
+                              <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="3" 
+                        class="" 
+                        aria-current=" false " 
+                        aria-label="Slide 4"></button>
+                              <button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="4" 
+                        class="" 
+                        aria-current=" false " 
+                        aria-label="Slide 5"></button>
+                          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Videos y Noticias Destacadas -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Últimos Videos -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div class="bg-gradient-to-r from-red-600 to-red-700 text-white p-4">
+            <h3 class="font-bold text-lg flex items-center">
+              <i class="fab fa-youtube mr-2"></i>
+              En Vivo
+            </h3>
+          </div>
+          <div class="p-4">
+            <div class="relative pb-[56.25%] rounded-lg overflow-hidden">
+              <iframe 
+                class="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed?listType=playlist&list=UUx8c9O9qP3IjtnEKkEr-Bng" 
+                title="Últimos Videos de UHTV Bolivia" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- Noticias Más Leídas -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4">
+            <h3 class="font-bold text-lg flex items-center">
+              <i class="fas fa-fire mr-2"></i>
+              Más Leídas
+            </h3>
+          </div>
+          <div class="p-4 space-y-4">
+                          <div class="flex items-start space-x-3 pb-3  border-b border-gray-100 ">
+                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  1
+                </span>
+                <div class="flex-1">
+                  <a href="http://127.0.0.1:8000/noticia/3402" class="block">
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2">
+                      Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración
+                    </h4>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center">
+                      <i class="fas fa-clock mr-1"></i>
+                      hace 7 meses
+                    </p>
+                  </a>
+                </div>
+              </div>
+                          <div class="flex items-start space-x-3 pb-3  border-b border-gray-100 ">
+                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  2
+                </span>
+                <div class="flex-1">
+                  <a href="http://127.0.0.1:8000/noticia/3401" class="block">
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2">
+                      Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores
+                    </h4>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center">
+                      <i class="fas fa-clock mr-1"></i>
+                      hace 7 meses
+                    </p>
+                  </a>
+                </div>
+              </div>
+                          <div class="flex items-start space-x-3 pb-3  border-b border-gray-100 ">
+                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  3
+                </span>
+                <div class="flex-1">
+                  <a href="http://127.0.0.1:8000/noticia/3400" class="block">
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2">
+                      Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles
+                    </h4>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center">
+                      <i class="fas fa-clock mr-1"></i>
+                      hace 7 meses
+                    </p>
+                  </a>
+                </div>
+              </div>
+                          <div class="flex items-start space-x-3 pb-3 ">
+                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  4
+                </span>
+                <div class="flex-1">
+                  <a href="http://127.0.0.1:8000/noticia/3399" class="block">
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight hover:text-purple-600 dark:hover:text-purple-400 transition-colors line-clamp-2">
+                      Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”
+                    </h4>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs mt-1 flex items-center">
+                      <i class="fas fa-clock mr-1"></i>
+                      hace 7 meses
+                    </p>
+                  </a>
+                </div>
+              </div>
+                      </div>
+        </div>
+
+        <!-- Banner Publicitario -->
+        <!-- Banner Publicitario -->
+                                    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+                    <div class="bg-gray-100 text-gray-700 p-3 text-center">
+                        <span class="text-xs font-medium uppercase tracking-wide">Publicidad</span>
+                    </div>
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="block">
+                        <img src="http://127.0.0.1:8000/images/publicita-left.jpeg" alt="Publicidad Sidebar" 
+                             class="w-full h-auto hover:opacity-90 transition-opacity duration-300"
+                             loading="lazy">
+                    </a>
+                </div>
+                          </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cintillo de Últimas Noticias (News Ticker) -->
+<section class="bg-uhtv-purple-700 dark:bg-uhtv-purple-900 text-white py-2 overflow-hidden border-y border-uhtv-purple-500 dark:border-uhtv-purple-800 relative shadow-md z-10">
+  <div class="container mx-auto px-4 flex items-center">
+    <!-- Etiqueta "Último Momento" -->
+    <div class="bg-red-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full mr-4 flex-shrink-0 animate-pulse shadow-sm z-20 relative">
+      <i class="fas fa-circle text-[8px] mr-2 align-middle"></i>Último Momento
+    </div>
+    
+    <!-- Contenedor del Ticker -->
+    <div class="ticker-wrap flex-1 overflow-hidden relative h-6">
+      <div class="ticker">
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3402" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[11:55]</span>
+              Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3401" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[09:34]</span>
+              Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3400" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[08:36]</span>
+              Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3399" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[08:30]</span>
+              Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3398" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[07:56]</span>
+              Santa Cruz: Hay ocho agrupaciones departamentales y 27 municipales para ir a las subnacionales
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3397" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[19:48]</span>
+              ¿Habrá debates en las elecciones subnacionales? Esto dice el TSE
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3396" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[19:23]</span>
+              ¡Aliste paraguas! Lluvias intensas y tormentas eléctricas afectarán a cinco departamentos
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3395" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[18:46]</span>
+              “Aplazarse no es falta de ganas”: la realidad oculta detrás del bajo rendimiento escolar en Bolivia
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3394" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[18:10]</span>
+              Patra presenta “Poder Latino”, su nueva colección Primavera–Verano inspirada en la riqueza cultural latinoamericana
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+                  <div class="ticker__item inline-block px-4 text-sm font-medium hover:text-uhtv-purple-200 transition-colors">
+            <a href="http://127.0.0.1:8000/noticia/3393" class="flex items-center">
+              <span class="text-uhtv-purple-300 mr-2">[17:54]</span>
+              ‘Aquí no hay dos presidentes’: Copa dice a Lara que entienda su función
+            </a>
+          </div>
+          <span class="text-uhtv-purple-400 mx-2">•</span>
+              </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Animación del Ticker */
+  .ticker-wrap {
+    width: 100%;
+    white-space: nowrap;
+  }
+  .ticker {
+    display: inline-block;
+    animation: ticker 60s linear infinite;
+  }
+  .ticker:hover {
+    animation-play-state: paused;
+  }
+  .ticker__item {
+    display: inline-block;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+
+<!-- Sección de Noticias por Categorías - Estilo Brújula Digital -->
+<section class="py-12 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Noticias por Categorías</h2>
+      <div class="w-32 h-1 bg-gradient-to-r from-purple-600 to-red-600 mx-auto rounded-full"></div>
+      <p class="text-gray-600 dark:text-gray-300 mt-4 text-lg">Mantente informado con las últimas noticias de cada sección</p>
+    </div>
+
+    <!-- Secciones de Categorías como Brújula Digital -->
+                  <div class="mb-16">
+          <!-- Header de la Categoría -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Cultura</h3>
+              <div class="w-16 h-1 bg-gradient-to-r from-purple-600 to-red-600 rounded-full"></div>
+            </div>
+            <a href="http://127.0.0.1:8000/categoria/7" 
+               class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold flex items-center transition-colors duration-300">
+              Ver todas <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+
+          <!-- Grid de Noticias de la Categoría -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700  md:col-span-2 md:row-span-2 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3320" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="El Ballet Clásico de San Petersburgo lleva la magia de &quot;El Cascanueces&quot; a Bolivia con estrellas del Bolshoi" 
+                         class="w-full  h-64 md:h-80  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                      <div class="absolute top-4 right-4">
+                      <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        PRINCIPAL
+                      </span>
+                    </div>
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4  md:p-6 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3320" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-xl md:text-2xl  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      El Ballet Clásico de San Petersburgo lleva la magia de &quot;El Cascanueces&quot; a Bolivia con estrellas del Bolshoi
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-base line-clamp-3 leading-relaxed mb-4">
+                        La compañía rusa, con más de 30 giras internacionales y presencia en 150 países, presentará el clásico de Chaikovski en...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <a href="http://127.0.0.1:8000/noticia/3320" 
+                         class="inline-flex items-center text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold text-sm transition-colors duration-300 group">
+                        Leer noticia completa
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                      </a>
+                    </div>
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3315" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="El remake de “El Sobreviviente”, el intenso thriller de acción de Stephen King, ya está en los cines" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3315" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      El remake de “El Sobreviviente”, el intenso thriller de acción de Stephen King, ya está en los cines
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        &quot;El Sobreviviente&quot;&amp;nbsp;(The Running Man) es el próximo remake que llegará a los cines de Bolivia este jueves 13 de...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3294" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Black Cinema Day: un día para celebrar el séptimo arte con los precios más bajos" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3294" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Black Cinema Day: un día para celebrar el séptimo arte con los precios más bajos
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Una iniciativa inédita que reúne a toda la industria cinematográfica del país para celebrar el cine con entradas a...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3261" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="&quot;Difícil de definir&quot;: la prensa alemana queda fascinada con el guitarrista boliviano Piraí Vaca" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3261" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      &quot;Difícil de definir&quot;: la prensa alemana queda fascinada con el guitarrista boliviano Piraí Vaca
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El concertista boliviano conquista al público europeo en su gira 2025, fusionando emoción y técnica en cada...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3175" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="“Houston, tenemos un problema” La misión “Apolo 13” regresa al cine este 6 de noviembre por su 30 aniversario" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 8 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3175" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      “Houston, tenemos un problema” La misión “Apolo 13” regresa al cine este 6 de noviembre por su 30 aniversario
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        La
+icónica película de los años 90 Apolo 13 (Apollo 13) regresa una
+vez más a los cines, y esta vez lo hace en la gran...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3155" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Cita cultural: El viernes las calles del &#039;centro cruceño&#039; cerrarán por actividad Cambaween" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Cultura
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 8 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3155" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Cita cultural: El viernes las calles del &#039;centro cruceño&#039; cerrarán por actividad Cambaween
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        En la capital cruceña, las calles adyacentes de la Plaza 24 de Septiembre cerrarán desde las 16:00 hasta las 23:00,...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                      </div>
+        </div>
+                        <div class="mb-16">
+          <!-- Header de la Categoría -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Deportes</h3>
+              <div class="w-16 h-1 bg-gradient-to-r from-purple-600 to-red-600 rounded-full"></div>
+            </div>
+            <a href="http://127.0.0.1:8000/categoria/9" 
+               class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold flex items-center transition-colors duration-300">
+              Ver todas <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+
+          <!-- Grid de Noticias de la Categoría -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700  md:col-span-2 md:row-span-2 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3400" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles" 
+                         class="w-full  h-64 md:h-80  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                      <div class="absolute top-4 right-4">
+                      <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        PRINCIPAL
+                      </span>
+                    </div>
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4  md:p-6 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3400" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-xl md:text-2xl  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-base line-clamp-3 leading-relaxed mb-4">
+                        El tenista cruceño venció en cuartos de final al brasileño Sakamoto (6-4 y 7-5). Su próximo rival será el argentino...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <a href="http://127.0.0.1:8000/noticia/3400" 
+                         class="inline-flex items-center text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold text-sm transition-colors duration-300 group">
+                        Leer noticia completa
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                      </a>
+                    </div>
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3375" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="La selección boliviana enfrentará a Surinam en ‘semis’ del repechaje mundialista" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3375" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      La selección boliviana enfrentará a Surinam en ‘semis’ del repechaje mundialista
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El sorteo de la repesca determinó que la Verde se medirá al equipo de CONCACAF en el inicio de su camino hacia la Copa...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3367" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Cómo la isla caribeña de Curazao logró la hazaña de convertirse en el país más pequeño en clasificar a un Mundial de fútbol" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3367" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Cómo la isla caribeña de Curazao logró la hazaña de convertirse en el país más pequeño en clasificar a un Mundial de fútbol
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Cuando el árbitro salvadoreño Iván Arcides Barton Cisneros levantó los brazos al minuto 55 del segundo tiempo del...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3349" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="El Mundial 2026 toma forma: Hay 34 clasificados y este martes se definen otros ocho cupos" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3349" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      El Mundial 2026 toma forma: Hay 34 clasificados y este martes se definen otros ocho cupos
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El Mundial de 2026 de Estados Unidos, México y Canadá va tomando forma. Tras los partidos disputados ayer lunes, ya se...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3345" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Gustavo Mamani, campeón absoluto de calistenia en Dubai" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3345" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Gustavo Mamani, campeón absoluto de calistenia en Dubai
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Gustavo Mamani, ha vuelto a elevar el nombre de Bolivia, consagrándose Campeón Absoluto de Calistenia Estilo Libre en...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3334" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Los cuartos de final de la Copa Bolivia quedaron definidos tras el repechaje" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Deportes
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3334" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Los cuartos de final de la Copa Bolivia quedaron definidos tras el repechaje
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Terminaron los repechajes. Las llaves de cuartos de final de la Copa Bolivia quedaron definidas. De los ocho clubes que...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                      </div>
+        </div>
+                        <div class="mb-16">
+          <!-- Header de la Categoría -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Economía</h3>
+              <div class="w-16 h-1 bg-gradient-to-r from-purple-600 to-red-600 rounded-full"></div>
+            </div>
+            <a href="http://127.0.0.1:8000/categoria/3" 
+               class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold flex items-center transition-colors duration-300">
+              Ver todas <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+
+          <!-- Grid de Noticias de la Categoría -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700  md:col-span-2 md:row-span-2 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3384" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Ejecutivo aprueba crédito de CAF por $us 550 MM y lo remite al Legislativo" 
+                         class="w-full  h-64 md:h-80  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                      <div class="absolute top-4 right-4">
+                      <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        PRINCIPAL
+                      </span>
+                    </div>
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4  md:p-6 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3384" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-xl md:text-2xl  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Ejecutivo aprueba crédito de CAF por $us 550 MM y lo remite al Legislativo
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-base line-clamp-3 leading-relaxed mb-4">
+                        El ministro de Planificación dijo que el contrato fue remitido a la Asamblea Legislativa y se espera que pueda ser...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <a href="http://127.0.0.1:8000/noticia/3384" 
+                         class="inline-flex items-center text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold text-sm transition-colors duration-300 group">
+                        Leer noticia completa
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                      </a>
+                    </div>
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3370" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Tras ampliado, panificadores anuncian que subirán el precio del pan a Bs 1 si se elimina la subvención" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3370" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Tras ampliado, panificadores anuncian que subirán el precio del pan a Bs 1 si se elimina la subvención
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Los dirigentes del sector se reunieron este miércoles, confirmaron que asistirán a la reunión convocada por el...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3352" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="ANH alerta que 30% del combustible subvencionado se va al contrabando" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3352" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      ANH alerta que 30% del combustible subvencionado se va al contrabando
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        La directora de la ANH, Margot Ayala, denuncia complicidad de funcionarios y anuncia auditorías profundas.La directora...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3343" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Economista advierte que caída del dólar paralelo aún no aliviará la inflación" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3343" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Economista advierte que caída del dólar paralelo aún no aliviará la inflación
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El especialista advirtió que, pese a la reciente baja del dólar, la presión inflacionaria sobre la población continúa...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3339" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="CAF aprueba préstamo de liquidez por $us 550 millones en apoyo a Bolivia" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3339" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      CAF aprueba préstamo de liquidez por $us 550 millones en apoyo a Bolivia
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El Directorio de la entidad internacional anunció que apoyará la estabilidad macroeconómica y respaldará el programa de...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3335" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="‘La caja negra’ de BoA revela un agujero de Bs 432 millones" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Economía
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3335" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      ‘La caja negra’ de BoA revela un agujero de Bs 432 millones
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        La estatal domina el mercado interno desde 2009, pero nunca consolidó ganancias. Hoy enfrenta pérdidas acumuladas,...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                      </div>
+        </div>
+                        <div class="mb-16">
+          <!-- Header de la Categoría -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+              <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Espectáculo</h3>
+              <div class="w-16 h-1 bg-gradient-to-r from-purple-600 to-red-600 rounded-full"></div>
+            </div>
+            <a href="http://127.0.0.1:8000/categoria/8" 
+               class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold flex items-center transition-colors duration-300">
+              Ver todas <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+
+          <!-- Grid de Noticias de la Categoría -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700  md:col-span-2 md:row-span-2 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3387" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="La mexicana Fátima Bosch se corona como Miss Universo en una edición marcada por la controversia" 
+                         class="w-full  h-64 md:h-80  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                      <div class="absolute top-4 right-4">
+                      <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        PRINCIPAL
+                      </span>
+                    </div>
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4  md:p-6 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3387" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-xl md:text-2xl  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      La mexicana Fátima Bosch se corona como Miss Universo en una edición marcada por la controversia
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-base line-clamp-3 leading-relaxed mb-4">
+                        Su triunfo en Tailandia se convierte en uno de los más polémicos del certamen en los últimos años tras un...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <a href="http://127.0.0.1:8000/noticia/3387" 
+                         class="inline-flex items-center text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-semibold text-sm transition-colors duration-300 group">
+                        Leer noticia completa
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                      </a>
+                    </div>
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3381" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Diego Torres estrena su nuevo álbum “Mi norte y mi sur”" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3381" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Diego Torres estrena su nuevo álbum “Mi norte y mi sur”
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        El cantante argentino lanza su nuevo álbum de estudio, una producción vibrante que marca su regreso con fuerza, emoción...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3207" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Indignación en Miss Universo por un directivo que llama “tonta” a la concursante mexicana" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 7 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3207" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Indignación en Miss Universo por un directivo que llama “tonta” a la concursante mexicana
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        La polémica se desató luego de que Nawat Itsaragrisil, director regional en Asia de Miss Universo, confrontara a la...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3142" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Chris Syler lanza “Alas de Papel”: el segundo Dardo del Éxito que da nueva vida a una voz olvidada" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 8 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3142" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Chris Syler lanza “Alas de Papel”: el segundo Dardo del Éxito que da nueva vida a una voz olvidada
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        ‎El cantautor boliviano Chris Syler presenta su nuevo sencillo &quot;Alas de Papel&quot;, una emotiva balada que marca el segundo...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/3088" class="block">
+                    <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                         alt="Con fe, danza y música se lanza el Carnaval de Oruro 2026" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 8 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/3088" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Con fe, danza y música se lanza el Carnaval de Oruro 2026
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        La actividad se realizó en la avenida Cívica Sanjinés Vincenti, donde cientos de personas se congregaron para disfrutar...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                          <article class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 ">
+                
+                <!-- Imagen de la Noticia -->
+                <div class="relative overflow-hidden">
+                  <a href="http://127.0.0.1:8000/noticia/2962" class="block">
+                    <img src="http://127.0.0.1:8000/storage/noticias/espectaculo/AHNJCZYYntX4yIp3UpWLSCj3rdc52zkOVRsfnoYc.jpg" 
+                         alt="Charly García y Sting sorprenden con una histórica colaboración “In the city”" 
+                         class="w-full  h-48  object-cover transition-transform duration-500 hover:scale-105"
+                         loading="lazy"
+                         onerror="handleImageError(this)">
+                  </a>
+                  
+                  <!-- Etiqueta de categoría -->
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                      Espectáculo
+                    </span>
+                  </div>
+                  
+                  <!-- Indicador de noticia principal -->
+                                    
+                  <!-- Overlay sutil -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <!-- Contenido -->
+                <div class="p-4 ">
+                  <!-- Metadata -->
+                  <div class="mb-3">
+                    <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                      <i class="fas fa-clock mr-2 text-purple-600"></i>
+                      hace 8 meses
+                    </span>
+                  </div>
+                  
+                  <!-- Título y contenido -->
+                  <a href="http://127.0.0.1:8000/noticia/2962" class="block group">
+                    <h4 class="font-bold text-gray-900 dark:text-gray-100 mb-2  text-lg  leading-tight line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                      Charly García y Sting sorprenden con una histórica colaboración “In the city”
+                    </h4>
+                                          <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                        Dos leyendas del rock, el argentino y el británico, unen sus voces en una colaboración histórica que celebra la...
+                      </p>
+                                      </a>
+                  
+                  <!-- Botón de acción -->
+                                  </div>
+              </article>
+                      </div>
+        </div>
+              
+    <!-- Sección de Todas las Categorías -->
+    <div class="text-center mt-16">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-10 relative overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-red-50 dark:from-purple-900/10 dark:to-red-900/10"></div>
+        <div class="relative">
+          <h3 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Explora Todas las Secciones</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-8 text-lg">Descubre todas nuestras categorías de noticias</p>
+          <div class="flex flex-wrap justify-center gap-4">
+                          <a href="http://127.0.0.1:8000/categoria/7" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Cultura
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/9" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Deportes
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/3" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Economía
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/8" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Espectáculo
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/4" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Mundo
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/1" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Nacional
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/10" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Negocios
+              </a>
+                          <a href="http://127.0.0.1:8000/categoria/2" 
+                 class="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-red-600 hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 border border-gray-200 dark:border-gray-600">
+                Política
+              </a>
+                      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Script de carrusel optimizado -->
+<script src="http://127.0.0.1:8000/js/carousel.js"></script>
+
+
+<!-- Sección de Últimas Noticias - Diseño Moderno -->
+<section class="py-12 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">Últimas Noticias</h2>
+      <div class="w-32 h-1 bg-gradient-to-r from-red-600 to-purple-600 mx-auto rounded-full"></div>
+      <p class="text-gray-600 mt-4 text-lg">Las noticias más recientes e importantes del momento</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3402" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Nacional
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3402" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                Desastre en Samaipata: Las lluvias perjudican los trabajos de emergencia y restauración
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                Dos mujeres permanecen desaparecidas desde el lunes, cuando se produjeron deslizamientos que afectaron viviendas y vías...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3402" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3401" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Política
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3401" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                Doria Medina niega cuoteo y afirma que Paz elige a sus colaboradores
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                El jefe de Unidad niega que tenga influencia en el Gobierno y responde a críticas del vicepresidente Edmand Lara.El...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3401" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3400" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Deportes
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3400" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                Tenis: Prado avanza a las semis del Challenger de Florianópolis y Arias es finalistas en dobles
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                El tenista cruceño venció en cuartos de final al brasileño Sakamoto (6-4 y 7-5). Su próximo rival será el argentino...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3400" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3399" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Política
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3399" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                Lara arremete nuevamente contra Rodrigo Paz y afirma que “no hay mal que dure 100 años”
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                Pese a las críticas del vicepresidente y de sus seguidores, Wilson Santamaría ya realiza sus labores con el...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3399" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3398" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="Santa Cruz: Hay ocho agrupaciones departamentales y 27 municipales para ir a las subnacionales" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Nacional
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3398" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                Santa Cruz: Hay ocho agrupaciones departamentales y 27 municipales para ir a las subnacionales
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                El país renovará a gobernadores, alcaldes, asambleístas departamentales, concejales, corregidores y otras autoridades,...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3398" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+              <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
+          <div class="relative overflow-hidden">
+            <a href="http://127.0.0.1:8000/noticia/3397" class="block">
+              <img src="http://127.0.0.1:8000/images/default-news.svg" 
+                   alt="¿Habrá debates en las elecciones subnacionales? Esto dice el TSE" 
+                   class="w-full h-56 object-cover transition-transform duration-500 hover:scale-110"
+                   loading="lazy"
+                   onerror="handleImageError(this)">
+            </a>
+            
+            <!-- Etiqueta de Categoría -->
+            <div class="absolute top-4 left-4">
+              <span class="bg-gradient-to-r from-purple-600 to-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide shadow-lg">
+                Política
+              </span>
+            </div>
+            
+            <!-- Indicador de "Nuevo" para noticias recientes -->
+                        
+            <!-- Overlay sutil -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Metadata -->
+            <div class="mb-4 flex items-center justify-between">
+              <span class="text-gray-500 text-sm flex items-center">
+                <i class="fas fa-clock mr-2 text-red-600"></i>
+                hace 7 meses
+              </span>
+              <span class="text-gray-400 text-xs flex items-center">
+                <i class="fas fa-eye mr-1"></i>
+                Leer más
+              </span>
+            </div>
+            
+            <!-- Título y Contenido -->
+            <a href="http://127.0.0.1:8000/noticia/3397" class="block group">
+              <h3 class="font-bold text-gray-900 mb-3 text-lg leading-tight line-clamp-2 group-hover:text-purple-600 transition-colors duration-300">
+                ¿Habrá debates en las elecciones subnacionales? Esto dice el TSE
+              </h3>
+              <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                El proceso electoral tendrá por objeto elegir a más de 5.000 autoridades entre alcaldes, concejales, gobernadores,...
+              </p>
+            </a>
+            
+            <!-- Botón de Acción -->
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <a href="http://127.0.0.1:8000/noticia/3397" 
+                 class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 group">
+                Continuar leyendo
+                <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+          </div>
+    
+    <!-- Botón para Ver Más Noticias -->
+    <div class="text-center mt-12">
+      <a href="#" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-red-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-purple-700 hover:to-red-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
+        <i class="fas fa-newspaper mr-3"></i>
+        Ver Todas las Noticias
+        <i class="fas fa-arrow-right ml-3"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Banner Publicitario Horizontal -->
+<section class="py-6 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-4">
+      <span class="text-gray-500 text-sm font-medium">PUBLICIDAD</span>
+    </div>
+    <div class="flex justify-center">
+      <a href="https://radiobetania.com/" target="_blank" rel="noopener noreferrer" class="block max-w-4xl"> 
+        <img src="http://127.0.0.1:8000/images/betania.jpg" alt="Publicidad Radio Betania" 
+             class="w-full h-auto rounded-lg shadow-lg hover:opacity-90 transition"
+             loading="lazy">
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+<script src="https://static.elfsight.com/platform/platform.js" async></script>
+<div class="elfsight-app-fbb50d0e-c779-44ab-bf7f-b16fd3542ccc" data-elfsight-app-lazy></div>
+    </main>
+
+   <!-- Footer Moderno - Inspirado en la imagen -->
+<footer class="bg-gray-800 dark:bg-gray-900 text-white py-12 border-t border-gray-700">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <!-- Logo y Descripción -->
+            <div class="lg:col-span-1">
+                <div class="flex items-center space-x-3 mb-4">
+                    <img src="http://127.0.0.1:8000/images/Logo.jpg" alt="ÚltimaHoraTV" class="w-12 h-12 rounded-full" loading="lazy">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Última<span class="text-purple-400">Hora</span> TV</h3>
+                        <p class="text-gray-400 text-sm">Tu fuente confiable de noticias y análisis. © 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secciones -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Secciones</h4>
+                <ul class="space-y-2">
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/7" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Cultura
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/9" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Deportes
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/3" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Economía
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/8" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Espectáculo
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/4" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Mundo
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/1" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Nacional
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/10" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Negocios
+                            </a>
+                        </li>
+                                            <li>
+                            <a href="http://127.0.0.1:8000/categoria/2" 
+                               class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                                Política
+                            </a>
+                        </li>
+                                    </ul>
+            </div>
+
+            <!-- Legal -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Legal</h4>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                            Aviso de Privacidad
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                            Términos y Condiciones
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                            Contacto
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                            Acerca de Nosotros
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Síguenos -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Síguenos</h4>
+                <div class="flex space-x-3 mb-4">
+                    <a href="https://facebook.com/uhtvbolivia" target="_blank" rel="noopener noreferrer" 
+                       class="bg-gray-700 hover:bg-blue-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-facebook text-lg"></i>
+                    </a>
+                    <a href="https://x.com/UhtvBol" target="_blank" rel="noopener noreferrer" 
+                       class="bg-gray-700 hover:bg-gray-900 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-x-twitter text-lg"></i>
+                    </a>
+                    <a href="https://instagram.com/uhtvbolivia" target="_blank" rel="noopener noreferrer" 
+                       class="bg-gray-700 hover:bg-pink-600 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-instagram text-lg"></i>
+                    </a>
+                    <a href="https://tiktok.com/@uhtvbolivia" target="_blank" rel="noopener noreferrer" 
+                       class="bg-gray-700 hover:bg-black text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-tiktok text-lg"></i>
+                    </a>
+                </div>
+                
+                <!-- Toggle de modo oscuro en footer -->
+                <div class="mt-4">
+                    <button data-dark-mode-toggle 
+                            class="flex items-center space-x-2 text-gray-400 hover:text-purple-400 transition-colors duration-300 text-sm">
+                        <i class="fas fa-sun sun-icon hidden"></i>
+                        <i class="fas fa-moon moon-icon"></i>
+                        <span class="sun-text hidden">Modo Claro</span>
+                        <span class="moon-text">Modo Oscuro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Línea divisoria -->
+        <div class="border-t border-gray-700 mt-8 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                    Desarrollado con <i class="fas fa-heart text-red-500 mx-1"></i> por el equipo de Última Hora TV.
+                </p>
+                <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                    <span>Bolivia</span>
+                    <span>•</span>
+                    <span>2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+    <!-- Dark Mode Script (debe cargarse antes que otros scripts) -->
+    <script src="http://127.0.0.1:8000/js/dark-mode.js"></script>
+    
+    <!-- CSS Optimization and Browser Compatibility -->
+    <script src="http://127.0.0.1:8000/js/css-optimization.js"></script>
+    
+    <!-- Diagnostics (solo en desarrollo) -->
+    <script src="http://127.0.0.1:8000/js/diagnostics.js"></script>
+    
+    <!-- Error Handler -->
+    <script src="http://127.0.0.1:8000/js/error-handler.js"></script>
+    
+    <!-- Bootstrap JS - Solo una versión -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+
+</html>
+
+

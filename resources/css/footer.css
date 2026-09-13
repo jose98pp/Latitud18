@@ -1,0 +1,21 @@
+/* resources/js/components/Footer.css */
+.footer {
+    background-color: #343a40; /* Color de fondo oscuro */
+    color: white; /* Color del texto */
+}
+
+.social-icons a {
+    -webkit-transition: -webkit-transform 0.2s, transform 0.2s;
+    -moz-transition: -moz-transform 0.2s, transform 0.2s;
+    -ms-transition: -ms-transform 0.2s, transform 0.2s;
+    -o-transition: -o-transform 0.2s, transform 0.2s;
+    transition: transform 0.2s;
+}
+
+.social-icons a:hover {
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2); /* Efecto de zoom al pasar el mouse */
+}

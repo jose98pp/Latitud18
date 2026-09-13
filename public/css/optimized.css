@@ -1,0 +1,534 @@
+/* Estilos optimizados para UHTV */
+
+/* Variables CSS para colores UHTV */
+:root {
+    --uhtv-purple: #7c3aed;
+    --uhtv-purple-dark: #5b21b6;
+    --uhtv-purple-light: #a855f7;
+    --uhtv-gray: #6b7280;
+    --uhtv-gray-light: #f3f4f6;
+}
+
+/* Fallback classes for browsers that don't support CSS variables */
+.uhtv-purple { color: #7c3aed; }
+.uhtv-purple-dark { color: #5b21b6; }
+.uhtv-purple-light { color: #a855f7; }
+.uhtv-gray { color: #6b7280; }
+.uhtv-gray-light { color: #f3f4f6; }
+
+.bg-uhtv-purple { background-color: #7c3aed; }
+.bg-uhtv-purple-dark { background-color: #5b21b6; }
+.bg-uhtv-purple-light { background-color: #a855f7; }
+.bg-uhtv-gray { background-color: #6b7280; }
+.bg-uhtv-gray-light { background-color: #f3f4f6; }
+
+/* Lazy loading placeholder */
+.lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.lazy.loaded {
+    opacity: 1;
+    animation: none;
+    background: none;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Line clamp utilities - Compatible con todos los navegadores */
+.line-clamp-2 {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-line-clamp: 2;
+    -moz-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    overflow: hidden;
+    /* Fallback para navegadores que no soportan line-clamp */
+    max-height: 3em; /* Aproximadamente 2 líneas */
+    line-height: 1.5em;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-line-clamp: 3;
+    -moz-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+    overflow: hidden;
+    /* Fallback para navegadores que no soportan line-clamp */
+    max-height: 4.5em; /* Aproximadamente 3 líneas */
+    line-height: 1.5em;
+}
+
+/* Carrusel mejorado */
+.carousel-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    -moz-overflow-scrolling: touch;
+    -ms-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.carousel-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.carousel-container::-moz-scrollbar {
+    display: none; /* Firefox fallback */
+}
+
+/* Efectos hover para tarjetas */
+.card-hover {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    -webkit-transform: translateY(-4px);
+    -moz-transform: translateY(-4px);
+    -ms-transform: translateY(-4px);
+    -o-transform: translateY(-4px);
+    transform: translateY(-4px);
+    -webkit-box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    -moz-box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Botones de carrusel mejorados */
+.carousel-btn {
+    background: rgba(124, 58, 237, 0.9);
+    border: none;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    color: white;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    -webkit-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-btn:hover {
+    background: var(--uhtv-purple-dark);
+    background: #5b21b6; /* Fallback for browsers that don't support CSS variables */
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    -o-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+/* Gradientes personalizados */
+.gradient-overlay {
+    /* Fallback for old browsers */
+    background: rgba(0, 0, 0, 0.6);
+    /* Webkit browsers */
+    background: -webkit-linear-gradient(
+        bottom,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+    /* Mozilla Firefox */
+    background: -moz-linear-gradient(
+        bottom,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+    /* Opera */
+    background: -o-linear-gradient(
+        bottom,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+    /* Internet Explorer */
+    background: -ms-linear-gradient(
+        bottom,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+    /* Standard syntax */
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+    );
+}
+
+/* Animaciones suaves */
+.fade-in {
+    -webkit-animation: fadeIn 0.6s ease-in;
+    -moz-animation: fadeIn 0.6s ease-in;
+    -ms-animation: fadeIn 0.6s ease-in;
+    -o-animation: fadeIn 0.6s ease-in;
+    animation: fadeIn 0.6s ease-in;
+}
+
+@-webkit-keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-moz-keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -moz-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        -moz-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-ms-keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -ms-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@-o-keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -o-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        -o-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -webkit-transform: translateY(20px);
+        -moz-transform: translateY(20px);
+        -ms-transform: translateY(20px);
+        -o-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        -webkit-transform: translateY(0);
+        -moz-transform: translateY(0);
+        -ms-transform: translateY(0);
+        -o-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+/* Mejoras de accesibilidad */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.focus-visible:focus {
+    outline: 2px solid var(--uhtv-purple);
+    outline-offset: 2px;
+}
+
+/* Optimización de imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Aspect ratios */
+.aspect-ratio-16-9 {
+    aspect-ratio: 16 / 9;
+    /* Fallback for browsers that don't support aspect-ratio */
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 9/16 = 0.5625 */
+}
+
+.aspect-ratio-16-9 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.aspect-ratio-4-3 {
+    aspect-ratio: 4 / 3;
+    /* Fallback for browsers that don't support aspect-ratio */
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* 3/4 = 0.75 */
+}
+
+.aspect-ratio-4-3 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Badges y etiquetas */
+.badge-category {
+    background: #7c3aed; /* Fallback */
+    background: var(--uhtv-purple);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    -webkit-border-radius: 9999px;
+    -moz-border-radius: 9999px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Separadores decorativos */
+.divider {
+    width: 60px;
+    height: 4px;
+    /* Fallback for browsers that don't support CSS variables or gradients */
+    background: #7c3aed;
+    /* Webkit browsers */
+    background: -webkit-linear-gradient(left, #7c3aed, #a855f7);
+    background: -webkit-linear-gradient(left, var(--uhtv-purple), var(--uhtv-purple-light));
+    /* Mozilla Firefox */
+    background: -moz-linear-gradient(left, #7c3aed, #a855f7);
+    background: -moz-linear-gradient(left, var(--uhtv-purple), var(--uhtv-purple-light));
+    /* Opera */
+    background: -o-linear-gradient(left, #7c3aed, #a855f7);
+    background: -o-linear-gradient(left, var(--uhtv-purple), var(--uhtv-purple-light));
+    /* Internet Explorer */
+    background: -ms-linear-gradient(left, #7c3aed, #a855f7);
+    background: -ms-linear-gradient(left, var(--uhtv-purple), var(--uhtv-purple-light));
+    /* Standard syntax */
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    background: linear-gradient(90deg, var(--uhtv-purple), var(--uhtv-purple-light));
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+/* Efectos de hover para enlaces */
+.link-hover {
+    -webkit-transition: color 0.3s ease;
+    -moz-transition: color 0.3s ease;
+    -ms-transition: color 0.3s ease;
+    -o-transition: color 0.3s ease;
+    transition: color 0.3s ease;
+}
+
+.link-hover:hover {
+    color: #7c3aed; /* Fallback */
+    color: var(--uhtv-purple);
+}
+
+/* Sombras personalizadas */
+.shadow-uhtv {
+    -webkit-box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1), 0 4px 6px -2px rgba(124, 58, 237, 0.05);
+    -moz-box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1), 0 4px 6px -2px rgba(124, 58, 237, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1), 0 4px 6px -2px rgba(124, 58, 237, 0.05);
+}
+
+/* Responsive mejoras */
+@media (max-width: 768px) {
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .card-hover:hover {
+        transform: none;
+    }
+}
+
+/* Reducir motion para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        -webkit-animation-duration: 0.01ms !important;
+        -moz-animation-duration: 0.01ms !important;
+        -ms-animation-duration: 0.01ms !important;
+        -o-animation-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        -webkit-animation-iteration-count: 1 !important;
+        -moz-animation-iteration-count: 1 !important;
+        -ms-animation-iteration-count: 1 !important;
+        -o-animation-iteration-count: 1 !important;
+        animation-iteration-count: 1 !important;
+        -webkit-transition-duration: 0.01ms !important;
+        -moz-transition-duration: 0.01ms !important;
+        -ms-transition-duration: 0.01ms !important;
+        -o-transition-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .lazy {
+        -webkit-animation: none;
+        -moz-animation: none;
+        -ms-animation: none;
+        -o-animation: none;
+        animation: none;
+    }
+    
+    .card-hover:hover {
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+        transform: none;
+    }
+}
+
+/* Optimización de CSS para mejor rendimiento */
+/* Usar will-change para elementos que van a ser animados */
+.card-hover,
+.carousel-btn,
+.social-icons a,
+.ratio img {
+    will-change: transform;
+}
+
+.fade-in {
+    will-change: opacity, transform;
+}
+
+/* Optimización de GPU para animaciones */
+.card-hover,
+.carousel-btn,
+.social-icons a,
+.ratio img,
+.fade-in {
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    -ms-perspective: 1000;
+    perspective: 1000;
+}
+
+/* Mejorar el renderizado de texto */
+body,
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Optimización de imágenes para mejor rendimiento */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Contenedor principal optimizado */
+.container,
+.container-fluid {
+    contain: layout style paint;
+}
+
+/* Optimización para elementos que cambian frecuentemente */
+.carousel-container {
+    contain: layout;
+}
+
+/* Prevenir layout shifts */
+.lazy,
+.card-img-top,
+.ratio img {
+    min-height: 1px;
+}
+
+/* Optimización de scroll */
+.carousel-container {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}

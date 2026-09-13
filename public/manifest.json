@@ -1,0 +1,24 @@
+{
+  "name": "Unión Huayllani TV - Noticias y Streaming",
+  "short_name": "UHTV Noticias",
+  "description": "Portal de noticias de última hora, streaming en vivo, periodismo de opinión y periódico digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1128",
+  "theme_color": "#0a1128",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/Logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/Logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+[PERIÓDICO DIGITAL](http://127.0.0.1:8000/periodico)
+[LATITUD
+            18
+
+          INFORMACIÓN SIN RUIDO](http://127.0.0.1:8000/)
+INFORMACIÓN SIN RUIDO
+[PERIÓDICO DIGITAL](http://127.0.0.1:8000/periodico)
+- [INICIO](http://127.0.0.1:8000/)
+- [NACIONAL](http://127.0.0.1:8000/categoria/1)
+- [POLíTICA](http://127.0.0.1:8000/categoria/2)
+- [ECONOMíA](http://127.0.0.1:8000/categoria/3)
+- [MUNDO](http://127.0.0.1:8000/categoria/4)
+- [SOCIEDAD](http://127.0.0.1:8000/categoria/5)
+- [CULTURA](http://127.0.0.1:8000/categoria/7)
+- [ESPECTáCULO](http://127.0.0.1:8000/categoria/8)
+- [DEPORTES](http://127.0.0.1:8000/categoria/9)
+- [NEGOCIOS](http://127.0.0.1:8000/categoria/10)
+[INICIO](http://127.0.0.1:8000/)
+[NACIONAL](http://127.0.0.1:8000/categoria/1)
+[POLíTICA](http://127.0.0.1:8000/categoria/2)
+[ECONOMíA](http://127.0.0.1:8000/categoria/3)
+[MUNDO](http://127.0.0.1:8000/categoria/4)
+[SOCIEDAD](http://127.0.0.1:8000/categoria/5)
+[CULTURA](http://127.0.0.1:8000/categoria/7)
+[ESPECTáCULO](http://127.0.0.1:8000/categoria/8)
+[DEPORTES](http://127.0.0.1:8000/categoria/9)
+[NEGOCIOS](http://127.0.0.1:8000/categoria/10)
+[Inicio](http://127.0.0.1:8000/)
+Secciones
+[Nacional](http://127.0.0.1:8000/categoria/1)
+[Política](http://127.0.0.1:8000/categoria/2)
+[Economía](http://127.0.0.1:8000/categoria/3)
+[Mundo](http://127.0.0.1:8000/categoria/4)
+[Sociedad](http://127.0.0.1:8000/categoria/5)
+[Cultura](http://127.0.0.1:8000/categoria/7)
+[Espectáculo](http://127.0.0.1:8000/categoria/8)
+[Deportes](http://127.0.0.1:8000/categoria/9)
+[Negocios](http://127.0.0.1:8000/categoria/10)
+[Periódico Digital](http://127.0.0.1:8000/periodico)
+Síguenos
+
+# La Estrella del Oriente
+
+- 
+                                    [N° 13185 (06 de September de 2026)](http://127.0.0.1:8000/periodico/edicion/ed-1788745781-l9agL)
+
+- 
+                                    [N° 11.986 (Domingo 6 de septiembre de 2026)](http://127.0.0.1:8000/periodico/edicion/ed-1788744723)
+
+[N° 13185 (06 de September de 2026)](http://127.0.0.1:8000/periodico/edicion/ed-1788745781-l9agL)
+[N° 11.986 (Domingo 6 de septiembre de 2026)](http://127.0.0.1:8000/periodico/edicion/ed-1788744723)
+[Descargar / Imprimir](http://127.0.0.1:8000/periodico/edicion/ed-1788744723/pdf)
+
+## Preocupante inseguridad
+
+En los últimos meses, se registraron cuatro incidentes relacionados con la seguridad en instalaciones de las Fuerzas Armadas. El último ocurrió este viernes en Viacha, encendiendo las alarmas sobre las condiciones de seguridad y control dentro de los recintos militares del país.
+Anteriormente, se denunció la sustracción de 33.608 cartuchos de munición calibre 5,56 × 45 milímetros de un depósito del Regimiento de Satinadores de Selva 12 "Coronel Francisco Manchego", en Montero, Santa Cruz; un robo de armamento de guerra del cuartel VI Independencia, ubicado en Chua Cocani, La Paz y un incendio en instalaciones antiguas del Regimiento de Infantería Mecanizada 23 "Max Toledo", en Viacha.
+Estos hechos son por demás de preocupantes, puesto que, supuestamente, los cuarteles son lugares seguros para aquellos que circunstancialmente viven en los mismos e, hipotéticamente, tendrían que dar una sensación de seguridad para sus vecinos.
+Sin embargo, por lo menos en dos de los cuatro casos mencionados, se convirtieron en generadores de inseguridad total para los vivientes en dichos cuarteles y para los vecinos.
+Sin lugar a dudas que el peor de los cuatro ha sido el que se produjo el viernes pasado, cuando se detonaron dos explosiones en un cuartel de Viacha, que, hasta el momento, han dejado 3 soldados muertos, 84 heridos y 14 desaparecidos, que aún continúan siendo buscados.
+El Ministerio de Defensa y los investigadores tienen la palabra en el caso de las explosiones en Viacha, porque se tiene que determinar qué fue lo que sucedió exactamente y quiénes son los responsables para aplicar las sanciones correspondientes.
+La Estrella del Oriente, el primer periódico de Santa Cruz, fundado en 1864, reconoce como valores supremos la Libertad, Igualdad y Solidaridad, como base de la Justicia y el Desarrollo de los pueblos. Su política editorial se sustenta en la Libertad de Expresión y repudia todo acto racista y discriminatorio.
+
+### Leer y escribir no alcanza: el desafío de comprender el mundo
+
+En una sociedad saturada de información, aprender a leer y escribir no alcanza. Quien no puede comprender un texto, distinguir una opinión de un hecho o construir una voz propia queda nuevamente del lado de la exclusión.
+Históricamente, entendimos la alfabetización como la simple capacidad de decodificar letras, escribir palabras o resolver cuentas básicas. Hoy, esa definición es sumamente reduccionista en una sociedad atravesada por la información constante.
+Para desarmar esta realidad, resulta interesante retomar a un referente de la pedagogía latinoamericana, Paulo Freire, quien planteó que alfabetizar va mucho más allá del mero deletreo; exige una comprensión crítica del mundo.
+Alfabetizar, hoy, nos exige reconocer la singularidad y la trayectoria de cada alumno, diseñando alternativas de enseñanza que respondan a las problemáticas reales de sus propios contextos.
+
+## La CRE celebró el grito libertario de 1810 con una retreta cultural
+Una noche de música, danza y tradición reunió a más de 600 personas en la retreta cultural, organizada por la Cooperativa Rural de Electrificación (CRE), como parte de los homenajes al grito libertario de 1810. La actividad se desarrolló frente a la oficina central de la institución, junto al paseo del "Arco de la Cruceñidad".
+El espectáculo comenzó pasadas las 19:00 y permitió a las familias disfrutar de una jornada inspirada en la Santa Cruz de antaño. La actividad fue gratuita y convocó a ciudadanos que llegaron para compartir y revalorizar las expresiones culturales de la región.
+El presidente del Consejo de Administración de CRE, José Alejandro Durán Rek, dio inicio al programa y destacó el compromiso de la cooperativa con las tradiciones y la identidad cruceña. El escenario recibió a Darwin Olmos, Sebas Soliz, Tiziana Zankyz y el Coro Santa Cruz.
+Con la retreta, la CRE volvió a reunir a las familias en torno a la música y las costumbres regionales, fortaleciendo la valoración de la identidad cultural cruceña durante las celebraciones de septiembre.
+
+#### Santa Cruz se prepara para un fuerte descenso térmico
+La Gobernación de Santa Cruz emitió una alerta naranja por el brusco descenso de temperaturas previsto para este domingo 6 y lunes 7 de septiembre.
+
+#### Peatones y ciclistas tomarán las calles este domingo
+Santa Cruz de la Sierra se prepara para vivir este domingo el Día Nacional del Peatón y del Ciclista con actividades deportivas.
+
+#### Un 20% de personas ciegas buscan acreditarse en Montero
+Cerca de un 20% de las personas con discapacidad visual registradas en Santa Cruz viven en el Norte Integrado.
+
+## Encuentro cierra con $us 3,5 MM en intenciones de negocio
+Con resultados positivos y nuevas oportunidades comerciales, Concepción cerró la sexta versión del Encuentro Social de Negocios de la Industria Forestal 2026 con $us 3,5 millones en intenciones de negocio, resultado de 195 citas comerciales.
+La actividad se desarrolló en el marco de la sexta versión de la Feria Forestal y fue organizada por la Cámara Forestal de Bolivia (CFB) y el Gobierno Autónomo Municipal de Concepción.
+El gerente general de la CFB, Walter Rioja, destacó la participación de operadores de distintos mercados. "El encuentro cerró con $us 3,5 millones en intenciones de negocios, lo que representa un incremento del 25% frente al año anterior", afirmó.
+Por su parte, el presidente de la Cámara Forestal resaltó el valor de estos espacios para fortalecer los vínculos comerciales y dinamizar la economía regional en el oriente boliviano.
+
+### Proponen nuevas estrategias para proteger la producción de girasol
+
+La Fundación PROINPA presentó nuevas alternativas para enfrentar a la Orobanche cumana, conocida como jopo, una maleza parásita que afecta la producción de girasol en Santa Cruz.
+La propuesta fue expuesta durante el Segundo Simposio Internacional realizado en Santa Cruz, donde se recomendaron combinaciones de híbridos con métodos de control biológico.
+Navia explicó que los microorganismos benéficos del suelo pueden ser identificados y multiplicados para elaborar bioinsumos que protejan las raíces y mejoren el rendimiento.
+
+## La FIFA ya eligió al árbitro de la final entre España y Argentina
+La información periodística de calidad es la base de una sociedad informada y libre.
+En esta sección desarrollamos los análisis más profundos sobre la actualidad departamental y nacional.
+Los protagonistas de los hechos comparten sus declaraciones y posturas ante los desafíos actuales.
+Continuaremos informando con la mayor rigurosidad y objetividad para nuestros lectores.
+
+#### Noticia secundaria 1
+Detalle de la noticia...
+
+#### Noticia secundaria 2
+Detalle de la noticia...
+Portal de noticias 24/7. Información sin ruido para Santa Cruz de la Sierra y Bolivia.
+
+#### Secciones
+- [Nacional](http://127.0.0.1:8000/categoria/1)
+- [Política](http://127.0.0.1:8000/categoria/2)
+- [Economía](http://127.0.0.1:8000/categoria/3)
+- [Mundo](http://127.0.0.1:8000/categoria/4)
+- [Sociedad](http://127.0.0.1:8000/categoria/5)
+- [Cultura](http://127.0.0.1:8000/categoria/7)
+- [Espectáculo](http://127.0.0.1:8000/categoria/8)
+- [Deportes](http://127.0.0.1:8000/categoria/9)
+- [Negocios](http://127.0.0.1:8000/categoria/10)
+[Nacional](http://127.0.0.1:8000/categoria/1)
+[Política](http://127.0.0.1:8000/categoria/2)
+[Economía](http://127.0.0.1:8000/categoria/3)
+[Mundo](http://127.0.0.1:8000/categoria/4)
+[Sociedad](http://127.0.0.1:8000/categoria/5)
+[Cultura](http://127.0.0.1:8000/categoria/7)
+[Espectáculo](http://127.0.0.1:8000/categoria/8)
+[Deportes](http://127.0.0.1:8000/categoria/9)
+[Negocios](http://127.0.0.1:8000/categoria/10)
+
+#### Legal
+- [Aviso de Privacidad](http://127.0.0.1:8000/periodico)
+- [Términos y Condiciones](http://127.0.0.1:8000/periodico)
+- [Contacto](http://127.0.0.1:8000/periodico)
+[Aviso de Privacidad](http://127.0.0.1:8000/periodico)
+[Términos y Condiciones](http://127.0.0.1:8000/periodico)
+[Contacto](http://127.0.0.1:8000/periodico)
+
+#### En Vivo
+Transmisión en vivo 24/7 por YouTube.
+
+#### Contacto
+Santa Cruz de la Sierra, Bolivia
+info@latitud18.com
+
+## TITULAR PRINCIPAL DE LA EDICIÓN SEMANAL
+La información más importante de la semana en Santa Cruz de la Sierra y Bolivia. Análisis, reportajes y las noticias que importan.
+
+#### Economía regional crece
+Indicadores muestran recuperación del sector productivo cruceño.
+
+#### Nuevas inversiones
+Empresas internacionales apuestan por el desarrollo sostenible.
+
+#### Deportes en alto
+Club Always Ready clasifica a fase internacional.
+
+### Contenido de la sección — Página 2
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 3
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 4
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 5
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 6
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 7
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 8
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 9
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 10
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 11
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.
+
+### Contenido de la sección — Página 12
+La información periodística de calidad es la base de una sociedad informada. En esta edición presentamos los análisis más profundos sobre los acontecimientos que marcan la agenda pública regional y nacional.

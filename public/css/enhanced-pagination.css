@@ -1,0 +1,388 @@
+/* Enhanced Pagination Styles */
+.enhanced-pagination-wrapper {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.pagination-info {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.pagination-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.enhanced-pagination .pagination {
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.enhanced-pagination .page-link {
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    padding: 0.75rem 1rem;
+    margin: 0 2px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 44px; /* Accessibility: minimum touch target */
+    justify-content: center;
+}
+
+.enhanced-pagination .page-link:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #1f2937;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-pagination .page-link:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.enhanced-pagination .page-item.active .page-link {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.enhanced-pagination .page-item.active .page-link:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.enhanced-pagination .page-item.disabled .page-link {
+    color: #9ca3af;
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.enhanced-pagination .page-item.disabled .page-link:hover {
+    background-color: #f9fafb;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.page-size-selector,
+.page-jump {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-size-selector .form-label,
+.page-jump .form-label {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.page-size-selector .form-select {
+    min-width: 80px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease;
+}
+
+.page-size-selector .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.page-size-selector .form-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.page-jump .input-group {
+    min-width: 120px;
+}
+
+.page-jump .form-control {
+    border-radius: 6px 0 0 6px;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease;
+}
+
+.page-jump .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.page-jump .btn {
+    border-radius: 0 6px 6px 0;
+    border-left: none;
+    transition: all 0.2s ease;
+}
+
+.page-jump .btn:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+/* Loading state for pagination */
+.enhanced-pagination-wrapper.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.enhanced-pagination-wrapper.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: loading-shimmer 1.5s infinite;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loading-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .enhanced-pagination-wrapper {
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .enhanced-pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        margin: 0 1px;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .page-size-selector,
+    .page-jump {
+        justify-content: center;
+    }
+
+    .pagination-info {
+        margin-bottom: 0.75rem;
+    }
+
+    .pagination-text {
+        font-size: 0.8125rem;
+    }
+
+    /* Hide text on mobile, keep icons */
+    .enhanced-pagination .d-none.d-sm-inline {
+        display: none !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .enhanced-pagination .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .enhanced-pagination .page-item {
+        margin: 2px;
+    }
+
+    .enhanced-pagination .page-link {
+        padding: 0.5rem;
+        min-width: 40px;
+        font-size: 0.8125rem;
+    }
+
+    .page-size-selector .form-select,
+    .page-jump .input-group {
+        min-width: auto;
+    }
+
+    .pagination-controls {
+        gap: 0.5rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .enhanced-pagination-wrapper {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+
+    .pagination-text {
+        color: #9ca3af;
+    }
+
+    .enhanced-pagination .page-link {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .enhanced-pagination .page-link:hover {
+        background-color: #4b5563;
+        border-color: #6b7280;
+        color: #f9fafb;
+    }
+
+    .enhanced-pagination .page-item.disabled .page-link {
+        background-color: #1f2937;
+        border-color: #374151;
+        color: #6b7280;
+    }
+
+    .page-size-selector .form-label,
+    .page-jump .form-label {
+        color: #f9fafb;
+    }
+
+    .page-size-selector .form-text {
+        color: #9ca3af;
+    }
+
+    .pagination-controls {
+        border-top-color: #374151;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .enhanced-pagination .page-link {
+        border-width: 2px;
+    }
+
+    .enhanced-pagination .page-item.active .page-link {
+        border-color: #1e40af;
+        background-color: #1e40af;
+    }
+
+    .enhanced-pagination .page-link:focus {
+        outline-width: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .enhanced-pagination .page-link,
+    .page-size-selector .form-select,
+    .page-jump .form-control,
+    .page-jump .btn {
+        transition: none;
+    }
+
+    .enhanced-pagination-wrapper {
+        animation: none;
+    }
+
+    .enhanced-pagination .page-link:hover {
+        transform: none;
+    }
+
+    .enhanced-pagination .page-item.active .page-link {
+        transform: none;
+    }
+}
+
+/* Class-based Dark Mode support for enhanced-pagination */
+.dark .enhanced-pagination-wrapper {
+    background: #1f2937 !important;
+    border-color: #374151 !important;
+    color: #f9fafb !important;
+}
+
+.dark .pagination-text {
+    color: #9ca3af !important;
+}
+
+.dark .enhanced-pagination .page-link {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
+}
+
+.dark .enhanced-pagination .page-link:hover {
+    background-color: #4b5563 !important;
+    border-color: #6b7280 !important;
+    color: #f9fafb !important;
+}
+
+.dark .enhanced-pagination .page-item.disabled .page-link {
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+    color: #6b7280 !important;
+}
+
+.dark .page-size-selector .form-label,
+.dark .page-jump .form-label {
+    color: #f9fafb !important;
+}
+
+.dark .page-size-selector .form-text {
+    color: #9ca3af !important;
+}
+
+.dark .pagination-controls {
+    border-top-color: #374151 !important;
+}
+
+.dark .page-size-selector .form-select,
+.dark .page-jump .form-control {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
+}
