@@ -64,9 +64,6 @@
   {{-- Search Realtime Modal --}}
   @include('components.search-modal')
 
-  {{-- Tabloid Digital Newspaper Modal --}}
-  @include('components.newspaper-modal')
-
   {{-- Live TV & Radio Streaming Player Studio Modal --}}
   @include('components.live-player')
 

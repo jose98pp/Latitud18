@@ -45,48 +45,6 @@ function closeSearchModal(){
   document.getElementById('search-modal-suite').classList.remove('active');
 }
 
-// Newspaper Modal
-function openNewspaperModal(){
-  document.getElementById('newspaper-modal-suite').classList.add('active');
-  document.body.style.overflow='hidden';
-  initNewspaperThumbs();
-}
-function closeNewspaperModal(){
-  document.getElementById('newspaper-modal-suite').classList.remove('active');
-  document.body.style.overflow='';
-}
-function initNewspaperThumbs(){
-  const strip=document.getElementById('newspaper-thumbs-strip');
-  if(!strip||strip.children.length>0)return;
-  const pages=[
-    {n:1,t:'Portada',c:'var(--color-red)'},
-    {n:2,t:'Editorial',c:'var(--color-navy)'},
-    {n:3,t:'Política',c:'#1e40af'},
-    {n:4,t:'Política',c:'#1e40af'},
-    {n:5,t:'Santa Cruz',c:'#059669'},
-    {n:6,t:'Santa Cruz',c:'#059669'},
-    {n:7,t:'País',c:'#d97706'},
-    {n:8,t:'País',c:'#d97706'},
-    {n:9,t:'Economía',c:'#7c3aed'},
-    {n:10,t:'Economía',c:'#7c3aed'},
-    {n:11,t:'Judicial',c:'#475569'},
-    {n:12,t:'Mundo/Deportes',c:'var(--color-red)'}
-  ];
-  pages.forEach((p,i)=>{
-    const d=document.createElement('div');
-    d.className='page-thumb-card'+(i===0?' active':'');
-    d.onclick=()=>showNewspaperPage(p.n,d);
-    d.innerHTML=`<div class="page-thumb-preview"><div class="bar" style="background:${p.c};width:80%"></div><div class="bar" style="background:${p.c};width:60%;opacity:.5"></div><div class="bar" style="background:${p.c};width:40%;opacity:.3"></div></div><div class="page-thumb-label">Pág ${p.n}<br>${p.t}</div>`;
-    strip.appendChild(d);
-  });
-}
-function showNewspaperPage(num,el){
-  document.querySelectorAll('.newspaper-sheet').forEach(s=>s.style.display='none');
-  document.querySelector(`.newspaper-sheet[data-page="${num}"]`).style.display='block';
-  document.querySelectorAll('.page-thumb-card').forEach(c=>c.classList.remove('active'));
-  if(el)el.classList.add('active');
-}
-
 // Live Modal (TV & Radio)
 function openLiveModal(){
   document.getElementById('live-streaming-modal-suite').classList.add('active');
@@ -144,18 +102,6 @@ function sendChatMessage(e){
     container.scrollTop=container.scrollHeight;
   },1500);
 }
-
-// Newspaper mode toggle
-document.getElementById('btn-mode-single')?.addEventListener('click',function(){
-  this.classList.add('active');
-  document.getElementById('btn-mode-all').classList.remove('active');
-  document.querySelectorAll('.newspaper-sheet').forEach((s,i)=>s.style.display=i===0?'block':'none');
-});
-document.getElementById('btn-mode-all')?.addEventListener('click',function(){
-  this.classList.add('active');
-  document.getElementById('btn-mode-single').classList.remove('active');
-  document.querySelectorAll('.newspaper-sheet').forEach(s=>s.style.display='block');
-});
 
 // PWA Service Worker & Install Prompt
 let deferredPrompt;
@@ -279,7 +225,6 @@ document.addEventListener('DOMContentLoaded',function(){
     if(e.key==='Escape'){
       closeMobileMenu();
       closeSearchModal();
-      closeNewspaperModal();
       closeLiveModal();
     }
   });
