@@ -11,19 +11,25 @@ class OpinionPublicController extends Controller
 {
     public function index()
     {
-        $columnistas = Columnista::activo()
-            ->with(['articulos' => function ($q) {
-                $q->where('publicado', true)->orderBy('created_at', 'desc')->take(3);
-            }])
-            ->get();
+        try {
+            $columnistas = Columnista::activo()
+                ->with(['articulos' => function ($q) {
+                    $q->where('publicado', true)->orderBy('created_at', 'desc')->take(3);
+                }])
+                ->get();
 
-        $articulosRecientes = ArticuloOpinion::with('columnista')
-            ->where('publicado', true)
-            ->whereHas('columnista', fn($q) => $q->where('activo', true))
-            ->orderBy('created_at', 'desc')
-            ->paginate(9);
+            $articulosRecientes = ArticuloOpinion::with('columnista')
+                ->where('publicado', true)
+                ->whereHas('columnista', fn($q) => $q->where('activo', true))
+                ->orderBy('created_at', 'desc')
+                ->paginate(9);
 
-        $categorias = Category::all();
+            $categorias = Category::all();
+        } catch (\Throwable $e) {
+            $columnistas = collect([]);
+            $articulosRecientes = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 9);
+            $categorias = collect([]);
+        }
 
         return view('opinion.index', compact('columnistas', 'articulosRecientes', 'categorias'));
     }

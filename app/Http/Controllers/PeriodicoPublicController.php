@@ -55,8 +55,13 @@ class PeriodicoPublicController extends Controller
             $edicionActiva = $ediciones[0];
         }
 
-        $categorias = Category::all();
-        $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
+        try {
+            $categorias = Category::all();
+            $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
+        } catch (\Throwable $e) {
+            $categorias = collect([]);
+            $banners = collect([]);
+        }
 
         return view('periodico.reader', compact('edicionActiva', 'ediciones', 'categorias', 'banners'));
     }

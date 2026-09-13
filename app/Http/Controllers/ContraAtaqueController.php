@@ -14,30 +14,38 @@ class ContraAtaqueController extends Controller
      */
     public function index(Request $request)
     {
-        $categorias = Category::all();
-        $categoriaDeportes = Category::where('name', 'LIKE', '%deporte%')
-            ->orWhere('name', 'LIKE', '%futbol%')
-            ->orWhere('name', 'LIKE', '%contra%')
-            ->first();
+        try {
+            $categorias = Category::all();
+            $categoriaDeportes = Category::where('name', 'LIKE', '%deporte%')
+                ->orWhere('name', 'LIKE', '%futbol%')
+                ->orWhere('name', 'LIKE', '%contra%')
+                ->first();
 
-        // Obtener noticias de deportes de la BD
-        $noticiasDeportesQuery = Noticia::where('publicada', true);
-        if ($categoriaDeportes) {
-            $noticiasDeportesQuery->where(function($q) use ($categoriaDeportes) {
-                $q->where('category_id', $categoriaDeportes->id)
-                  ->orWhere('titulo', 'LIKE', '%fútbol%')
-                  ->orWhere('titulo', 'LIKE', '%futbol%')
-                  ->orWhere('titulo', 'LIKE', '%deporte%')
-                  ->orWhere('titulo', 'LIKE', '%liga%')
-                  ->orWhere('titulo', 'LIKE', '%copa%')
-                  ->orWhere('titulo', 'LIKE', '%bolívar%')
-                  ->orWhere('titulo', 'LIKE', '%oriente%')
-                  ->orWhere('titulo', 'LIKE', '%blooming%')
-                  ->orWhere('titulo', 'LIKE', '%strongest%');
-            });
+            // Obtener noticias de deportes de la BD
+            $noticiasDeportesQuery = Noticia::where('publicada', true);
+            if ($categoriaDeportes) {
+                $noticiasDeportesQuery->where(function($q) use ($categoriaDeportes) {
+                    $q->where('category_id', $categoriaDeportes->id)
+                      ->orWhere('titulo', 'LIKE', '%fútbol%')
+                      ->orWhere('titulo', 'LIKE', '%futbol%')
+                      ->orWhere('titulo', 'LIKE', '%deporte%')
+                      ->orWhere('titulo', 'LIKE', '%liga%')
+                      ->orWhere('titulo', 'LIKE', '%copa%')
+                      ->orWhere('titulo', 'LIKE', '%bolívar%')
+                      ->orWhere('titulo', 'LIKE', '%oriente%')
+                      ->orWhere('titulo', 'LIKE', '%blooming%')
+                      ->orWhere('titulo', 'LIKE', '%strongest%');
+                });
+            }
+
+            $noticiasDB = $noticiasDeportesQuery->with('category')->orderBy('created_at', 'desc')->take(12)->get();
+            $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
+        } catch (\Throwable $e) {
+            $categorias = collect([]);
+            $categoriaDeportes = null;
+            $noticiasDB = collect([]);
+            $banners = collect([]);
         }
-
-        $noticiasDB = $noticiasDeportesQuery->with('category')->orderBy('created_at', 'desc')->take(12)->get();
 
         // Si hay pocas noticias en BD, complementamos con contenido deportivo de alta calidad de Bolivia e Internacional
         $noticiasFallback = $this->getFallbackSportsNews();
@@ -64,8 +72,6 @@ class ContraAtaqueController extends Controller
 
         // Columnistas de Opinión Deportiva
         $columnistasDeportes = $this->getSportsColumnists();
-
-        $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
 
         return view('contraataque.index', compact(
             'categorias',
