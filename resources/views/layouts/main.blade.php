@@ -208,6 +208,9 @@
         <button id="btn-pwa-install" onclick="triggerPwaInstall()" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);font-family:var(--font-title-montserrat);font-weight:700;font-size:.7rem;text-transform:uppercase;padding:7px 12px;border-radius:2px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.borderColor='var(--color-red)'" onmouseout="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.2)'">
           <i class="fas fa-download"></i> INSTALAR APP
         </button>
+        <a href="{{ route('contraataque.index') }}" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg, #090d16 0%, #162032 100%);border:1px solid #00FF87;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.7rem;text-transform:uppercase;text-decoration:none;padding:7px 14px;border-radius:2px;box-shadow:0 0 10px rgba(0,255,135,0.25);transition:all .2s" onmouseover="this.style.background='#00FF87';this.style.color='#000'" onmouseout="this.style.background='linear-gradient(135deg, #090d16 0%, #162032 100%)';this.style.color='#00FF87'">
+          <i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE
+        </a>
         <a href="{{ route('periodico.public.index') }}" style="display:flex;align-items:center;gap:6px;background:var(--color-navy);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.7rem;text-transform:uppercase;text-decoration:none;padding:7px 14px;border-radius:2px;transition:background .2s" onmouseover="this.style.background='var(--color-navy-light)'" onmouseout="this.style.background='var(--color-navy)'">
           <i class="fas fa-newspaper"></i> PERIÓDICO DIGITAL
         </a>
@@ -225,12 +228,24 @@
       <ul style="display:flex;align-items:center;gap:0;list-style:none;padding:0;margin:0;white-space:nowrap;overflow-x:auto;flex:1;scrollbar-width:none">
         <li><a href="/" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fas fa-home" style="margin-right:4px"></i> INICIO</a></li>
         @forelse($categorias ?? [] as $categoria)
-          <li><a href="{{ route('categoria.noticias', $categoria->id) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
+          @php
+            $isSports = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
+          @endphp
+          @if($isSports)
+            <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
+              <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
+            </li>
+          @else
+            <li><a href="{{ route('categoria.noticias', $categoria->id) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
+          @endif
         @empty
           @foreach(['Política','País','Santa Cruz','Economía'] as $cat)
             <li><a href="#" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent">{{ $cat }}</a></li>
           @endforeach
         @endforelse
+        <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
+          <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
+        </li>
         <li><a href="{{ route('opinion.index') }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fca5a5;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fa-solid fa-pen-nib" style="margin-right:4px"></i> OPINIÓN</a></li>
       </ul>
       <button onclick="openLiveModal()" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#ff8a8f;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;cursor:pointer;padding:12px 8px;white-space:nowrap">
@@ -250,10 +265,23 @@
     </div>
     <div style="padding:16px">
       <a href="/" style="display:flex;align-items:center;gap:8px;padding:12px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-weight:600"><i class="fas fa-home"></i> Inicio</a>
+      
+      <!-- CONTRA ATAQUE PROMINENTE EN MOVIL -->
+      <a href="{{ route('contraataque.index') }}" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:linear-gradient(90deg, #090d16, #162032);color:#00FF87;text-decoration:none;border-radius:4px;margin:12px 0;border:1px solid #00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.85rem;box-shadow:0 0 10px rgba(0,255,135,0.2)">
+        <i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE (DEPORTES)
+      </a>
+
       <div style="margin-top:12px">
         <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);font-weight:700;margin-bottom:8px">Secciones</p>
         @forelse($categorias ?? [] as $categoria)
-          <a href="{{ route('categoria.noticias', $categoria->id) }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;transition:color .2s" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-text-main)'"><i class="fas fa-chevron-right" style="font-size:.6rem;color:var(--color-red)"></i> {{ $categoria->name }}</a>
+          @php
+            $isSportsMob = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
+          @endphp
+          @if($isSportsMob)
+            <a href="{{ route('contraataque.index') }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:#00FF87;text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-weight:800"><i class="fas fa-bolt" style="font-size:.7rem;color:#FF3B30"></i> {{ $categoria->name }} (Contra Ataque)</a>
+          @else
+            <a href="{{ route('categoria.noticias', $categoria->id) }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;transition:color .2s" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-text-main)'"><i class="fas fa-chevron-right" style="font-size:.6rem;color:var(--color-red)"></i> {{ $categoria->name }}</a>
+          @endif
         @empty
         @endforelse
       </div>
@@ -261,8 +289,6 @@
         <button onclick="closeMobileMenu();openSearchModal()" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);background:none;border:none;border-bottom:1px solid var(--color-border);font-size:.88rem;cursor:pointer;text-align:left;width:100%;font-family:var(--font-body)"><i class="fas fa-search" style="color:var(--color-red)"></i> Buscar Noticias</button>
         <a href="{{ route('periodico.public.index') }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-family:var(--font-body)"><i class="fas fa-newspaper" style="color:var(--color-red)"></i> Periódico Digital</a>
         <a href="{{ route('opinion.index') }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-family:var(--font-body)"><i class="fa-solid fa-pen-nib" style="color:var(--color-red)"></i> Opinión & Análisis</a>
-        <button onclick="closeMobileMenu();openLiveModal()" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);background:none;border:none;border-bottom:1px solid var(--color-border);font-size:.88rem;cursor:pointer;text-align:left;width:100%;font-family:var(--font-body)"><i class="fas fa-radio" style="color:var(--color-red)"></i> TV & Radio En Vivo</button>
-
       </div>
       <div style="margin-top:16px">
         <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);font-weight:700;margin-bottom:8px">Síguenos</p>
@@ -328,8 +354,9 @@
           </ul>
         </div>
         <div>
-          <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Editorial</h4>
+          <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Editorial & Especiales</h4>
           <ul style="list-style:none;padding:0;margin:0">
+            <li style="margin-bottom:8px"><a href="{{ route('contraataque.index') }}" style="color:#00FF87;font-weight:700;text-decoration:none;font-size:.82rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#00FF87'"><i class="fas fa-bolt" style="color:#FF3B30;margin-right:4px"></i> Contra Ataque (Deportes)</a></li>
             <li style="margin-bottom:8px"><a href="{{ route('opinion.index') }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">Opinión y Columnistas</a></li>
             <li style="margin-bottom:8px"><a href="{{ route('periodico.public.index') }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">Periódico Semanal</a></li>
             <li style="margin-bottom:8px"><a href="{{ route('search') }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">Buscador de Archivo</a></li>

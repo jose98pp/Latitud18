@@ -46,6 +46,12 @@ Route::get('/opinion', [\App\Http\Controllers\OpinionPublicController::class, 'i
 Route::get('/opinion/columnista/{id}', [\App\Http\Controllers\OpinionPublicController::class, 'columnista'])->name('opinion.columnista');
 Route::get('/opinion/articulo/{id}', [\App\Http\Controllers\OpinionPublicController::class, 'articulo'])->name('opinion.articulo');
 
+// Rutas Públicas del Portal Deportivo "CONTRA ATAQUE" (Estilo DIEZ / El Deber)
+Route::get('/contraataque', [\App\Http\Controllers\ContraAtaqueController::class, 'index'])->name('contraataque.index');
+Route::get('/deportes', function() { return redirect()->route('contraataque.index'); })->name('deportes.redirect');
+Route::get('/contraataque/noticia/{id}', [\App\Http\Controllers\ContraAtaqueController::class, 'show'])->name('contraataque.show');
+Route::get('/contraataque/seccion/{seccion}', [\App\Http\Controllers\ContraAtaqueController::class, 'seccion'])->name('contraataque.seccion');
+
 // Ruta SEO Amigable para noticias: /{categoria}/{titulo-slug}/{id}
 Route::get('/{categoria}/{slug}/{id}', [PortadaController::class, 'showBySlug'])->name('noticias.show.slug')->where('id', '[0-9]+');
 
