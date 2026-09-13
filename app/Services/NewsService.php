@@ -138,12 +138,27 @@ class NewsService
     }
 
     /**
-     * Obtener datos para página de categoría con paginación
+     * Obtener datos para página de categoría con paginación (soporta Slug e ID)
      */
-    public function getCategoryPageData($categoryId, $perPage = 10)
+    public function getCategoryPageData($categoryIdentifier, $perPage = 10)
     {
-        // Obtener la categoría
-        $categoria = Category::findOrFail($categoryId);
+        // Obtener la categoría por ID o por Slug
+        if (is_numeric($categoryIdentifier)) {
+            $categoria = Category::find($categoryIdentifier);
+        } else {
+            $categoria = Category::all()->first(function ($cat) use ($categoryIdentifier) {
+                return \Illuminate\Support\Str::slug($cat->name) === $categoryIdentifier;
+            });
+            if (!$categoria) {
+                $categoria = Category::where('name', 'LIKE', str_replace('-', ' ', $categoryIdentifier))->first();
+            }
+        }
+
+        if (!$categoria) {
+            abort(404, 'Categoría no encontrada');
+        }
+
+        $categoryId = $categoria->id;
         
         // Obtener noticias de la categoría con paginación
         $noticiasCategoria = Noticia::where('category_id', $categoryId)

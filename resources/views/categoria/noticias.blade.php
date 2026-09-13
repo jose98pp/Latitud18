@@ -54,7 +54,7 @@
   <div class="container">
     <div class="cat-tags-filter-bar" style="display:flex;gap:8px;flex-wrap:wrap;">
       @foreach($categorias as $cat)
-        <a href="{{ route('categoria.noticias', $cat->id) }}" class="cat-tag-pill" style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;padding:5px 14px;border-radius:20px;text-decoration:none;transition:all 0.2s;{{ $cat->id === $categoria->id ? 'background:var(--color-red);color:#fff;' : 'background:var(--color-navy-subtle);color:var(--color-navy);border:1px solid var(--color-border);' }}" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff';this.style.borderColor='var(--color-red)'" onmouseout="{{ $cat->id !== $categoria->id ? "this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-navy)';this.style.borderColor='var(--color-border)'" : '' }}">
+        <a href="{{ route('categoria.noticias', $cat->slug) }}" class="cat-tag-pill" style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px;padding:5px 14px;border-radius:20px;text-decoration:none;transition:all 0.2s;{{ $cat->id === $categoria->id ? 'background:var(--color-red);color:#fff;' : 'background:var(--color-navy-subtle);color:var(--color-navy);border:1px solid var(--color-border);' }}" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff';this.style.borderColor='var(--color-red)'" onmouseout="{{ $cat->id !== $categoria->id ? "this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-navy)';this.style.borderColor='var(--color-border)'" : '' }}">
           {{ $cat->name }}
         </a>
       @endforeach
@@ -142,7 +142,7 @@
           </div>
           <div style="padding:10px;">
             @foreach($categorias as $cat)
-              <a href="{{ route('categoria.noticias', $cat->id) }}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;text-decoration:none;color:var(--color-text-main);font-size:0.82rem;border-bottom:1px solid var(--color-border);transition:all 0.2s;{{ $cat->id === $categoria->id ? 'background:var(--color-red);color:#fff;border-color:var(--color-red);font-weight:700;' : '' }}" onmouseover="{{ $cat->id !== $categoria->id ? "this.style.background='var(--color-navy-subtle)'" : '' }}" onmouseout="{{ $cat->id !== $categoria->id ? "this.style.background='none'" : '' }}">
+              <a href="{{ route('categoria.noticias', $cat->slug) }}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;text-decoration:none;color:var(--color-text-main);font-size:0.82rem;border-bottom:1px solid var(--color-border);transition:all 0.2s;{{ $cat->id === $categoria->id ? 'background:var(--color-red);color:#fff;border-color:var(--color-red);font-weight:700;' : '' }}" onmouseover="{{ $cat->id !== $categoria->id ? "this.style.background='var(--color-navy-subtle)'" : '' }}" onmouseout="{{ $cat->id !== $categoria->id ? "this.style.background='none'" : '' }}">
                 <i class="fas fa-chevron-right" style="font-size:0.6rem;color:{{ $cat->id === $categoria->id ? '#fff' : 'var(--color-red)' }};"></i>
                 {{ $cat->name }}
               </a>

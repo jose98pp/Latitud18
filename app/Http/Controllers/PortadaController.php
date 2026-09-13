@@ -40,11 +40,19 @@ class PortadaController extends Controller
     }
 
 
-    public function noticiasPorCategoria($id, Request $request)
+    public function noticiasPorCategoria($slug, Request $request)
     {
         try {
-            $perPage = $request->get('per_page', 10); // Permitir personalizar items por página
-            $data = $this->newsService->getCategoryPageData($id, $perPage);
+            $perPage = $request->get('per_page', 10);
+            $data = $this->newsService->getCategoryPageData($slug, $perPage);
+            
+            // Si el parámetro recibido fue numérico y existe la categoría, redirigir 301 a la URL canónica con slug
+            if (is_numeric($slug) && isset($data['categoria'])) {
+                $canonicalSlug = $data['categoria']->slug;
+                if ($canonicalSlug && $canonicalSlug !== (string) $slug) {
+                    return redirect()->route('categoria.noticias', $canonicalSlug, 301);
+                }
+            }
             
             // Verificar que tenemos los datos necesarios
             if (!isset($data['categoria']) || !isset($data['noticiasCategoria']) || !isset($data['categorias'])) {
@@ -56,9 +64,8 @@ class PortadaController extends Controller
             
         } catch (\Exception $e) {
             \Log::error('Error en noticiasPorCategoria', [
-                'category_id' => $id,
+                'identifier' => $slug,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
             ]);
             
             return redirect()->route('portada')->with('error', 'La categoría solicitada no existe.');

@@ -30,7 +30,7 @@
     {{-- Categorías --}}
     @foreach($categorias as $categoria)
         <url>
-            <loc>{{ route('categoria.noticias', $categoria->id) }}</loc>
+            <loc>{{ route('categoria.noticias', $categoria->slug) }}</loc>
             <lastmod>{{ $categoria->updated_at ? $categoria->updated_at->toAtomString() : now()->toAtomString() }}</lastmod>
             <changefreq>hourly</changefreq>
             <priority>0.8</priority>

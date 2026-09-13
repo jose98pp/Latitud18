@@ -12,11 +12,11 @@
             <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
           </li>
         @else
-          <li><a href="{{ route('categoria.noticias', $categoria->id) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
+          <li><a href="{{ route('categoria.noticias', $categoria->slug) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
         @endif
       @empty
-        @foreach(['Política','País','Santa Cruz','Economía'] as $cat)
-          <li><a href="#" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent">{{ $cat }}</a></li>
+        @foreach(['politica' => 'Política','pais' => 'País','santa-cruz' => 'Santa Cruz','economia' => 'Economía'] as $cSlug => $cat)
+          <li><a href="{{ route('categoria.noticias', $cSlug) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent">{{ $cat }}</a></li>
         @endforeach
       @endforelse
       <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
@@ -56,7 +56,7 @@
         @if($isSportsMob)
           <a href="{{ route('contraataque.index') }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:#00FF87;text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-weight:800"><i class="fas fa-bolt" style="font-size:.7rem;color:#FF3B30"></i> {{ $categoria->name }} (Contra Ataque)</a>
         @else
-          <a href="{{ route('categoria.noticias', $categoria->id) }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;transition:color .2s" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-text-main)'"><i class="fas fa-chevron-right" style="font-size:.6rem;color:var(--color-red)"></i> {{ $categoria->name }}</a>
+          <a href="{{ route('categoria.noticias', $categoria->slug) }}" style="display:flex;align-items:center;gap:8px;padding:10px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;transition:color .2s" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-text-main)'"><i class="fas fa-chevron-right" style="font-size:.6rem;color:var(--color-red)"></i> {{ $categoria->name }}</a>
         @endif
       @empty
       @endforelse

@@ -65,7 +65,7 @@
   </h3>
   <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
     @foreach($categorias as $cat)
-      <a href="{{ route('categoria.noticias', $cat->id) }}"
+      <a href="{{ route('categoria.noticias', $cat->slug) }}"
          style="font-family:var(--font-title-montserrat); font-weight:700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--color-navy); background:var(--color-navy-subtle); padding:6px 16px; border-radius:2px; text-decoration:none; border:1px solid var(--color-border); transition:all 0.2s;"
          onmouseover="this.style.background='var(--color-red)';this.style.color='#fff';this.style.borderColor='var(--color-red)'"
          onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-navy)';this.style.borderColor='var(--color-border)'">

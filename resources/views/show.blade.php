@@ -187,7 +187,7 @@
     <nav style="display:flex;align-items:center;gap:8px;font-size:0.78rem;flex-wrap:wrap;">
       <a href="{{ route('portada') }}" style="color:var(--color-navy);text-decoration:none;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-navy)'"><i class="fas fa-home" style="margin-right:4px;"></i> Inicio</a>
       <span style="color:var(--color-text-muted);">›</span>
-      <a href="{{ route('categoria.noticias', $noticia->category->id) }}" style="color:var(--color-navy);text-decoration:none;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-navy)'">{{ $noticia->category->name ?? 'Noticias' }}</a>
+      <a href="{{ route('categoria.noticias', $noticia->category->slug ?? ($noticia->category->id ?? 'general')) }}" style="color:var(--color-navy);text-decoration:none;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-navy)'">{{ $noticia->category->name ?? 'Noticias' }}</a>
       <span style="color:var(--color-text-muted);">›</span>
       <span style="color:var(--color-text-muted);">{{ Str::limit($noticia->titulo, 50) }}</span>
     </nav>

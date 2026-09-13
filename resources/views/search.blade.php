@@ -119,7 +119,7 @@
       <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-navy);margin-bottom:14px;">Explora nuestras categorías</h3>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
         @foreach($categorias as $categoria)
-          <a href="{{ route('categoria.noticias', $categoria->id) }}" style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);background:var(--color-card-bg);padding:6px 16px;border-radius:2px;text-decoration:none;border:1px solid var(--color-border);transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff';this.style.borderColor='var(--color-red)'" onmouseout="this.style.background='var(--color-card-bg)';this.style.color='var(--color-navy)';this.style.borderColor='var(--color-border)'">
+          <a href="{{ route('categoria.noticias', $categoria->slug) }}" style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);background:var(--color-card-bg);padding:6px 16px;border-radius:2px;text-decoration:none;border:1px solid var(--color-border);transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff';this.style.borderColor='var(--color-red)'" onmouseout="this.style.background='var(--color-card-bg)';this.style.color='var(--color-navy)';this.style.borderColor='var(--color-border)'">
             {{ $categoria->name }}
           </a>
         @endforeach

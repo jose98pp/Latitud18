@@ -12,7 +12,7 @@
     <div class="cat-block-box">
       <div class="cat-block-head">
         <h3 class="cat-block-title">{{ strtoupper($categoria->name) }}</h3>
-        <a href="{{ route('categoria.noticias', $categoria->id) }}" class="cat-ver-mas-link">
+        <a href="{{ route('categoria.noticias', $categoria->slug) }}" class="cat-ver-mas-link">
           VER MÁS &gt;
         </a>
       </div>

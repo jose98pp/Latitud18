@@ -31,10 +31,10 @@
         <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Secciones</h4>
         <ul style="list-style:none;padding:0;margin:0">
           @forelse($categorias ?? [] as $categoria)
-            <li style="margin-bottom:8px"><a href="{{ route('categoria.noticias', $categoria->id) }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">{{ $categoria->name }}</a></li>
+            <li style="margin-bottom:8px"><a href="{{ route('categoria.noticias', $categoria->slug) }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">{{ $categoria->name }}</a></li>
           @empty
-            @foreach(['Política','País','Santa Cruz','Economía','Deportes'] as $cat)
-              <li style="margin-bottom:8px"><a href="#" style="color:#94A3B8;text-decoration:none;font-size:.82rem">{{ $cat }}</a></li>
+            @foreach(['politica' => 'Política','pais' => 'País','santa-cruz' => 'Santa Cruz','economia' => 'Economía'] as $cSlug => $cat)
+              <li style="margin-bottom:8px"><a href="{{ route('categoria.noticias', $cSlug) }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem">{{ $cat }}</a></li>
             @endforeach
           @endforelse
         </ul>

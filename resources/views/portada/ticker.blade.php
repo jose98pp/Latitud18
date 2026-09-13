@@ -12,7 +12,7 @@
       </a>
     @endforeach
   </div>
-  <a href="{{ route('categoria.noticias', $categorias->first()->id ?? 1) }}" class="ticker-ver-mas">
+  <a href="{{ route('categoria.noticias', $categorias->first()->slug ?? 'noticias') }}" class="ticker-ver-mas">
     VER MÁS &gt;
   </a>
 </div>
