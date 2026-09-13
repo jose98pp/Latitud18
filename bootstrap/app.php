@@ -47,6 +47,12 @@ if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') || str_
         putenv('SESSION_LIFETIME=120');
     }
 
+    if (empty($_ENV['DB_CONNECTION'])) {
+        $_ENV['DB_CONNECTION'] = 'mysql';
+        $_SERVER['DB_CONNECTION'] = 'mysql';
+        putenv('DB_CONNECTION=mysql');
+    }
+
     $app->useStoragePath($tmpDir);
 }
 

@@ -52,6 +52,11 @@ if (empty($_ENV['SESSION_LIFETIME']) || !is_numeric($_ENV['SESSION_LIFETIME'])) 
     $_SERVER['SESSION_LIFETIME'] = '120';
     putenv('SESSION_LIFETIME=120');
 }
+if (empty($_ENV['DB_CONNECTION'])) {
+    $_ENV['DB_CONNECTION'] = 'mysql';
+    $_SERVER['DB_CONNECTION'] = 'mysql';
+    putenv('DB_CONNECTION=mysql');
+}
 
 // Mark Vercel environment flag
 $_ENV['VERCEL'] = '1';

@@ -20,7 +20,11 @@ class ShareCategoriesMiddleware
     {
         // Compartir categorías con todas las vistas usando caché
         $categorias = Cache::remember('navigation_categories', 600, function () {
-            return Category::orderBy('name')->get();
+            try {
+                return Category::orderBy('name')->get();
+            } catch (\Throwable $e) {
+                return collect([]);
+            }
         });
 
         View::share('categorias', $categorias);
