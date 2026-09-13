@@ -20,6 +20,9 @@ class AssetHelper
         if ($currentRoute === 'show') {
             $conditionalFiles[] = 'resources/css/show-dark-mode.css';
         }
+        if ($currentRoute === 'portada' || $currentRoute === 'home' || empty($currentRoute)) {
+            $conditionalFiles[] = 'resources/css/portada.css';
+        }
 
         return $conditionalFiles;
     }
@@ -33,6 +36,7 @@ class AssetHelper
     {
         return [
             'resources/css/app.css',
+            'resources/css/main-layout.css',
             'resources/css/browser-compatibility.css',
             'resources/css/dark-mode.css'
         ];

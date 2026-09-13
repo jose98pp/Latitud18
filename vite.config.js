@@ -26,6 +26,8 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css', 
+                'resources/css/main-layout.css',
+                'resources/css/portada.css',
                 'resources/css/browser-compatibility.css',
                 'resources/css/dark-mode.css',
                 'resources/css/show-dark-mode.css',
