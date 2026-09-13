@@ -14,8 +14,25 @@ Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
+
+# IDEs and Editors
 /.fleet
 /.idea
 /.vscode
+/.vs
+/.kiro
+
+# Build and Archives
 /public/build.zip
 *.zip
+*.tar.gz
+
+# Database Dumps and SQL files (Security)
+*.sql
+*.sql.gz
+*.sqlite
+
+# Dev & temporary files
+php.ini
+test-autoload.php
+homepage.html
