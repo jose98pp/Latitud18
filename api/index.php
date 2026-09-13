@@ -46,6 +46,13 @@ putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 
+// Ensure numeric/safe environment defaults for serverless execution
+if (empty($_ENV['SESSION_LIFETIME']) || !is_numeric($_ENV['SESSION_LIFETIME'])) {
+    $_ENV['SESSION_LIFETIME'] = '120';
+    $_SERVER['SESSION_LIFETIME'] = '120';
+    putenv('SESSION_LIFETIME=120');
+}
+
 // Mark Vercel environment flag
 $_ENV['VERCEL'] = '1';
 $_SERVER['VERCEL'] = '1';

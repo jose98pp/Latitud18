@@ -11,19 +11,19 @@ return [
     */
 
     'cache' => [
-        'homepage_ttl' => env('UHTV_CACHE_HOMEPAGE_TTL', 300), // 5 minutos
-        'categories_ttl' => env('UHTV_CACHE_CATEGORIES_TTL', 600), // 10 minutos
-        'dashboard_ttl' => env('UHTV_CACHE_DASHBOARD_TTL', 300), // 5 minutos
+        'homepage_ttl' => (int) (env('UHTV_CACHE_HOMEPAGE_TTL') ?: 300), // 5 minutos
+        'categories_ttl' => (int) (env('UHTV_CACHE_CATEGORIES_TTL') ?: 600), // 10 minutos
+        'dashboard_ttl' => (int) (env('UHTV_CACHE_DASHBOARD_TTL') ?: 300), // 5 minutos
     ],
 
     'pagination' => [
-        'admin_news' => env('UHTV_ADMIN_NEWS_PER_PAGE', 15),
-        'public_news' => env('UHTV_PUBLIC_NEWS_PER_PAGE', 10),
+        'admin_news' => (int) (env('UHTV_ADMIN_NEWS_PER_PAGE') ?: 15),
+        'public_news' => (int) (env('UHTV_PUBLIC_NEWS_PER_PAGE') ?: 10),
     ],
 
     'images' => [
         'default_news' => 'images/default-news.svg',
-        'max_size' => env('UHTV_MAX_IMAGE_SIZE', 2048), // KB
+        'max_size' => (int) (env('UHTV_MAX_IMAGE_SIZE') ?: 2048), // KB
         'allowed_types' => ['jpeg', 'png', 'jpg', 'webp'],
     ],
 

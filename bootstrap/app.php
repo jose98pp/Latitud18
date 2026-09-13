@@ -41,6 +41,12 @@ if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') || str_
     $_SERVER['APP_ROUTES_CACHE'] = "{$cacheDir}/routes.php";
     $_SERVER['APP_EVENTS_CACHE'] = "{$cacheDir}/events.php";
 
+    if (empty($_ENV['SESSION_LIFETIME']) || !is_numeric($_ENV['SESSION_LIFETIME'])) {
+        $_ENV['SESSION_LIFETIME'] = '120';
+        $_SERVER['SESSION_LIFETIME'] = '120';
+        putenv('SESSION_LIFETIME=120');
+    }
+
     $app->useStoragePath($tmpDir);
 }
 
