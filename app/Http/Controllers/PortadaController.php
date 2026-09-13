@@ -42,34 +42,18 @@ class PortadaController extends Controller
 
     public function noticiasPorCategoria($slug, Request $request)
     {
-        try {
-            $perPage = $request->get('per_page', 10);
-            $data = $this->newsService->getCategoryPageData($slug, $perPage);
-            
-            // Si el parámetro recibido fue numérico y existe la categoría, redirigir 301 a la URL canónica con slug
-            if (is_numeric($slug) && isset($data['categoria'])) {
-                $canonicalSlug = $data['categoria']->slug;
-                if ($canonicalSlug && $canonicalSlug !== (string) $slug) {
-                    return redirect()->route('categoria.noticias', $canonicalSlug, 301);
-                }
+        $perPage = (int) $request->get('per_page', 10);
+        $data = $this->newsService->getCategoryPageData($slug, $perPage);
+        
+        // Si el parámetro recibido fue numérico, redirigir 301 a la URL canónica con slug
+        if (is_numeric($slug) && isset($data['categoria'])) {
+            $canonicalSlug = $data['categoria']->slug;
+            if ($canonicalSlug && $canonicalSlug !== (string) $slug) {
+                return redirect()->route('categoria.noticias', $canonicalSlug, 301);
             }
-            
-            // Verificar que tenemos los datos necesarios
-            if (!isset($data['categoria']) || !isset($data['noticiasCategoria']) || !isset($data['categorias'])) {
-                \Log::error('Datos faltantes en getCategoryPageData', $data);
-                return redirect()->route('portada')->with('error', 'Error al cargar la categoría.');
-            }
-            
-            return view('categoria.noticias', $data);
-            
-        } catch (\Exception $e) {
-            \Log::error('Error en noticiasPorCategoria', [
-                'identifier' => $slug,
-                'error' => $e->getMessage(),
-            ]);
-            
-            return redirect()->route('portada')->with('error', 'La categoría solicitada no existe.');
         }
+        
+        return view('categoria.noticias', $data);
     }
 
     public function search(Request $request)

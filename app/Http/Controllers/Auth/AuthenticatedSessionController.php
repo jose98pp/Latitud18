@@ -29,14 +29,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirigir según el rol del usuario
         $user = Auth::user();
         
-        if ($user && $user->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard'));
+        // Verificar permisos de acceso administrativo
+        if ($user && $user->role !== 'admin') {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('admin.login')->withErrors([
+                'email' => 'No tienes permisos para acceder al panel de administración.',
+            ]);
         }
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**

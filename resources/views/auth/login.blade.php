@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - UHTV Admin</title>
+    <title>Iniciar Sesión - Latitud 18 Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 min-h-screen flex items-center justify-center">
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full mx-4">
         <!-- Logo y Header -->
         <div class="text-center mb-8">
             <div class="flex justify-center mb-4">
-                <img src="{{ asset('images/Logo.jpg') }}" alt="UHTV" class="w-20 h-20 rounded-full shadow-lg">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-indigo-500/20">
+                    L18
+                </div>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">UHTV Admin</h1>
-            <p class="text-purple-200">Panel de Administración</p>
+            <h1 class="text-3xl font-black text-white tracking-tight mb-1">LATITUD <span class="text-amber-400">18</span></h1>
+            <p class="text-indigo-200 text-sm font-medium">Panel Editorial & Administración</p>
         </div>
 
         <!-- Login Form -->
@@ -105,8 +107,8 @@
 
             <!-- Footer -->
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">
-                    © {{ date('Y') }} UHTV. Todos los derechos reservados.
+                <p class="text-xs text-gray-400">
+                    © {{ date('Y') }} Latitud 18. Todos los derechos reservados.
                 </p>
             </div>
         </div>
