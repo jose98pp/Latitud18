@@ -61,7 +61,7 @@
       <a href="{{ route('periodico.public.index') }}" style="display:flex;align-items:center;gap:6px;background:var(--color-navy);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.7rem;text-transform:uppercase;text-decoration:none;padding:7px 14px;border-radius:2px;transition:background .2s" onmouseover="this.style.background='var(--color-navy-light)'" onmouseout="this.style.background='var(--color-navy)'">
         <i class="fas fa-newspaper"></i> PERIÓDICO DIGITAL
       </a>
-      <button onclick="toggleTheme()" style="background:var(--color-navy-subtle);color:var(--color-navy);border:1px solid var(--color-border);padding:7px 9px;border-radius:2px;cursor:font-size:.85rem;transition:all .2s" onmouseover="this.style.background='var(--color-navy)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-navy)'">
+      <button onclick="toggleTheme()" style="background:var(--color-navy-subtle);color:var(--color-navy);border:1px solid var(--color-border);padding:7px 9px;border-radius:2px;cursor:pointer;font-size:.85rem;transition:all .2s" onmouseover="this.style.background='var(--color-navy)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-navy)'">
         <i class="fas fa-sun" id="themeIconSun" style="display:none"></i>
         <i class="fas fa-moon" id="themeIconMoon"></i>
       </button>
