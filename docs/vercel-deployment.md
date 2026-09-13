@@ -36,7 +36,7 @@ En la pantalla de configuración:
 - **Root Directory**: Deja `./` (la raíz).
 - **Build and Output Settings**:
   - **Build Command**: `npm run build`
-  - **Output Directory**: Déjalo vacío o en blanco.
+  - **Output Directory**: Activa el switch **Override** y escribe **`public`** (para que Vercel sirva `public` en lugar de buscar la carpeta predeterminada `dist`).
 
 ---
 
