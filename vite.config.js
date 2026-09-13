@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import react from '@vitejs/plugin-react';
 import { assetValidationPlugin } from './vite-plugins/asset-validation.js';
 
 export default defineConfig({
@@ -30,11 +29,10 @@ export default defineConfig({
                 'resources/css/browser-compatibility.css',
                 'resources/css/dark-mode.css',
                 'resources/css/show-dark-mode.css',
-                'resources/js/app.jsx'
+                'resources/js/app.js'
             ],
             refresh: true,
         }),
-        react(),
         assetValidationPlugin({
             strict: process.env.NODE_ENV === 'production',
             logLevel: 'warn'
@@ -57,7 +55,6 @@ export default defineConfig({
                     
                     // CSS files with categorized naming
                     if (/css/i.test(extType)) {
-                        // Categorize CSS files for better organization
                         if (assetInfo.name.includes('app')) {
                             return `css/core/app-[hash:8][extname]`;
                         }
@@ -96,9 +93,6 @@ export default defineConfig({
                 manualChunks: (id) => {
                     // Vendor libraries
                     if (id.includes('node_modules')) {
-                        if (id.includes('react')) {
-                            return 'vendor-react';
-                        }
                         return 'vendor';
                     }
                     
@@ -122,7 +116,7 @@ export default defineConfig({
     
     // Performance optimizations
     optimizeDeps: {
-        include: ['react', 'react-dom'],
+        include: ['alpinejs', 'axios'],
         exclude: ['@vite/client', '@vite/env']
     },
     

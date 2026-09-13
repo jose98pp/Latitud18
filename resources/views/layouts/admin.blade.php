@@ -21,7 +21,7 @@
     <!-- CSS personalizado -->
     <link href="{{ asset('css/optimized.css') }}" rel="stylesheet">
     
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Script de inicialización inmediata para modo oscuro -->
     <script>

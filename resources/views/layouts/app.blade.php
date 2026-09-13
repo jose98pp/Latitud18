@@ -14,7 +14,7 @@
         <link rel="preload" href="{{ asset('css/optimized.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="{{ asset('css/optimized.css') }}"></noscript>
         
-        @vite(['resources/css/app.css', 'resources/css/browser-compatibility.css', 'resources/js/app.jsx'])
+        @vite(['resources/css/app.css', 'resources/css/browser-compatibility.css', 'resources/js/app.js'])
 
         <title>{{ config('app.name', 'Admin') }}</title>
 

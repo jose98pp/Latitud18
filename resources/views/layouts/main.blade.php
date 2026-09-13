@@ -31,7 +31,7 @@
     @php
         use App\Helpers\AssetHelper;
         $cssFiles = AssetHelper::getAllCssFiles();
-        $jsFiles = ['resources/js/app.jsx'];
+        $jsFiles = ['resources/js/app.js'];
         $allAssets = array_merge($cssFiles, $jsFiles);
     @endphp
     @vite($allAssets)
