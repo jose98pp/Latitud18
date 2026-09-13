@@ -26,9 +26,6 @@
       @if(setting('whatsapp_phone'))
         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('whatsapp_phone')) }}?text={{ urlencode(setting('whatsapp_message', 'Hola')) }}" target="_blank" style="color:#25D366" title="WhatsApp Denuncias"><i class="fab fa-whatsapp"></i></a>
       @endif
-      <a href="{{ route('periodico.public.index') }}" style="background:var(--color-navy);color:#fff;border:1px solid rgba(255,255,255,.15);padding:4px 10px;border-radius:2px;font-family:var(--font-title-montserrat);font-weight:700;font-size:.6rem;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy)';this.style.color='#fff'">
-        <i class="fas fa-newspaper" style="margin-right:4px;color:var(--color-red)"></i> PERIÓDICO DIGITAL
-      </a>
     </div>
   </div>
 </aside>

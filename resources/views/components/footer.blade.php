@@ -49,9 +49,16 @@
         </ul>
       </div>
       <div>
-        <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">En Vivo</h4>
-        <button onclick="openLiveModal()" style="display:inline-flex;align-items:center;gap:6px;background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.7rem;text-transform:uppercase;padding:8px 16px;border-radius:2px;border:none;cursor:pointer;margin-bottom:12px"><span style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite"></span> EN VIVO</button>
-        <p style="font-size:.78rem;color:#64748B;line-height:1.5">Transmisión multimedia digital 24/7.</p>
+        <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Multimedia</h4>
+        <ul style="list-style:none;padding:0;margin:0">
+          <li style="margin-bottom:8px">
+            <a href="javascript:void(0)" onclick="openLiveModal()" style="color:#fca5a5;text-decoration:none;font-size:.82rem;display:inline-flex;align-items:center;gap:6px;font-weight:700;">
+              <span style="width:6px;height:6px;background:var(--color-red);border-radius:50%;animation:pulse 1.5s infinite"></span> TV & Radio en Vivo
+            </a>
+          </li>
+          <li style="margin-bottom:8px"><a href="/#tvSection" style="color:#94A3B8;text-decoration:none;font-size:.82rem">Reportajes en Video</a></li>
+        </ul>
+        <p style="font-size:.75rem;color:#64748B;line-height:1.4;margin-top:8px">Transmisión digital continua para toda Bolivia.</p>
       </div>
       <div>
         <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Contacto & Redacción</h4>

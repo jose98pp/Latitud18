@@ -7,11 +7,7 @@
         @php
           $isSports = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
         @endphp
-        @if($isSports)
-          <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
-            <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
-          </li>
-        @else
+        @if(!$isSports)
           <li><a href="{{ route('categoria.noticias', $categoria->slug) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
         @endif
       @empty
@@ -24,9 +20,6 @@
       </li>
       <li><a href="{{ route('opinion.index') }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fca5a5;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fa-solid fa-pen-nib" style="margin-right:4px"></i> OPINIÓN</a></li>
     </ul>
-    <button onclick="openLiveModal()" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#ff8a8f;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;cursor:pointer;padding:12px 8px;white-space:nowrap">
-      <i class="fas fa-radio"></i> RADIO
-    </button>
     <button id="mobileMenuToggle" style="display:none;background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:12px"><i class="fas fa-bars"></i></button>
   </div>
 </nav>

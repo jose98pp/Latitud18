@@ -105,12 +105,16 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-1 pt-1 border-top border-secondary text-muted" style="font-size: 0.68rem;">
+                            <div class="d-flex align-items-center mt-1 pt-1 border-top border-secondary text-muted" style="font-size: 0.68rem;">
                                 <span><i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $p['estadio'] }}</span>
-                                <a href="#tablaPosiciones" class="text-info" style="font-size: 0.68rem;">Ver Tabla</a>
                             </div>
                         </div>
                     @endforeach
+                    <div class="mt-2 text-center">
+                        <a href="#tablaPosiciones" class="btn btn-sm w-100" style="background: rgba(0, 255, 135, 0.1); border: 1px solid #00FF87; color: #00FF87; font-family: var(--ca-font-display); font-weight: 700; font-size: 0.78rem; text-decoration: none;">
+                            <i class="fas fa-list-ol me-1"></i> VER TABLA DE POSICIONES COMPLETA
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
