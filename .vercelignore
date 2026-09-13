@@ -1,0 +1,12 @@
+.git
+.github
+.env
+.env.example
+tests
+node_modules
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+*.md
+docs/
