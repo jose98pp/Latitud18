@@ -18,9 +18,30 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
-// En entorno serverless de Vercel (sistema de archivos de solo lectura), redirigir almacenamiento a /tmp
+// En entorno serverless de Vercel (sistema de archivos de solo lectura), redirigir almacenamiento y caché de bootstrap a /tmp
 if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || env('VERCEL') || str_contains(dirname(__DIR__), '/var/task')) {
-    $app->useStoragePath('/tmp/storage');
+    $tmpDir = '/tmp/storage';
+    $cacheDir = "{$tmpDir}/bootstrap/cache";
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0777, true);
+    }
+    putenv("APP_PACKAGES_CACHE={$cacheDir}/packages.php");
+    putenv("APP_SERVICES_CACHE={$cacheDir}/services.php");
+    putenv("APP_CONFIG_CACHE={$cacheDir}/config.php");
+    putenv("APP_ROUTES_CACHE={$cacheDir}/routes.php");
+    putenv("APP_EVENTS_CACHE={$cacheDir}/events.php");
+    $_ENV['APP_PACKAGES_CACHE'] = "{$cacheDir}/packages.php";
+    $_ENV['APP_SERVICES_CACHE'] = "{$cacheDir}/services.php";
+    $_ENV['APP_CONFIG_CACHE'] = "{$cacheDir}/config.php";
+    $_ENV['APP_ROUTES_CACHE'] = "{$cacheDir}/routes.php";
+    $_ENV['APP_EVENTS_CACHE'] = "{$cacheDir}/events.php";
+    $_SERVER['APP_PACKAGES_CACHE'] = "{$cacheDir}/packages.php";
+    $_SERVER['APP_SERVICES_CACHE'] = "{$cacheDir}/services.php";
+    $_SERVER['APP_CONFIG_CACHE'] = "{$cacheDir}/config.php";
+    $_SERVER['APP_ROUTES_CACHE'] = "{$cacheDir}/routes.php";
+    $_SERVER['APP_EVENTS_CACHE'] = "{$cacheDir}/events.php";
+
+    $app->useStoragePath($tmpDir);
 }
 
 /*
