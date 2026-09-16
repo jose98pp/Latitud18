@@ -164,6 +164,36 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/comentarios/{id}/toggle', [ComentarioController::class, 'toggleAprobado'])->name('comentarios.toggle');
     Route::delete('/comentarios/{id}', [ComentarioController::class, 'destroy'])->name('comentarios.destroy');
 
+    // Herramientas de Mantenimiento del Sistema (cPanel / Producción)
+    Route::prefix('system')->name('system.')->group(function () {
+        Route::get('/storage-link', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('storage:link');
+                return back()->with('success', 'Enlace simbólico de storage creado exitosamente.');
+            } catch (\Throwable $e) {
+                return back()->with('error', 'Error al ejecutar storage:link: ' . $e->getMessage());
+            }
+        })->name('storage-link');
+
+        Route::get('/clear-cache', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                return back()->with('success', 'Caché optimizada y limpiada exitosamente.');
+            } catch (\Throwable $e) {
+                return back()->with('error', 'Error al limpiar caché: ' . $e->getMessage());
+            }
+        })->name('clear-cache');
+
+        Route::get('/migrate', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                return back()->with('success', 'Migraciones ejecutadas exitosamente: ' . nl2br(\Illuminate\Support\Facades\Artisan::output()));
+            } catch (\Throwable $e) {
+                return back()->with('error', 'Error al ejecutar migraciones: ' . $e->getMessage());
+            }
+        })->name('migrate');
+    });
+
     // Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
