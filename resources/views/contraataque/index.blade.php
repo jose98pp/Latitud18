@@ -278,12 +278,14 @@
                 <div class="col-md-4">
                     <div class="ca-card h-100">
                         <div style="height: 190px; position: relative; overflow: hidden;">
-                            <img src="{{ $v['imagen'] }}" alt="{{ $v['titulo'] }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
-                                <div style="width: 52px; height: 52px; background: var(--ca-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem; box-shadow: 0 0 20px rgba(255,59,48,0.6); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fas fa-play ms-1"></i>
+                            <a href="{{ route('contraataque.show', $v['id']) }}">
+                                <img src="{{ $v['imagen'] }}" alt="{{ $v['titulo'] }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
+                                    <div style="width: 52px; height: 52px; background: var(--ca-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem; box-shadow: 0 0 20px rgba(255,59,48,0.6); transition: transform 0.2s;">
+                                        <i class="fas fa-play ms-1"></i>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                             <span class="badge bg-dark position-absolute bottom-2 end-2 text-white" style="font-family: var(--ca-font-display);">{{ $v['duracion'] }}</span>
                             <span class="badge position-absolute top-2 start-2" style="background: var(--ca-volt); color: #000; font-family: var(--ca-font-display); font-weight: 800; font-size: 0.65rem;">
                                 {{ $v['categoria'] }}
@@ -291,9 +293,9 @@
                         </div>
                         <div class="p-3">
                             <h4 class="ca-title-card" style="font-size: 1rem;">
-                                <a href="#">{{ $v['titulo'] }}</a>
+                                <a href="{{ route('contraataque.show', $v['id']) }}">{{ $v['titulo'] }}</a>
                             </h4>
-                            <small class="text-muted"><i class="fas fa-eye me-1"></i>{{ $v['vistas'] }} reproducciones</small>
+                            <small class="text-muted"><i class="fas fa-eye me-1"></i>{{ $v['vistas'] }}</small>
                         </div>
                     </div>
                 </div>

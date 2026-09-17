@@ -110,7 +110,7 @@ Route::prefix('opinion')->name('opinion.')->group(function () {
 // Contra Ataque (Portal Deportivo Multi-deporte)
 Route::prefix('contraataque')->name('contraataque.')->group(function () {
     Route::get('/', [ContraAtaqueController::class, 'index'])->name('index');
-    Route::get('/noticia/{id}', [ContraAtaqueController::class, 'show'])->name('show');
+    Route::get('/noticia/{id}/{slug?}', [ContraAtaqueController::class, 'show'])->name('show');
     Route::get('/seccion/{seccion}', [ContraAtaqueController::class, 'seccion'])->name('seccion');
 });
 Route::get('/deportes', function () {

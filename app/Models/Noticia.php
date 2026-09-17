@@ -77,6 +77,11 @@ class Noticia extends Model
 
     public function getUrlAttribute(): string
     {
+        $catName = strtolower($this->category->name ?? '');
+        if (str_contains($catName, 'deport') || str_contains($catName, 'futbol') || $this->category_id == 9) {
+            return route('contraataque.show', $this->id);
+        }
+
         $categorySlug = $this->category ? \Illuminate\Support\Str::slug($this->category->name) : 'general';
         $newsSlug = \Illuminate\Support\Str::slug($this->titulo) ?: 'noticia';
         return url("/{$categorySlug}/{$newsSlug}/{$this->id}");

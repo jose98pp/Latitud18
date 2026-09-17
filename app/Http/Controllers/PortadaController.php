@@ -30,8 +30,16 @@ class PortadaController extends Controller
 
     public function showBySlug($categoria, $slug, $id)
     {
+        $noticia = Noticia::with('category')->where('id', $id)->where('publicada', true)->firstOrFail();
+
+        // Si la noticia es de la sección Deportes, redirigir a Contra Ataque para que tenga su diseño deportivo especializado
+        $catName = strtolower($noticia->category->name ?? '');
+        $catSlug = strtolower($categoria ?? '');
+        if (str_contains($catName, 'deport') || str_contains($catName, 'futbol') || str_contains($catSlug, 'deport') || str_contains($catSlug, 'futbol') || $noticia->category_id == 9) {
+            return redirect()->route('contraataque.show', $noticia->id);
+        }
+
         // Incrementar contador de vistas
-        $noticia = Noticia::where('id', $id)->where('publicada', true)->firstOrFail();
         $noticia->increment('views');
 
         $data = $this->newsService->getNewsDetailData($id);
@@ -42,6 +50,11 @@ class PortadaController extends Controller
 
     public function noticiasPorCategoria($slug, Request $request)
     {
+        $cleanSlug = strtolower(trim($slug));
+        if ($cleanSlug === 'deportes' || $cleanSlug === 'futbol' || str_contains($cleanSlug, 'deport')) {
+            return redirect()->route('contraataque.index');
+        }
+
         $perPage = (int) $request->get('per_page', 10);
         $data = $this->newsService->getCategoryPageData($slug, $perPage);
         
