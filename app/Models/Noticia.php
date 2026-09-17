@@ -128,16 +128,7 @@ class Noticia extends Model
 
     public function getYoutubeIdAttribute()
     {
-        if (empty($this->video_youtube)) {
-            return null;
-        }
-        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $this->video_youtube, $match)) {
-            return $match[1];
-        }
-        if (strlen(trim($this->video_youtube)) === 11) {
-            return trim($this->video_youtube);
-        }
-        return null;
+        return extract_youtube_id($this->video_youtube);
     }
 
     public function getYoutubeThumbnailAttribute()

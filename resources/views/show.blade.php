@@ -319,11 +319,11 @@
         @endif
 
         <!-- Video de YouTube -->
-        @if($noticia->video_youtube)
+        @if($noticia->youtube_id)
           <div style="margin-bottom:28px;">
             <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><i class="fab fa-youtube" style="color:var(--color-red);"></i> Video Relacionado</h3>
             <div style="position:relative;padding-bottom:56.25%;border-radius:2px;overflow:hidden;">
-              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/{{ $noticia->video_youtube }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/{{ $noticia->youtube_id }}?rel=0&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
           </div>
         @endif

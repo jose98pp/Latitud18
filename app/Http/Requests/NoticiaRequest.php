@@ -38,8 +38,12 @@ class NoticiaRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'video_youtube' => [
                 'nullable',
-                'url',
-                'regex:/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\/.*$/'
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value) && !extract_youtube_id($value)) {
+                        $fail('El enlace o ID de YouTube no es válido.');
+                    }
+                },
             ],
             'publicada' => 'boolean',
             'destacada_hero' => 'boolean',

@@ -1,7 +1,8 @@
 <!-- ========== MODAL: EN VIVO TV & RADIO ========== -->
 @php
   $tvActive = setting('streaming_tv_active', '1') == '1';
-  $tvYtId = setting('streaming_tv_youtube_id', 'jfKfPfyJRdk');
+  $rawTvId = setting('streaming_tv_youtube_id', 'jfKfPfyJRdk');
+  $tvYtId = extract_youtube_id($rawTvId) ?: $rawTvId;
   $tvTitle = setting('streaming_tv_title', 'UHTV En Vivo — Transmisión Digital 24/7');
   $radioActive = setting('streaming_radio_active', '1') == '1';
   $radioTitle = setting('streaming_radio_title', 'Radio Latitud 18 FM — Señal Online');
@@ -22,7 +23,7 @@
           <div class="tv-screen-frame">
             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
               @if($tvActive && !empty($tvYtId))
-                <iframe src="https://www.youtube.com/embed/{{ $tvYtId }}?autoplay=1" style="width:100%;height:100%;border:none" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/{{ $tvYtId }}?autoplay=1&mute=1&enablejsapi=1&rel=0" style="width:100%;height:100%;border:none" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe>
               @else
                 <div style="color:#94A3B8;text-align:center;padding:20px;">
                   <i class="fas fa-tv" style="font-size:3rem;margin-bottom:12px;display:block;opacity:0.4;"></i>

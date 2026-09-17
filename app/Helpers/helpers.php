@@ -26,3 +26,33 @@ if (!function_exists('setting')) {
         return SiteSetting::get($key, $default);
     }
 }
+
+if (!function_exists('extract_youtube_id')) {
+    /**
+     * Extrae de forma limpia el ID de 11 caracteres de cualquier enlace de YouTube
+     * (soporta directos /live/, /watch?v=, youtu.be/, /embed/, /shorts/, etc.)
+     *
+     * @param string|null $value
+     * @return string|null
+     */
+    function extract_youtube_id(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        // Si ya es únicamente el ID de 11 caracteres
+        if (preg_match('/^[a-zA-Z0-9_-]{11}$/', $value)) {
+            return $value;
+        }
+
+        // Si es una URL completa (soporta /live/, /watch?v=, youtu.be/, /embed/, /shorts/)
+        if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|live\/|shorts\/))([a-zA-Z0-9_-]{11})/i', $value, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+}

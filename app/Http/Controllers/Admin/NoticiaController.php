@@ -369,11 +369,7 @@ class NoticiaController extends Controller
 
     private function getYouTubeVideoID($url)
     {
-        if ($url && (Str::contains($url, 'youtube.com') || Str::contains($url, 'youtu.be'))) {
-            preg_match('/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([^\?&]+)/', $url, $matches);
-            return $matches[1] ?? null;
-        }
-        return null;
+        return extract_youtube_id($url);
     }
 
     /**

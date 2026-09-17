@@ -55,9 +55,9 @@ class ConfiguracionController extends Controller
 
         // Si el usuario pega una URL completa de YouTube en el campo ID, extraer automáticamente el ID
         if (!empty($data['streaming_tv_youtube_id'])) {
-            $yt = $data['streaming_tv_youtube_id'];
-            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $yt, $m)) {
-                $data['streaming_tv_youtube_id'] = $m[1];
+            $cleanedYtId = extract_youtube_id($data['streaming_tv_youtube_id']);
+            if ($cleanedYtId) {
+                $data['streaming_tv_youtube_id'] = $cleanedYtId;
             }
         }
 
