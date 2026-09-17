@@ -953,12 +953,21 @@
   border-radius: 2px;
 }
 
+/* Ticker default badge visibility */
+.ticker-badge-text-full {
+  display: inline;
+}
+.ticker-badge-text-short {
+  display: none;
+}
+
 /* ==========================================================================
-   RESPONSIVE
+   RESPONSIVE OVERHAUL (PORTADA)
    ========================================================================== */
 @media (max-width: 1100px) {
   .hero-grid-3cols {
     grid-template-columns: 1.3fr 1fr;
+    gap: 12px;
   }
   .hero-lo-mas-leido-col {
     grid-column: span 2;
@@ -971,6 +980,7 @@
   }
   .row-opinion-tv-split {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   .columnists-grid-4 {
     grid-template-columns: repeat(4, 1fr);
@@ -978,44 +988,133 @@
 }
 
 @media (max-width: 768px) {
+  .hero-news-section {
+    padding: 8px 0 12px;
+  }
   .hero-grid-3cols {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .hero-lo-mas-leido-col {
     grid-column: span 1;
   }
+  /* Show stacked cards below carousel on mobile instead of hiding them */
   .hero-stacked-col {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .stacked-news-card {
+    min-height: 150px;
+  }
+  .stacked-headline {
+    font-size: 0.85rem;
+    -webkit-line-clamp: 2;
   }
   .cat-row-3cols {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .cat-row-4cols {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .columnists-grid-4 {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   .block-layout-split {
     grid-template-columns: 1fr;
   }
   .row-opinion-tv-split {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .tv-cards-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+  .hero-carousel-wrapper,
+  .hero-carousel-inner,
+  .hero-main-media {
+    min-height: 270px;
+    height: 290px;
+  }
+  .hero-main-overlay-info {
+    padding: 12px 14px 10px;
+  }
+  .hero-main-headline {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    -webkit-line-clamp: 2;
+    margin-bottom: 4px;
+  }
+  .hero-main-subhead {
+    display: none;
+  }
+  .hero-car-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 0.72rem;
+  }
+  .hero-car-arrow.prev { left: 6px; }
+  .hero-car-arrow.next { right: 6px; }
+  .hero-car-indicators {
+    bottom: 10px;
+    right: 12px;
+  }
+  
+  /* Compact ticker */
+  .ticker-strip-bar {
+    margin: 8px 0 16px;
+  }
+  .ticker-label-badge {
+    padding: 8px 10px;
+    font-size: 0.65rem;
+  }
+  .ticker-badge-text-full {
+    display: none !important;
+  }
+  .ticker-badge-text-short {
+    display: inline !important;
+  }
+  .ticker-ver-mas {
+    padding: 0 8px;
+    font-size: 0.65rem;
+  }
+
   .cat-row-3cols {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .tv-cards-grid-3 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-stacked-col {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .cat-row-4cols {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
   .columnists-grid-4 {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   .ticker-snippet {
     font-size: 0.72rem;
-    padding: 0 10px;
+    padding: 0 8px;
+  }
+  .ad-banner-strip-block {
+    padding: 12px 8px;
+    margin: 8px 0 20px;
   }
 }

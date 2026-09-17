@@ -32,7 +32,19 @@
       grid-template-columns: 1fr !important;
     }
     .cat-banner-title {
-      font-size: 2.2rem !important;
+      font-size: clamp(1.8rem, 6vw, 2.4rem) !important;
+      word-break: break-word;
+    }
+    .cat-tags-filter-bar {
+      overflow-x: auto;
+      white-space: nowrap;
+      flex-wrap: nowrap !important;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .cat-tags-filter-bar::-webkit-scrollbar {
+      display: none;
     }
   }
 </style>

@@ -6,7 +6,7 @@
 <div class="container py-2">
 
     <!-- Header de Sección -->
-    <div class="p-4 mb-4 rounded" style="background: linear-gradient(90deg, #111827 0%, #162032 100%); border-left: 5px solid var(--ca-volt); border-top: 1px solid var(--ca-border); border-right: 1px solid var(--ca-border); border-bottom: 1px solid var(--ca-border);">
+    <div class="p-3 p-md-4 mb-4 rounded" style="background: linear-gradient(90deg, #111827 0%, #162032 100%); border-left: 5px solid var(--ca-volt); border-top: 1px solid var(--ca-border); border-right: 1px solid var(--ca-border); border-bottom: 1px solid var(--ca-border);">
         <div class="d-flex align-items-center gap-2 mb-1">
             <a href="{{ route('contraataque.index') }}" class="text-muted small"><i class="fas fa-arrow-left me-1"></i> Portada Contra Ataque</a>
             <span class="text-muted small">/</span>

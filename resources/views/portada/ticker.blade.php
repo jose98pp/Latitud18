@@ -3,7 +3,9 @@
      ========================================================================= --}}
 <div class="ticker-strip-bar">
   <div class="ticker-label-badge">
-    <i class="fa-solid fa-circle"></i> ÚLTIMAS NOTICIAS
+    <i class="fa-solid fa-circle"></i> 
+    <span class="ticker-badge-text-full">ÚLTIMAS NOTICIAS</span>
+    <span class="ticker-badge-text-short">AL DÍA</span>
   </div>
   <div class="ticker-news-items-row" id="tickerRow">
     @foreach($ultimasNoticias->take(10) as $ultima)

@@ -144,10 +144,22 @@
   }
   @media (max-width: 640px) {
     .article-main-column {
-      padding: 18px 14px !important;
+      padding: 16px 12px !important;
     }
     .article-page-headline {
-      font-size: 2.2rem !important;
+      font-size: clamp(1.75rem, 6vw, 2.4rem) !important;
+      line-height: 1.1 !important;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .article-page-lead {
+      font-size: 0.95rem !important;
+      line-height: 1.55 !important;
+      padding: 12px 14px !important;
+    }
+    .article-author-byline-bar {
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .article-more-grid {
       grid-template-columns: 1fr !important;
@@ -157,10 +169,19 @@
     }
     .reactions-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
     .reading-toolbar {
       flex-direction: column;
       align-items: stretch;
+      gap: 10px;
+    }
+    .photo-gallery-section {
+      padding: 12px !important;
+    }
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+      gap: 8px !important;
     }
   }
   @media print {

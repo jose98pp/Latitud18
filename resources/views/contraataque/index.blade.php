@@ -26,7 +26,7 @@
                 $heroSlug = \Illuminate\Support\Str::slug($heroTitulo) ?: 'noticia';
                 $heroUrl = is_object($heroNews) && isset($heroNews->url) ? $heroNews->url : route('contraataque.show', ['id' => $heroId, 'slug' => $heroSlug]);
             @endphp
-            <div class="ca-card h-100 position-relative" style="min-height: 480px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;">
+            <div class="ca-card h-100 position-relative ca-hero-main-card" style="min-height: 480px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;">
                 <!-- Imagen de fondo con overlay degradado oscuro -->
                 <div style="position: absolute; inset: 0; z-index: 1;">
                     <a href="{{ $heroUrl }}">
@@ -41,7 +41,7 @@
                 </div>
 
                 <!-- Contenido sobre la imagen -->
-                <div style="position: relative; z-index: 2; padding: 28px;">
+                <div class="ca-hero-content" style="position: relative; z-index: 2; padding: 28px;">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge" style="background: var(--ca-red); color: #fff; font-family: var(--ca-font-display); font-size: 0.75rem; letter-spacing: 1px; font-weight: 900;">
                             🔥 EL GOLPE DE LA FECHA

@@ -331,10 +331,32 @@
         }
 
         /* Responsiveness */
+        .ca-back-btn .back-btn-text-full { display: inline; }
+        .ca-back-btn .back-btn-text-short { display: none; }
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
         @media (max-width: 768px) {
-            .ca-brand-title { font-size: 1.6rem; }
-            .ca-logo-img { height: 40px; }
-            .ca-title-hero { font-size: 1.5rem; }
+            .ca-brand-title { font-size: 1.5rem; }
+            .ca-logo-img { height: 38px; }
+            .ca-title-hero { font-size: clamp(1.35rem, 4.5vw, 1.8rem); line-height: 1.15; }
+            .ca-header-top { gap: 8px; }
+            .ca-back-btn .back-btn-text-full { display: none; }
+            .ca-back-btn .back-btn-text-short { display: inline !important; }
+            .ca-hero-main-card { min-height: 360px !important; }
+            .ca-hero-content { padding: 18px 14px !important; }
+        }
+        @media (max-width: 480px) {
+            .ca-brand-motto { display: none; }
+            .ca-brand-title { font-size: 1.25rem; }
+            .ca-logo-img { height: 32px; }
+            .ca-nav-item { font-size: 0.8rem; padding: 5px 8px; }
+            .ca-footer { padding: 30px 0 16px; margin-top: 40px; }
+            .ca-hero-main-card { min-height: 320px !important; }
+            .ca-hero-content { padding: 14px 10px !important; }
         }
     </style>
     @yield('styles')
@@ -372,7 +394,9 @@
             <div class="ca-header-top">
                 <!-- Return link to Latitud 18 -->
                 <a href="{{ route('portada') }}" class="ca-back-btn" title="Volver al portal principal de noticias">
-                    <i class="fas fa-arrow-left"></i> Volver a Latitud 18
+                    <i class="fas fa-arrow-left"></i> 
+                    <span class="back-btn-text-full">Volver a Latitud 18</span>
+                    <span class="back-btn-text-short">Portada</span>
                 </a>
 
                 <!-- Brand Logo & Name -->
@@ -395,7 +419,7 @@
             </div>
 
             <!-- Sports Sub-Navigation -->
-            <nav class="ca-nav-bar">
+            <nav class="ca-nav-bar" style="-webkit-overflow-scrolling:touch; scrollbar-width:none;">
                 <a href="{{ route('contraataque.index') }}" class="ca-nav-item {{ request()->routeIs('contraataque.index') ? 'active' : '' }}">
                     <i class="fas fa-home me-1"></i> Portada
                 </a>

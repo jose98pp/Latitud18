@@ -1,7 +1,7 @@
 <!-- FOOTER -->
 <footer class="site-main-footer" style="background:var(--color-navy);border-top:4px solid var(--color-red);color:#94A3B8;padding:48px 0 24px;transition:background .3s">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1.8fr 1.2fr 1.2fr 1fr 1.5fr;gap:32px">
+    <div class="site-footer-grid">
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
           <div><span style="font-family:var(--font-title-anton);font-size:1.5rem;color:#fff">{{ strtoupper(setting('site_name', 'LATITUD 18')) }}</span></div>

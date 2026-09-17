@@ -32,14 +32,19 @@
     --color-border: #1E293B;
 }
 
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
+html, body {
     overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+}
+
+body {
     font-family: var(--font-body);
     background: var(--color-bg-page);
     color: var(--color-text-main);
@@ -50,8 +55,10 @@ body {
 
 .container {
     max-width: 1240px;
+    width: 100%;
     margin: 0 auto;
     padding: 0 16px;
+    box-sizing: border-box;
 }
 
 [data-theme="dark"] .site-top-bar {
@@ -425,3 +432,327 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
 }
+
+/* ==========================================================================
+   RESPONSIVE HEADER & TOPBAR
+   ========================================================================== */
+.site-top-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.site-top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+}
+.topbar-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+@media (max-width: 640px) {
+    .topbar-socials {
+        display: none !important;
+    }
+    .site-top-bar-inner {
+        justify-content: center;
+    }
+}
+
+.site-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.site-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    min-width: 0;
+    flex-shrink: 1;
+}
+.site-brand-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+.site-brand-logo .brand-main {
+    font-family: var(--font-title-anton);
+    font-size: clamp(1.8rem, 5.5vw, 2.6rem);
+    color: var(--color-navy);
+    line-height: 1;
+    letter-spacing: -0.5px;
+}
+[data-theme="dark"] .site-brand-logo .brand-main {
+    color: #fff;
+}
+.site-brand-logo .brand-num {
+    font-family: var(--font-title-anton);
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    background: var(--color-red);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 2px;
+    line-height: 1;
+}
+.site-brand-slogan {
+    font-family: var(--font-title-montserrat);
+    font-size: .55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+}
+@media (max-width: 480px) {
+    .site-brand-slogan {
+        display: none;
+    }
+}
+
+.site-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 2px;
+    font-family: var(--font-title-montserrat);
+    font-weight: 700;
+    font-size: .72rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.header-btn-search {
+    background: var(--color-navy-subtle);
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+}
+.header-btn-search:hover {
+    border-color: var(--color-red);
+    color: var(--color-red);
+}
+.header-btn-live {
+    background: var(--color-red);
+    color: #fff;
+    font-weight: 800;
+    border: none;
+}
+.header-btn-live:hover {
+    background: var(--color-red-dark);
+}
+.header-btn-sports {
+    background: linear-gradient(135deg, #090d16 0%, #162032 100%);
+    border: 1px solid #00FF87;
+    color: #00FF87;
+    font-weight: 900;
+    box-shadow: 0 0 10px rgba(0,255,135,0.25);
+}
+.header-btn-sports:hover {
+    background: #00FF87;
+    color: #000;
+}
+.header-btn-newspaper {
+    background: var(--color-navy);
+    color: #fff;
+    font-weight: 800;
+}
+.header-btn-theme {
+    background: var(--color-navy-subtle);
+    color: var(--color-navy);
+    border: 1px solid var(--color-border);
+    padding: 7px 9px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: .85rem;
+    transition: all .2s;
+}
+[data-theme="dark"] .header-btn-theme {
+    color: #fff;
+    border-color: var(--color-border);
+    background: var(--color-navy-subtle);
+}
+.header-mobile-toggle-btn {
+    display: none;
+    background: var(--color-navy);
+    color: #fff;
+    border: 1px solid var(--color-border);
+    padding: 7px 11px;
+    border-radius: 2px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+.header-mobile-toggle-btn:hover {
+    background: var(--color-red);
+}
+
+@media (max-width: 991px) {
+    .header-btn-newspaper,
+    .header-btn-pwa {
+        display: none !important;
+    }
+    .header-btn-search .btn-label,
+    .header-btn-sports .btn-label {
+        display: none;
+    }
+    .header-btn-search,
+    .header-btn-sports {
+        padding: 7px 10px;
+    }
+    .header-mobile-toggle-btn {
+        display: inline-flex !important;
+    }
+}
+@media (max-width: 520px) {
+    .header-btn-live .btn-label {
+        display: none;
+    }
+    .header-btn-live {
+        padding: 7px 10px;
+    }
+    .site-header-actions {
+        gap: 6px;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE NAVBAR & DRAWER
+   ========================================================================== */
+.site-nav-categories {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    scrollbar-width: none;
+}
+.site-nav-categories::-webkit-scrollbar {
+    display: none;
+}
+#mobileMenuToggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 10px 14px;
+}
+@media (max-width: 991px) {
+    #mobileMenuToggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE FOOTER
+   ========================================================================== */
+.site-footer-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr 1.2fr 1fr 1.5fr;
+    gap: 32px;
+}
+@media (max-width: 1024px) {
+    .site-footer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    .site-footer-grid > div:first-child {
+        grid-column: span 3;
+    }
+}
+@media (max-width: 768px) {
+    .site-footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .site-footer-grid > div:first-child {
+        grid-column: span 2;
+    }
+}
+@media (max-width: 480px) {
+    .site-footer-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+    .site-footer-grid > div:first-child {
+        grid-column: span 1;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE MODAL SYSTEM & LIVE STUDIO
+   ========================================================================== */
+@media (max-width: 991px) {
+    .studio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    .live-chat-panel {
+        max-height: 320px !important;
+    }
+    .radio-studio-card {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+}
+@media (max-width: 640px) {
+    .live-modal-header {
+        padding: 10px 14px !important;
+    }
+    .live-modal-header h2 {
+        font-size: 1rem !important;
+    }
+    .lower-third-overlay {
+        bottom: 8px !important;
+        left: 8px !important;
+        right: 8px !important;
+        padding: 8px 12px !important;
+    }
+    .lt-headline {
+        font-size: 1.05rem !important;
+    }
+    .lt-subheadline {
+        font-size: .68rem !important;
+    }
+    .studio-control-bar {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        padding: 8px 10px !important;
+    }
+    .modal-overlay {
+        padding-top: 24px !important;
+    }
+    .modal-reader-card {
+        width: 95% !important;
+        margin-bottom: 24px !important;
+    }
+}
+
