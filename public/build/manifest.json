@@ -1,0 +1,49 @@
+{
+  "_vendor-ZF5XZ3KS.js": {
+    "file": "js/chunks/vendor-ZF5XZ3KS.js",
+    "name": "vendor"
+  },
+  "public/images/banner.png": {
+    "file": "images/banner-BpWHoSL3.png",
+    "src": "public/images/banner.png"
+  },
+  "resources/css/app.css": {
+    "file": "css/core/app-BI8FNLPZ.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/browser-compatibility.css": {
+    "file": "css/compatibility/browser-compat-B-Qk_zdV.css",
+    "src": "resources/css/browser-compatibility.css",
+    "isEntry": true
+  },
+  "resources/css/dark-mode.css": {
+    "file": "css/themes/dark-mode-BFkuSO7S.css",
+    "src": "resources/css/dark-mode.css",
+    "isEntry": true
+  },
+  "resources/css/main-layout.css": {
+    "file": "css/main-layout-nihhzEm6.css",
+    "src": "resources/css/main-layout.css",
+    "isEntry": true
+  },
+  "resources/css/portada.css": {
+    "file": "css/portada-BOIXuUEB.css",
+    "src": "resources/css/portada.css",
+    "isEntry": true
+  },
+  "resources/css/show-dark-mode.css": {
+    "file": "css/pages/show-dark-mode-g0MjTuKc.css",
+    "src": "resources/css/show-dark-mode.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "js/app-B4hVz3Vk.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-ZF5XZ3KS.js"
+    ]
+  }
+}
