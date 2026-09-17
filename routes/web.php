@@ -29,6 +29,35 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 |--------------------------------------------------------------------------
 */
 
+// Servidor de archivos de storage (Fallback transparente para cPanel y hosting compartido)
+Route::get('/storage/{path}', function ($path) {
+    // Sanitizar path contra Directory Traversal
+    $cleanSubpath = str_replace(['..', "\0"], '', $path);
+    $fullPath = storage_path('app/public/' . $cleanSubpath);
+
+    if (file_exists($fullPath) && !is_dir($fullPath)) {
+        $mime = mime_content_type($fullPath) ?: 'application/octet-stream';
+        return response()->file($fullPath, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'public, max-age=2592000, immutable',
+        ]);
+    }
+
+    // Si no existe el archivo específico, verificar si es imagen y responder con default
+    $ext = strtolower(pathinfo($cleanSubpath, PATHINFO_EXTENSION));
+    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])) {
+        $fallback = public_path('images/default-news.svg');
+        if (file_exists($fallback)) {
+            return response()->file($fallback, [
+                'Content-Type' => 'image/svg+xml',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+    }
+
+    abort(404);
+})->where('path', '.*')->name('storage.fallback');
+
 // Portada
 Route::get('/', [PortadaController::class, 'index'])->name('portada');
 
@@ -169,9 +198,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/storage-link', function () {
             try {
                 \Illuminate\Support\Facades\Artisan::call('storage:link');
-                return back()->with('success', 'Enlace simbólico de storage creado exitosamente.');
+                $out = \Illuminate\Support\Facades\Artisan::output();
+                return response('<pre style="background:#0f172a;color:#10b981;padding:24px;border-radius:8px;font-family:monospace;font-size:15px;line-height:1.6;">'
+                    . "=== RESULTADO: php artisan storage:link ===\n\n"
+                    . htmlspecialchars($out ?: "Enlace simbólico creado exitosamente.\n")
+                    . "\n\n[ OK ] Enlace simbólico de almacenamiento configurado.\n\n"
+                    . '<a href="/admin/dashboard" style="color:#38bdf8;font-weight:bold;">&larr; Volver al Panel Admin</a> | '
+                    . '<a href="/" style="color:#38bdf8;font-weight:bold;">Ver Portal</a>'
+                    . '</pre>');
             } catch (\Throwable $e) {
-                return back()->with('error', 'Error al ejecutar storage:link: ' . $e->getMessage());
+                return response('<pre style="background:#0f172a;color:#ef4444;padding:24px;border-radius:8px;font-family:monospace;font-size:15px;line-height:1.6;">'
+                    . "=== AVISO en storage:link ===\n\n"
+                    . htmlspecialchars($e->getMessage())
+                    . "\n\n(No te preocupes: el sistema cuenta con entrega directa de imágenes para que se muestren sin depender del enlace simbólico)\n\n"
+                    . '<a href="/admin/dashboard" style="color:#38bdf8;font-weight:bold;">&larr; Volver al Panel Admin</a>'
+                    . '</pre>');
             }
         })->name('storage-link');
 

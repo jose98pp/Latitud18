@@ -21,10 +21,25 @@ class ImageUrlHelper
             return self::getDefaultImageUrl();
         }
 
+        // Si ya es una URL completa (http://, https://, //)
+        if (preg_match('#^(https?:)?//#i', $imagePath)) {
+            return $imagePath;
+        }
+
+        // Si es un archivo estático en public/ (ej: images/betania.jpg, images/banner1.jpg)
+        $cleanPath = ltrim(str_replace('\\', '/', $imagePath), '/');
+        if (file_exists(public_path($cleanPath))) {
+            return asset($cleanPath);
+        }
+
         $resolvedPath = self::resolveImagePath($imagePath);
 
-        // Si no se pudo resolver la imagen, devolver imagen por defecto
+        // Si no se pudo resolver pero tiene ruta definida, usar el path limpio para permitir entrega vía fallback
         if (!$resolvedPath) {
+            $normalized = preg_replace('#^(storage|public)/#', '', $cleanPath) ?? $cleanPath;
+            if (file_exists(storage_path('app/public/' . $normalized))) {
+                return asset('storage/' . $normalized);
+            }
             return self::getDefaultImageUrl();
         }
 
@@ -57,7 +72,7 @@ class ImageUrlHelper
             return null;
         }
 
-        if (Storage::disk('public')->exists($normalizedPath)) {
+        if (Storage::disk('public')->exists($normalizedPath) || file_exists(storage_path('app/public/' . $normalizedPath))) {
             return $normalizedPath;
         }
 
@@ -70,14 +85,11 @@ class ImageUrlHelper
         }
 
         foreach ($candidates as $candidate) {
-            if (Storage::disk('public')->exists($candidate)) {
+            if (Storage::disk('public')->exists($candidate) || file_exists(storage_path('app/public/' . $candidate))) {
                 return $candidate;
             }
         }
 
-        // Evitar escanear todo el disco (puede consumir mucha memoria en discos grandes).
-        // En su lugar solo intentamos rutas deterministas construidas arriba.
-        // Si no se encuentra, devolvemos null para que el caller pueda decidir (migrator, logs, etc.).
         return null;
     }
 
