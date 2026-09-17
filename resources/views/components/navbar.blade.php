@@ -3,7 +3,10 @@
   <div class="container" style="display:flex;align-items:center;justify-content:space-between">
     <ul style="display:flex;align-items:center;gap:0;list-style:none;padding:0;margin:0;white-space:nowrap;overflow-x:auto;flex:1;scrollbar-width:none">
       <li><a href="/" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fas fa-home" style="margin-right:4px"></i> INICIO</a></li>
-      @forelse($categorias ?? [] as $categoria)
+      @php
+        $menuCats = $navCategorias ?? $categorias ?? \App\Models\Category::orderBy('name', 'asc')->get();
+      @endphp
+      @forelse($menuCats as $categoria)
         @php
           $isSports = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
         @endphp
@@ -42,7 +45,7 @@
 
     <div style="margin-top:12px">
       <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);font-weight:700;margin-bottom:8px">Secciones</p>
-      @forelse($categorias ?? [] as $categoria)
+      @forelse($menuCats as $categoria)
         @php
           $isSportsMob = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
         @endphp

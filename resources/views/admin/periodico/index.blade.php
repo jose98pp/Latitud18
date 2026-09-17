@@ -4,12 +4,22 @@
 @section('title', 'Editor InDesign — ' . ($currentEdicion['titulo'] ?? 'Periódico Digital'))
 
 @section('page-title')
-<div class="d-flex align-items-center gap-2" style="font-size:0.85rem;">
-    <i class="fas fa-newspaper text-danger"></i>
-    <span style="font-weight:800;letter-spacing:0.3px;">Editor de Maquetación InDesign</span>
-    <span id="pageStatusBadge" class="badge {{ !empty($currentEdicion['publicada']) ? 'bg-success' : 'bg-secondary' }}" style="font-size:0.7rem;">
-        {{ !empty($currentEdicion['publicada']) ? '✓ Publicada' : '⬤ Borrador' }}
-    </span>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100" style="font-size:0.85rem;">
+    <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-newspaper text-danger"></i>
+        <span style="font-weight:800;letter-spacing:0.3px;">Editor de Maquetación InDesign</span>
+        <span id="pageStatusBadge" class="badge {{ !empty($currentEdicion['publicada']) ? 'bg-success' : 'bg-secondary' }}" style="font-size:0.7rem;">
+            {{ !empty($currentEdicion['publicada']) ? '✓ Publicada' : '⬤ Borrador' }}
+        </span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-success btn-save-periodico fw-bold d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" onclick="saveEdicionLayout(true)" title="Guardar cambios de la edición (Ctrl+S)">
+            <i class="fas fa-save"></i> <span>Guardar Periódico</span>
+        </button>
+        <a href="{{ route('periodico.public.show', $currentEdicion['id']) }}" target="_blank" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
+            <i class="fas fa-external-link-alt"></i> Ver Lector
+        </a>
+    </div>
 </div>
 @endsection
 
@@ -64,7 +74,11 @@
   gap: 6px;
   padding: 0 12px;
   border-bottom: 1px solid var(--id-border);
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
+.id-menubar::-webkit-scrollbar { height: 4px; }
+.id-menubar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
 .id-menubar-title {
   font-weight: 800;
@@ -920,6 +934,18 @@
       @endforeach
     </select>
 
+    {{-- BOTÓN PRINCIPAL DE GUARDAR DESTACADO (Siempre visible y accesible) --}}
+    <button class="id-btn id-btn-success" id="mainSaveBtn" onclick="saveEdicionLayout(true)" style="background:#16a34a;border-color:#15803d;color:#fff;font-weight:900;padding:5px 14px;box-shadow:0 0 10px rgba(22,163,74,0.35);" title="Guardar cambios de la edición (Ctrl+S)">
+      <i class="fas fa-save"></i> <span>GUARDAR</span>
+    </button>
+
+    {{-- Indicador de guardado --}}
+    <div class="id-save-indicator" id="saveIndicator" style="margin-left:4px;margin-right:6px;">
+      <i class="fas fa-check-circle"></i> <span>Al día</span>
+    </div>
+
+    <div class="id-menubar-sep"></div>
+
     {{-- Selector de Formato de Papel --}}
     <select class="id-format-select" id="formatSelect" onchange="changePaperFormat(this.value)" title="Formato de página">
       <option value="tabloid" selected>Tabloide Moderno (720 × 1040)</option>
@@ -960,24 +986,15 @@
       <i class="fas {{ !empty($currentEdicion['publicada']) ? 'fa-check-circle' : 'fa-globe' }}"></i>
       <span id="publishBtnLabel">{{ !empty($currentEdicion['publicada']) ? 'Publicado' : 'Publicar Edición' }}</span>
     </button>
-
-    {{-- Guardar cambios --}}
-    <button class="id-btn id-btn-primary" onclick="saveEdicionLayout(false)">
-      <i class="fas fa-save"></i> Guardar
-    </button>
-
-    {{-- Indicador de guardado --}}
-    <div class="id-save-indicator" id="saveIndicator">
-      <i class="fas fa-check-circle"></i> <span>Al día</span>
-    </div>
   </div>
 
   {{-- ── 2. CONTROL BAR (FORMATTING & GEOMETRY) ── --}}
   <div class="id-controlbar">
-    {{-- Undo / Redo --}}
+    {{-- Undo / Redo / Guardar Rápido --}}
     <div class="id-control-group">
       <button class="id-ctrl-btn" onclick="undoAction()" title="Deshacer (Ctrl+Z)"><i class="fas fa-undo"></i></button>
       <button class="id-ctrl-btn" onclick="redoAction()" title="Rehacer (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+      <button class="id-ctrl-btn" onclick="saveEdicionLayout(true)" title="Guardar cambios (Ctrl+S)" style="color:#4ade80;"><i class="fas fa-save"></i></button>
     </div>
 
     {{-- Zoom Controls --}}
@@ -2381,6 +2398,13 @@ function redoAction() {
 
 function setupKeyboard() {
     document.addEventListener('keydown', (e) => {
+        // Ctrl+S o Cmd+S para Guardar en cualquier momento
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+            saveEdicionLayout(true);
+            return;
+        }
+
         if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
         if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoAction(); }
@@ -2465,7 +2489,16 @@ function saveEdicionLayout(showSuccessToast = true) {
     });
 
     const ind = document.getElementById('saveIndicator');
-    ind.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
+    if (ind) {
+        ind.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
+        ind.style.color = '#38bdf8';
+    }
+
+    const saveBtns = document.querySelectorAll('#mainSaveBtn, .btn-save-periodico');
+    saveBtns.forEach(btn => {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
+    });
 
     fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}`, {
         method: 'PUT',
@@ -2479,14 +2512,33 @@ function saveEdicionLayout(showSuccessToast = true) {
     .then(r => r.json())
     .then(data => {
         hasUnsavedChanges = false;
-        ind.innerHTML = '<i class="fas fa-check-circle" style="color:#4ade80;"></i> <span>Al día</span>';
-        ind.style.color = '#4ade80';
-        if (showSuccessToast) showToast('Edición guardada exitosamente', 'success');
+        if (ind) {
+            ind.innerHTML = '<i class="fas fa-check-circle" style="color:#4ade80;"></i> <span>Al día</span>';
+            ind.style.color = '#4ade80';
+        }
+        saveBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> <span>Guardar Periódico</span>';
+        });
+        const mainBtn = document.getElementById('mainSaveBtn');
+        if (mainBtn) mainBtn.innerHTML = '<i class="fas fa-save"></i> <span>GUARDAR</span>';
+
+        if (showSuccessToast) showToast('¡Edición guardada exitosamente!', 'success');
     })
     .catch(err => {
         console.error(err);
-        ind.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> <span>Error</span>';
-        showToast('Error al guardar la edición', 'error');
+        if (ind) {
+            ind.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> <span>Error</span>';
+            ind.style.color = '#ef4444';
+        }
+        saveBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> <span>Guardar Periódico</span>';
+        });
+        const mainBtn = document.getElementById('mainSaveBtn');
+        if (mainBtn) mainBtn.innerHTML = '<i class="fas fa-save"></i> <span>GUARDAR</span>';
+
+        showToast('Error al guardar la edición. Verifica tu conexión.', 'error');
     });
 }
 
@@ -2534,5 +2586,12 @@ function showToast(msg, type = 'success') {
     toast.classList.add('show');
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
 }
+
+// Auto-guardado en segundo plano cada 60 segundos si hay cambios pendientes
+setInterval(() => {
+    if (hasUnsavedChanges) {
+        saveEdicionLayout(false);
+    }
+}, 60000);
 </script>
 @endsection

@@ -30,7 +30,10 @@
       <div>
         <h4 style="font-family:var(--font-title-montserrat);font-weight:900;color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px">Secciones</h4>
         <ul style="list-style:none;padding:0;margin:0">
-          @forelse($categorias ?? [] as $categoria)
+          @php
+            $footerCats = $navCategorias ?? $categorias ?? \App\Models\Category::orderBy('name', 'asc')->get();
+          @endphp
+          @forelse($footerCats as $categoria)
             <li style="margin-bottom:8px"><a href="{{ route('categoria.noticias', $categoria->slug) }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'">{{ $categoria->name }}</a></li>
           @empty
             @foreach(['politica' => 'Política','pais' => 'País','santa-cruz' => 'Santa Cruz','economia' => 'Economía'] as $cSlug => $cat)

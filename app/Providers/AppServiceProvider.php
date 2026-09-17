@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Compartir banners con todas las vistas (solo en peticiones web, no en consola/tests)
+        // Compartir banners y categorías con todas las vistas (solo en peticiones web, no en consola/tests)
         if (!$this->app->runningInConsole()) {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasTable('banners')) {
@@ -45,9 +45,21 @@ class AppServiceProvider extends ServiceProvider
                     
                     \Illuminate\Support\Facades\View::share('banners', $banners);
                 }
+
+                if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+                    \Illuminate\Support\Facades\View::composer(
+                        ['components.navbar', 'components.footer', 'layouts.main', 'portada', 'categoria.noticias'],
+                        function ($view) {
+                            $navCategorias = \Illuminate\Support\Facades\Cache::remember('site_nav_categories', 3600, function () {
+                                return \App\Models\Category::orderBy('name', 'asc')->get();
+                            });
+                            $view->with('navCategorias', $navCategorias);
+                        }
+                    );
+                }
             } catch (\Exception $e) {
                 // Si falla (ej. durante migración), no detener la app
-                \Illuminate\Support\Facades\Log::error('Error loading banners: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Error loading shared view data: ' . $e->getMessage());
                 \Illuminate\Support\Facades\View::share('banners', collect());
             }
         }

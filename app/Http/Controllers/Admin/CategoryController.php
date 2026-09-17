@@ -63,6 +63,9 @@ class CategoryController extends Controller
             $this->sanitizationService->sanitizeContent($request->descripcion) : null;
         $categories->save();
 
+        \Illuminate\Support\Facades\Cache::forget('site_nav_categories');
+        \Illuminate\Support\Facades\Cache::forget('homepage_data');
+
         $successMessage = 'Categoría creada con éxito.';
         if ($request->descripcion && !empty($warnings ?? [])) {
             $successMessage .= ' Nota: Se removió contenido potencialmente peligroso por seguridad.';
@@ -111,6 +114,9 @@ class CategoryController extends Controller
             $this->sanitizationService->sanitizeContent($request->descripcion) : null;
         $categories->save();
 
+        \Illuminate\Support\Facades\Cache::forget('site_nav_categories');
+        \Illuminate\Support\Facades\Cache::forget('homepage_data');
+
         $successMessage = 'Categoría actualizada con éxito.';
         if ($request->descripcion && !empty($warnings ?? [])) {
             $successMessage .= ' Nota: Se removió contenido potencialmente peligroso por seguridad.';
@@ -124,10 +130,14 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         if ($category->noticias()->exists()) { // Verificar si hay noticias asociadas
-        return redirect()->route('admin.categorias.index')->withErrors('No se puede eliminar la categoría porque tiene noticias asociadas.');
-    }
+            return redirect()->route('admin.categorias.index')->withErrors('No se puede eliminar la categoría porque tiene noticias asociadas.');
+        }
 
         $category->delete();
+
+        \Illuminate\Support\Facades\Cache::forget('site_nav_categories');
+        \Illuminate\Support\Facades\Cache::forget('homepage_data');
+
         return redirect()->route('admin.categorias.index')->with('success', 'Categoría eliminada con éxito.');
     }  
     
