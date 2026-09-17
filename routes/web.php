@@ -67,31 +67,17 @@ Route::get('/buscar', [PortadaController::class, 'search'])->name('search');
 // Sitemap XML para buscadores (Google, Bing)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
-// Categorías por Slug (e.g. /categoria/politica, /categoria/santa-cruz)
-Route::get('/categoria/{slug}', [PortadaController::class, 'noticiasPorCategoria'])->name('categoria.noticias');
-
-// Redirección canónica de noticias por ID -> /{categoria}/{slug}/{id}
-Route::get('/noticia/{id}', [PortadaController::class, 'show'])->name('show');
-
-// Detalle de Noticia SEO Canónico: /{categoria}/{titulo-slug}/{id}
-Route::get('/{categoria}/{slug}/{id}', [PortadaController::class, 'showBySlug'])
-    ->name('noticias.show.slug')
-    ->where('id', '[0-9]+');
-
-/*
-|--------------------------------------------------------------------------
-| 2. INTERACCIONES PÚBLICAS (COMENTARIOS, REACCIONES, NEWSLETTER)
-|--------------------------------------------------------------------------
-*/
-Route::post('/noticia/{id}/comentarios', [ComentarioPublicController::class, 'store'])->name('noticias.comentarios.store');
-Route::post('/noticia/{id}/reaccionar', [ReaccionPublicController::class, 'react'])->name('noticias.react');
-Route::post('/newsletter/suscribir', [NewsletterPublicController::class, 'subscribe'])->name('newsletter.subscribe');
-
-/*
-|--------------------------------------------------------------------------
-| 3. PORTALES ESPECIALIZADOS
-|--------------------------------------------------------------------------
-*/
+// Contra Ataque (Portal Deportivo Multi-deporte)
+Route::prefix('contraataque')->name('contraataque.')->group(function () {
+    Route::get('/', [ContraAtaqueController::class, 'index'])->name('index');
+    Route::get('/seccion/{seccion}', [ContraAtaqueController::class, 'seccion'])->name('seccion');
+    Route::get('/noticia/{id}/{slug?}', [ContraAtaqueController::class, 'show'])
+        ->name('show')
+        ->where('id', '[0-9]+');
+});
+Route::get('/deportes', function () {
+    return redirect()->route('contraataque.index');
+})->name('deportes.redirect');
 
 // Periódico Digital Tabloide
 Route::prefix('periodico')->name('periodico.public.')->group(function () {
@@ -107,15 +93,26 @@ Route::prefix('opinion')->name('opinion.')->group(function () {
     Route::get('/articulo/{id}', [OpinionPublicController::class, 'articulo'])->name('articulo');
 });
 
-// Contra Ataque (Portal Deportivo Multi-deporte)
-Route::prefix('contraataque')->name('contraataque.')->group(function () {
-    Route::get('/', [ContraAtaqueController::class, 'index'])->name('index');
-    Route::get('/noticia/{id}/{slug?}', [ContraAtaqueController::class, 'show'])->name('show');
-    Route::get('/seccion/{seccion}', [ContraAtaqueController::class, 'seccion'])->name('seccion');
-});
-Route::get('/deportes', function () {
-    return redirect()->route('contraataque.index');
-})->name('deportes.redirect');
+// Categorías por Slug (e.g. /categoria/politica, /categoria/santa-cruz)
+Route::get('/categoria/{slug}', [PortadaController::class, 'noticiasPorCategoria'])->name('categoria.noticias');
+
+// Redirección canónica de noticias por ID -> /{categoria}/{slug}/{id}
+Route::get('/noticia/{id}', [PortadaController::class, 'show'])->name('show');
+
+// Detalle de Noticia SEO Canónico: /{categoria}/{titulo-slug}/{id}
+Route::get('/{categoria}/{slug}/{id}', [PortadaController::class, 'showBySlug'])
+    ->name('noticias.show.slug')
+    ->where('id', '[0-9]+')
+    ->where('categoria', '^(?!contraataque|periodico|opinion|admin|storage).*$');
+
+/*
+|--------------------------------------------------------------------------
+| 2. INTERACCIONES PÚBLICAS (COMENTARIOS, REACCIONES, NEWSLETTER)
+|--------------------------------------------------------------------------
+*/
+Route::post('/noticia/{id}/comentarios', [ComentarioPublicController::class, 'store'])->name('noticias.comentarios.store');
+Route::post('/noticia/{id}/reaccionar', [ReaccionPublicController::class, 'react'])->name('noticias.react');
+Route::post('/newsletter/suscribir', [NewsletterPublicController::class, 'subscribe'])->name('newsletter.subscribe');
 
 /*
 |--------------------------------------------------------------------------

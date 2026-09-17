@@ -533,14 +533,20 @@
                             $rImg = method_exists($rel, 'getImageUrl') ? $rel->getImageUrl() : ($rel->imagen ?? $rel->foto ?? '');
                             $rCat = $rel->category->name ?? 'DEPORTES';
                             $rFecha = $rel->created_at ? $rel->created_at->diffForHumans() : 'Hoy';
+                            $rSlug = \Illuminate\Support\Str::slug($rTitulo) ?: 'noticia';
+                            $rUrl = is_object($rel) && isset($rel->url) ? $rel->url : route('contraataque.show', ['id' => $rId, 'slug' => $rSlug]);
                         @endphp
                         <div class="col-md-6">
                             <div class="ca-card p-3 d-flex gap-3 h-100">
                                 <div style="width: 88px; height: 88px; min-width: 88px; border-radius: 6px; overflow: hidden; border: 1px solid var(--ca-border);">
-                                    <img src="{{ $rImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80' }}" 
-                                         alt="{{ $rTitulo }}" 
-                                         style="width: 100%; height: 100%; object-fit: cover;"
-                                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                    <a href="{{ $rUrl }}">
+                                        <img src="{{ $rImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80' }}" 
+                                             alt="{{ $rTitulo }}" 
+                                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
+                                             onmouseover="this.style.transform='scale(1.05)'" 
+                                             onmouseout="this.style.transform='scale(1)'"
+                                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                    </a>
                                 </div>
                                 <div class="d-flex flex-column justify-content-between">
                                     <div>
@@ -548,7 +554,7 @@
                                             {{ $rCat }}
                                         </span>
                                         <h4 style="font-size: 0.92rem; font-weight: 700; line-height: 1.25; margin-top: 4px; margin-bottom: 4px;">
-                                            <a href="{{ route('contraataque.show', $rId) }}" class="text-white hover:text-emerald-400">
+                                            <a href="{{ $rUrl }}" class="text-white hover:text-emerald-400">
                                                 {{ \Illuminate\Support\Str::limit($rTitulo, 65) }}
                                             </a>
                                         </h4>

@@ -34,11 +34,13 @@
                         }
                         $nCat = is_object($noticia) ? ($noticia->category->name ?? 'DEPORTES') : ($noticia['category']->name ?? 'DEPORTES');
                         $nFecha = is_object($noticia) && $noticia->created_at ? $noticia->created_at->diffForHumans() : 'Reciente';
+                        $nSlug = \Illuminate\Support\Str::slug($nTitulo) ?: 'noticia';
+                        $nUrl = is_object($noticia) && isset($noticia->url) ? $noticia->url : route('contraataque.show', ['id' => $nId, 'slug' => $nSlug]);
                     @endphp
                     <div class="col-md-6">
                         <div class="ca-card h-100 d-flex flex-column">
                             <div style="height: 180px; overflow: hidden; position: relative;">
-                                <a href="{{ route('contraataque.show', $nId) }}">
+                                <a href="{{ $nUrl }}">
                                     <img src="{{ $nImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80' }}" 
                                          alt="{{ $nTitulo }}" 
                                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
@@ -53,13 +55,13 @@
                             <div class="p-3 d-flex flex-column flex-grow-1">
                                 <small class="text-muted mb-1" style="font-size: 0.72rem;">{{ $nFecha }}</small>
                                 <h3 class="ca-title-card" style="font-size: 1.05rem;">
-                                    <a href="{{ route('contraataque.show', $nId) }}">{{ $nTitulo }}</a>
+                                    <a href="{{ $nUrl }}">{{ $nTitulo }}</a>
                                 </h3>
                                 <p class="text-muted small mb-3" style="line-height: 1.4;">
                                     {{ \Illuminate\Support\Str::limit(strip_tags($nBajada), 100) }}
                                 </p>
                                 <div class="mt-auto pt-2 border-top border-secondary">
-                                    <a href="{{ route('contraataque.show', $nId) }}" class="text-success fw-bold small">
+                                    <a href="{{ $nUrl }}" class="text-success fw-bold small">
                                         Leer Cobertura <i class="fas fa-chevron-right ms-1"></i>
                                     </a>
                                 </div>

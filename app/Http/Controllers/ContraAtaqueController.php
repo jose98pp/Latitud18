@@ -122,9 +122,20 @@ class ContraAtaqueController extends Controller
     /**
      * Ver noticia en el portal Contra Ataque
      */
-    public function show($id)
+    public function show($id, $slug = null)
     {
-        $noticia = Noticia::with(['category', 'galeria', 'comentariosAprobados', 'reacciones'])->findOrFail($id);
+        $noticia = Noticia::with(['category', 'galeria', 'comentariosAprobados', 'reacciones'])->find($id);
+
+        if (!$noticia) {
+            return redirect()->route('contraataque.index')->with('error', 'La noticia deportiva solicitada no fue encontrada o ya no está disponible.');
+        }
+
+        $expectedSlug = \Illuminate\Support\Str::slug($noticia->titulo) ?: 'noticia';
+
+        // Redirección canónica SEO 301 si falta el slug en la URL o no coincide
+        if ($slug !== $expectedSlug && request()->isMethod('GET') && !request()->ajax()) {
+            return redirect()->route('contraataque.show', ['id' => $id, 'slug' => $expectedSlug], 301);
+        }
 
         // Incrementar contador de visitas
         $noticia->increment('views');

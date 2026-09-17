@@ -23,16 +23,21 @@
                 }
                 $heroCat = is_object($heroNews) ? ($heroNews->category->name ?? 'FÚTBOL BOLIVIANO') : ($heroNews['category']->name ?? 'FÚTBOL BOLIVIANO');
                 $heroFecha = is_object($heroNews) ? ($heroNews->created_at ? $heroNews->created_at->diffForHumans() : 'Hace 2 horas') : 'Hace 2 horas';
+                $heroSlug = \Illuminate\Support\Str::slug($heroTitulo) ?: 'noticia';
+                $heroUrl = is_object($heroNews) && isset($heroNews->url) ? $heroNews->url : route('contraataque.show', ['id' => $heroId, 'slug' => $heroSlug]);
             @endphp
             <div class="ca-card h-100 position-relative" style="min-height: 480px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;">
                 <!-- Imagen de fondo con overlay degradado oscuro -->
                 <div style="position: absolute; inset: 0; z-index: 1;">
-                    <img src="{{ $heroImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80' }}" 
-                         alt="{{ $heroTitulo }}" 
-                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
-                         onmouseover="this.style.transform='scale(1.03)'" 
-                         onmouseout="this.style.transform='scale(1)'">
-                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9,13,22,0.2) 0%, rgba(9,13,22,0.85) 65%, rgba(9,13,22,0.98) 100%);"></div>
+                    <a href="{{ $heroUrl }}">
+                        <img src="{{ $heroImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80' }}" 
+                             alt="{{ $heroTitulo }}" 
+                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
+                             onmouseover="this.style.transform='scale(1.03)'" 
+                             onmouseout="this.style.transform='scale(1)'"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80'">
+                    </a>
+                    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9,13,22,0.2) 0%, rgba(9,13,22,0.85) 65%, rgba(9,13,22,0.98) 100%); pointer-events: none;"></div>
                 </div>
 
                 <!-- Contenido sobre la imagen -->
@@ -46,7 +51,7 @@
                     </div>
 
                     <h1 class="ca-title-hero">
-                        <a href="{{ route('contraataque.show', $heroId) }}" style="color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+                        <a href="{{ $heroUrl }}" style="color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
                             {{ $heroTitulo }}
                         </a>
                     </h1>
@@ -56,7 +61,7 @@
                     </p>
 
                     <div class="d-flex align-items-center gap-3">
-                        <a href="{{ route('contraataque.show', $heroId) }}" class="btn btn-sm fw-bold px-3 py-2" style="background: var(--ca-volt); color: #000; font-family: var(--ca-font-display); font-size: 0.9rem; letter-spacing: 0.5px;">
+                        <a href="{{ $heroUrl }}" class="btn btn-sm fw-bold px-3 py-2" style="background: var(--ca-volt); color: #000; font-family: var(--ca-font-display); font-size: 0.9rem; letter-spacing: 0.5px;">
                             LEER COBERTURA COMPLETA <i class="fas fa-chevron-right ms-1"></i>
                         </a>
                     </div>
@@ -144,15 +149,20 @@
                     }
                     $dCat = is_object($d) ? ($d->category->name ?? 'DEPORTES') : ($d['category']->name ?? 'DEPORTES');
                     $dFecha = is_object($d) ? ($d->created_at ? $d->created_at->diffForHumans() : 'Hace 3 horas') : 'Hace 3 horas';
+                    $dSlug = \Illuminate\Support\Str::slug($dTitulo) ?: 'noticia';
+                    $dUrl = is_object($d) && isset($d->url) ? $d->url : route('contraataque.show', ['id' => $dId, 'slug' => $dSlug]);
                 @endphp
                 <div class="col-md-6 col-lg-3">
                     <div class="ca-card h-100 d-flex flex-column">
                         <div style="height: 170px; overflow: hidden; position: relative;">
-                            <img src="{{ $dImg ?: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80' }}" 
-                                 alt="{{ $dTitulo }}" 
-                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
-                                 onmouseover="this.style.transform='scale(1.06)'" 
-                                 onmouseout="this.style.transform='scale(1)'">
+                            <a href="{{ $dUrl }}">
+                                <img src="{{ $dImg ?: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80' }}" 
+                                     alt="{{ $dTitulo }}" 
+                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
+                                     onmouseover="this.style.transform='scale(1.06)'" 
+                                     onmouseout="this.style.transform='scale(1)'"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80'">
+                            </a>
                             <span class="badge position-absolute top-2 start-2" style="background: rgba(0,0,0,0.8); color: var(--ca-volt); font-family: var(--ca-font-display); font-size: 0.68rem; letter-spacing: 0.5px;">
                                 {{ $dCat }}
                             </span>
@@ -160,11 +170,11 @@
                         <div class="p-3 d-flex flex-column flex-grow-1">
                             <small class="text-muted mb-1" style="font-size: 0.72rem;">{{ $dFecha }}</small>
                             <h3 class="ca-title-card" style="font-size: 1.05rem;">
-                                <a href="{{ route('contraataque.show', $dId) }}">{{ $dTitulo }}</a>
+                                <a href="{{ $dUrl }}">{{ $dTitulo }}</a>
                             </h3>
                             <div class="mt-auto pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
                                 <span class="ca-kicker" style="font-size: 0.68rem;">CONTRA ATAQUE</span>
-                                <a href="{{ route('contraataque.show', $dId) }}" class="text-white" style="font-size: 0.75rem;">
+                                <a href="{{ $dUrl }}" class="text-white" style="font-size: 0.75rem;">
                                     Leer <i class="fas fa-arrow-right text-success ms-1"></i>
                                 </a>
                             </div>
@@ -325,19 +335,26 @@
                     }
                     $mCat = is_object($m) ? ($m->category->name ?? 'DEPORTES') : ($m['category']->name ?? 'DEPORTES');
                     $mFecha = is_object($m) ? ($m->created_at ? $m->created_at->diffForHumans() : 'Hace unas horas') : 'Hace unas horas';
+                    $mSlug = \Illuminate\Support\Str::slug($mTitulo) ?: 'noticia';
+                    $mUrl = is_object($m) && isset($m->url) ? $m->url : route('contraataque.show', ['id' => $mId, 'slug' => $mSlug]);
                 @endphp
                 <div class="col-md-6 col-lg-4">
                     <div class="ca-card h-100 p-3 d-flex gap-3">
                         <div style="width: 100px; height: 100px; min-width: 100px; border-radius: 6px; overflow: hidden;">
-                            <img src="{{ $mImg ?: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80' }}" 
-                                 alt="{{ $mTitulo }}" 
-                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            <a href="{{ $mUrl }}">
+                                <img src="{{ $mImg ?: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80' }}" 
+                                     alt="{{ $mTitulo }}" 
+                                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
+                                     onmouseover="this.style.transform='scale(1.05)'"
+                                     onmouseout="this.style.transform='scale(1)'"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80'">
+                            </a>
                         </div>
                         <div class="d-flex flex-column justify-content-between">
                             <div>
                                 <span class="ca-kicker" style="font-size: 0.65rem;">{{ $mCat }}</span>
                                 <h4 class="ca-title-card" style="font-size: 0.95rem; margin-top: 2px;">
-                                    <a href="{{ route('contraataque.show', $mId) }}">{{ \Illuminate\Support\Str::limit($mTitulo, 65) }}</a>
+                                    <a href="{{ $mUrl }}">{{ \Illuminate\Support\Str::limit($mTitulo, 65) }}</a>
                                 </h4>
                             </div>
                             <small class="text-muted" style="font-size: 0.68rem;">{{ $mFecha }}</small>

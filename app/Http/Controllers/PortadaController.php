@@ -36,7 +36,8 @@ class PortadaController extends Controller
         $catName = strtolower($noticia->category->name ?? '');
         $catSlug = strtolower($categoria ?? '');
         if (str_contains($catName, 'deport') || str_contains($catName, 'futbol') || str_contains($catSlug, 'deport') || str_contains($catSlug, 'futbol') || $noticia->category_id == 9) {
-            return redirect()->route('contraataque.show', $noticia->id);
+            $newsSlug = \Illuminate\Support\Str::slug($noticia->titulo) ?: 'noticia';
+            return redirect()->route('contraataque.show', ['id' => $noticia->id, 'slug' => $newsSlug]);
         }
 
         // Incrementar contador de vistas
