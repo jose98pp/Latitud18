@@ -192,6 +192,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
                 return back()->with('error', 'Error al ejecutar migraciones: ' . $e->getMessage());
             }
         })->name('migrate');
+
+        Route::get('/seed', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                return back()->with('success', 'Seeders ejecutados exitosamente: ' . nl2br(\Illuminate\Support\Facades\Artisan::output()));
+            } catch (\Throwable $e) {
+                return back()->with('error', 'Error al ejecutar seeders: ' . $e->getMessage());
+            }
+        })->name('seed');
     });
 
     // Logout
