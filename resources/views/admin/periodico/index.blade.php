@@ -3,14 +3,31 @@
 
 @section('title', 'Editor InDesign — ' . ($currentEdicion['titulo'] ?? 'Periódico Digital'))
 
+@php
+    $curEstado = $currentEdicion['estado'] ?? (!empty($currentEdicion['publicada']) ? 'publicado' : 'borrador');
+    $statusMap = [
+        'borrador'   => ['class' => 'bg-secondary text-white', 'icon' => 'fas fa-circle', 'text' => 'Borrador'],
+        'revision'   => ['class' => 'bg-warning text-dark', 'icon' => 'fas fa-eye', 'text' => 'En Revisión'],
+        'aprobado'   => ['class' => 'bg-info text-white', 'icon' => 'fas fa-check', 'text' => 'Aprobado'],
+        'programado' => ['class' => 'text-white', 'style' => 'background:#9333ea;', 'icon' => 'fas fa-clock', 'text' => 'Programado'],
+        'publicado'  => ['class' => 'bg-success text-white', 'icon' => 'fas fa-check-double', 'text' => 'Publicada'],
+    ];
+    $badgeInfo = $statusMap[$curEstado] ?? $statusMap['borrador'];
+@endphp
+
 @section('page-title')
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100" style="font-size:0.85rem;">
     <div class="d-flex align-items-center gap-2">
         <i class="fas fa-newspaper text-danger"></i>
         <span style="font-weight:800;letter-spacing:0.3px;">Editor de Maquetación InDesign</span>
-        <span id="pageStatusBadge" class="badge {{ !empty($currentEdicion['publicada']) ? 'bg-success' : 'bg-secondary' }}" style="font-size:0.7rem;">
-            {{ !empty($currentEdicion['publicada']) ? '✓ Publicada' : '⬤ Borrador' }}
+        <span id="pageStatusBadge" class="badge {{ $badgeInfo['class'] }}" style="font-size:0.72rem;padding:4px 8px;{{ $badgeInfo['style'] ?? '' }}">
+            <i class="{{ $badgeInfo['icon'] }} me-1"></i> <span>{{ $badgeInfo['text'] }}</span>
         </span>
+        @if(!empty($currentEdicion['fecha_programada']) && $curEstado === 'programado')
+            <span class="badge bg-dark text-warning border border-warning" style="font-size:0.65rem;" title="Fecha programada">
+                <i class="fas fa-calendar-alt me-1"></i> {{ date('d/m/Y H:i', strtotime($currentEdicion['fecha_programada'])) }}
+            </span>
+        @endif
     </div>
     <div class="d-flex align-items-center gap-2">
         <button type="button" class="btn btn-success btn-save-periodico fw-bold d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" onclick="saveEdicionLayout(true)" title="Guardar cambios de la edición (Ctrl+S)">
@@ -914,6 +931,148 @@
 }
 .id-toast.show { display: flex; animation: idFadeIn 0.2s; }
 @keyframes idFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+/* ══════════════════════════════════════════ WORKFLOW & TEMPLATES SUITE */
+.id-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #18191C;
+  border: 1px solid var(--id-border);
+  border-radius: 6px;
+  min-width: 220px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.65);
+  z-index: 10000;
+  padding: 6px;
+}
+.id-dropdown-menu.show { display: block; animation: idFadeIn 0.15s ease-out; }
+.id-dropdown-header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--id-text-muted);
+  text-transform: uppercase;
+  padding: 4px 8px;
+  letter-spacing: 0.5px;
+}
+.id-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #E2E8F0;
+  padding: 7px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.id-dropdown-item:hover {
+  background: #2B2D33;
+  color: #38bdf8;
+}
+
+/* Locked frames */
+.id-frame.locked {
+  outline: 1px dashed rgba(239, 68, 68, 0.7) !important;
+  cursor: not-allowed !important;
+}
+.id-frame.locked .resize-handle { display: none !important; }
+.frame-lock-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  font-size: 0.55rem;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Template Catalog Tabs & Cards */
+.tpl-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--id-border);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tpl-tab-btn {
+  background: #18191C;
+  border: 1px solid var(--id-border);
+  color: #94A3B8;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tpl-tab-btn:hover { color: #fff; border-color: #475569; }
+.tpl-tab-btn.active {
+  background: var(--id-accent2);
+  border-color: var(--id-accent2);
+  color: #fff;
+}
+.tpl-card-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.tpl-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.tpl-btn-apply {
+  flex: 1;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tpl-btn-apply:hover { background: #0369a1; }
+.tpl-btn-action {
+  background: #1E2024;
+  border: 1px solid var(--id-border);
+  color: #CBD5E1;
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tpl-btn-action:hover { background: #2B2D33; color: #fff; }
+.tpl-btn-action.danger:hover { background: #991b1b; color: #fff; border-color: #ef4444; }
+
+/* Control bar active state */
+.id-ctrl-btn.active {
+  background: var(--id-accent2);
+  color: #fff;
+}
 </style>
 
 <div class="id-app" id="idApp">
@@ -981,6 +1140,36 @@
 
     <div class="id-menubar-sep"></div>
 
+    {{-- Flujo Editorial (5 Estados) --}}
+    <div class="id-dropdown" style="position:relative;display:inline-block;">
+      <button class="id-btn id-btn-ghost" id="editorialDropdownBtn" onclick="toggleStateDropdown(event)" style="border:1px solid rgba(255,255,255,0.2);padding:4px 10px;" title="Cambiar estado editorial de la edición">
+        <span id="topBarStateBadge" class="badge {{ $badgeInfo['class'] }}" style="font-size:0.65rem;padding:3px 6px;{{ $badgeInfo['style'] ?? '' }}">
+          <i class="{{ $badgeInfo['icon'] }} me-1"></i> <span id="topBarStateText">{{ $badgeInfo['text'] }}</span>
+        </span>
+        <span style="margin-left:4px;font-weight:700;">Flujo</span>
+        <i class="fas fa-chevron-down" style="font-size:0.55rem;margin-left:4px;"></i>
+      </button>
+      <div class="id-dropdown-menu" id="editorialDropdownMenu">
+        <div class="id-dropdown-header">Flujo de Trabajo (5 Estados)</div>
+        <button class="id-dropdown-item" onclick="updateEditorialState('borrador')">
+          <i class="fas fa-circle text-secondary"></i> <span>1. Borrador</span>
+        </button>
+        <button class="id-dropdown-item" onclick="updateEditorialState('revision')">
+          <i class="fas fa-eye text-warning"></i> <span>2. En Revisión</span>
+        </button>
+        <button class="id-dropdown-item" onclick="updateEditorialState('aprobado')">
+          <i class="fas fa-check text-info"></i> <span>3. Aprobado</span>
+        </button>
+        <button class="id-dropdown-item" onclick="openModal('scheduleModal')">
+          <i class="fas fa-clock" style="color:#a855f7;"></i> <span>4. Programar Publicación...</span>
+        </button>
+        <div style="height:1px;background:var(--id-border);margin:4px 0;"></div>
+        <button class="id-dropdown-item" onclick="updateEditorialState('publicado')">
+          <i class="fas fa-globe text-success"></i> <span>5. Publicar Ahora</span>
+        </button>
+      </div>
+    </div>
+
     {{-- Publicar / Despublicar --}}
     <button class="id-btn {{ !empty($currentEdicion['publicada']) ? 'id-btn-success' : 'id-btn-danger' }}" id="publishBtn" onclick="togglePublishEdition()">
       <i class="fas {{ !empty($currentEdicion['publicada']) ? 'fa-check-circle' : 'fa-globe' }}"></i>
@@ -1005,10 +1194,11 @@
       <button class="id-ctrl-btn" onclick="resetZoom()" title="Ajustar 100%"><i class="fas fa-compress-arrows-alt"></i></button>
     </div>
 
-    {{-- Rulers & Grid --}}
+    {{-- Rulers & Grid & Snap --}}
     <div class="id-control-group">
       <button class="id-ctrl-btn" id="rulerToggleBtn" onclick="toggleRulers()" title="Mostrar Reglas"><i class="fas fa-ruler-combined"></i></button>
       <button class="id-ctrl-btn" id="gridToggleBtn" onclick="toggleGrid()" title="Mostrar Cuadrícula"><i class="fas fa-border-all"></i></button>
+      <button class="id-ctrl-btn" id="snapToggleBtn" onclick="toggleSnapGrid()" title="Ajuste Magnético a Cuadrícula (Snap 10px)"><i class="fas fa-magnet"></i></button>
       <button class="id-ctrl-btn active" id="marginToggleBtn" onclick="toggleMargins()" title="Guías de Sangría"><i class="fas fa-vector-square"></i></button>
     </div>
 
@@ -1095,6 +1285,18 @@
     <button class="id-tool-btn" id="tool-line" onclick="createSpecialElement('divider')" title="Pleca / Filete Divisor (L)">
       <i class="fas fa-minus" style="color:#94a3b8;"></i>
       <span class="hotkey">L</span>
+    </button>
+
+    {{-- QR Code Digital --}}
+    <button class="id-tool-btn" id="tool-qr" onclick="createSpecialElement('qr')" title="Código QR Digital (K)">
+      <i class="fas fa-qrcode" style="color:#10b981;"></i>
+      <span class="hotkey">K</span>
+    </button>
+
+    {{-- Ad / Módulo Publicitario --}}
+    <button class="id-tool-btn" id="tool-ad" onclick="createSpecialElement('ad')" title="Módulo Publicitario / Anuncio (P)">
+      <i class="fas fa-ad" style="color:#f59e0b;"></i>
+      <span class="hotkey">P</span>
     </button>
 
     <div class="id-tool-sep"></div>
@@ -1256,6 +1458,50 @@
       </div>
     </div>
 
+    {{-- QR Inspector --}}
+    <div class="inspector-section" id="inspQr" style="display:none;">
+      <div class="inspector-section-header">
+        <span><i class="fas fa-qrcode" style="color:#10b981;margin-right:5px;"></i> Código QR Digital</span>
+      </div>
+      <div class="inspector-body">
+        <div>
+          <label class="id-form-label">Enlace / URL de Destino</label>
+          <input type="url" class="inspector-input" id="inspQrUrl" placeholder="https://latitud18.com/..." onchange="applyQrProps()" style="width:100%;">
+        </div>
+        <div style="margin-top:6px;">
+          <label class="id-form-label">Texto / Etiqueta inferior</label>
+          <input type="text" class="inspector-input" id="inspQrLabel" placeholder="Escanea para ver..." onchange="applyQrProps()" style="width:100%;">
+        </div>
+      </div>
+    </div>
+
+    {{-- Ad Module Inspector --}}
+    <div class="inspector-section" id="inspAd" style="display:none;">
+      <div class="inspector-section-header">
+        <span><i class="fas fa-ad" style="color:#f59e0b;margin-right:5px;"></i> Módulo Publicitario</span>
+      </div>
+      <div class="inspector-body">
+        <div>
+          <label class="id-form-label">Cintillo Superior</label>
+          <input type="text" class="inspector-input" id="inspAdBadge" onchange="applyAdProps()" style="width:100%;">
+        </div>
+        <div style="margin-top:4px;">
+          <label class="id-form-label">Título del Patrocinador</label>
+          <input type="text" class="inspector-input" id="inspAdTitle" onchange="applyAdProps()" style="width:100%;">
+        </div>
+        <div style="margin-top:4px;">
+          <label class="id-form-label">Eslogan o Mensaje</label>
+          <input type="text" class="inspector-input" id="inspAdSubtitle" onchange="applyAdProps()" style="width:100%;">
+        </div>
+        <div class="inspector-row" style="margin-top:6px;">
+          <span class="inspector-label" style="min-width:44px;">Fondo</span>
+          <input type="color" class="inspector-input" id="inspAdBg" value="#f0fdf4" onchange="applyAdProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
+          <span class="inspector-label" style="min-width:44px;">Borde</span>
+          <input type="color" class="inspector-input" id="inspAdBorder" value="#86efac" onchange="applyAdProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
+        </div>
+      </div>
+    </div>
+
     {{-- Actions & Ordering --}}
     <div class="inspector-section" id="inspActions" style="display:none;">
       <div class="inspector-section-header">
@@ -1263,13 +1509,24 @@
       </div>
       <div class="inspector-body" style="display:flex;flex-direction:column;gap:6px;">
         <div class="inspector-row">
-          <button class="insp-full-btn" onclick="bringToFront()" style="flex:1;">
-            <i class="fas fa-arrow-up"></i> Al Frente
+          <button class="insp-full-btn" onclick="bringToFront()" style="flex:1;" title="Traer al frente absoluto">
+            <i class="fas fa-angle-double-up"></i> Al Frente
           </button>
-          <button class="insp-full-btn" onclick="sendToBack()" style="flex:1;">
-            <i class="fas fa-arrow-down"></i> Al Fondo
+          <button class="insp-full-btn" onclick="sendToBack()" style="flex:1;" title="Enviar al fondo absoluto">
+            <i class="fas fa-angle-double-down"></i> Al Fondo
           </button>
         </div>
+        <div class="inspector-row">
+          <button class="insp-full-btn" onclick="bringForward()" style="flex:1;" title="Subir una capa (+1)">
+            <i class="fas fa-arrow-up"></i> Avanzar (+1)
+          </button>
+          <button class="insp-full-btn" onclick="sendBackward()" style="flex:1;" title="Bajar una capa (-1)">
+            <i class="fas fa-arrow-down"></i> Retroceder (-1)
+          </button>
+        </div>
+        <button class="insp-full-btn" id="inspLockBtn" onclick="toggleLockSelected()" title="Bloquear / Desbloquear elemento para evitar modificaciones accidentales">
+          <i class="fas fa-lock"></i> <span id="inspLockBtnText">Bloquear Elemento</span>
+        </button>
         <button class="insp-full-btn" onclick="duplicateSelected()">
           <i class="fas fa-clone"></i> Duplicar Elemento
         </button>
@@ -1350,53 +1607,160 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════
-     MODAL: TEMPLATE PRESETS (INDESIGN SUITE)
+     MODAL: BIBLIOTECA DE MAQUETAS Y PLANTILLAS INDESIGN
 ═══════════════════════════════════════════════════════ --}}
 <div class="id-modal-overlay" id="templateModal">
-  <div class="id-modal">
+  <div class="id-modal" style="max-width:980px;">
     <div class="id-modal-header">
       <div class="id-modal-title"><i class="fas fa-th-large" style="color:var(--id-accent);"></i> Biblioteca de Maquetas y Plantillas InDesign</div>
       <button class="id-modal-close" onclick="closeModal('templateModal')"><i class="fas fa-times"></i></button>
     </div>
     <div class="id-modal-body">
-      <p style="font-size:0.75rem;color:#94a3b8;margin-bottom:16px;">
-        Selecciona una plantilla profesional prediseñada para la página actual. Se generará la distribución editorial con cabeceras, orejas de cotización, columnas y fotos listas para editar.
-      </p>
-      <div class="template-grid">
-        <div class="template-card" onclick="applyTemplate('la_estrella_portada')">
-          <i class="fas fa-newspaper text-danger"></i>
-          <h6>La Estrella del Oriente - Portada Oficial (Bolivia)</h6>
-          <p>Cabecera cyan con distintivo rojo, orejas de cotización del dólar (Bs 12,58) y CRE, gran titular con antetítulo en rojo, sumario en 4 columnas y fotonoticia principal.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+        <p style="font-size:0.75rem;color:#94a3b8;margin:0;max-width:550px;">
+          Selecciona una maqueta prediseñada para aplicar a la página actual con 1 solo clic. También puedes guardar tu propio diseño o exportar/importar archivos <code>.latitud-template</code>.
+        </p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="id-btn id-btn-ghost" onclick="openSaveTemplateModal()" style="border:1px solid rgba(255,255,255,0.15);color:#4ade80;">
+            <i class="fas fa-save"></i> Guardar como Plantilla
+          </button>
+          <button class="id-btn id-btn-ghost" onclick="openImportTemplateModal()" style="border:1px solid rgba(255,255,255,0.15);color:#38bdf8;">
+            <i class="fas fa-file-import"></i> Importar Archivo
+          </button>
+          <button class="id-btn id-btn-ghost" onclick="exportCurrentAsTemplateFile()" style="border:1px solid rgba(255,255,255,0.15);color:#f59e0b;" title="Descargar diseño actual en archivo .latitud-template">
+            <i class="fas fa-file-export"></i> Exportar Página
+          </button>
         </div>
-        <div class="template-card" onclick="applyTemplate('latitud18_broadsheet')">
-          <i class="fas fa-columns" style="color:#0284c7;"></i>
-          <h6>Latitud 18 / El Deber - Portada 5 Columnas</h6>
-          <p>Gran formato Broadsheet con cintillo superior, titular dominante, doble fotonoticia central y módulos de opinión.</p>
-        </div>
-        <div class="template-card" onclick="applyTemplate('editorial_opinion')">
-          <i class="fas fa-feather-alt" style="color:#f59e0b;"></i>
-          <h6>Página 2: Editorial & Opinión</h6>
-          <p>Columna editorial con letra capital (Drop Cap), cita destacada con comillas estilizadas, cuadro de cotizaciones y clima.</p>
-        </div>
-        <div class="template-card" onclick="applyTemplate('comunidad_cultura')">
-          <i class="fas fa-landmark" style="color:#10b981;"></i>
-          <h6>Página 3: Comunidad & Cultura</h6>
-          <p>Fotonoticia de gran impacto, texto en 4 columnas con crédito de autor y columna lateral de breves informativos.</p>
-        </div>
-        <div class="template-card" onclick="applyTemplate('negocios_economia')">
-          <i class="fas fa-chart-line" style="color:#8b5cf6;"></i>
-          <h6>Página 4: Negocios & Economía</h6>
-          <p>Apertura económica con cifra destacada, dos artículos independientes y gráficos financieros.</p>
-        </div>
-        <div class="template-card" onclick="applyTemplate('blank')">
-          <i class="fas fa-square" style="color:#64748b;"></i>
-          <h6>Página en Blanco</h6>
-          <p>Lienzo vacío para construir una maquetación libre desde cero.</p>
-        </div>
+      </div>
+
+      {{-- Search & Tabs --}}
+      <div style="margin-bottom:10px;">
+        <input type="text" id="tplSearchInput" class="id-form-input" placeholder="Buscar plantilla por nombre o sección..." oninput="searchTemplates(this.value)" style="margin-bottom:10px;padding:6px 12px;">
+      </div>
+
+      <div class="tpl-tabs" id="tplTabs">
+        <button class="tpl-tab-btn active" onclick="filterTemplateCards('all', this)"><i class="fas fa-border-all me-1"></i> Todas</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('portadas', this)"><i class="fas fa-newspaper me-1"></i> Portadas</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('interior', this)"><i class="fas fa-columns me-1"></i> Páginas Interiores</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('opinion', this)"><i class="fas fa-feather-alt me-1"></i> Opinión</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Contra Ataque / Deportes</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('contraportada', this)"><i class="fas fa-book-open me-1"></i> Contraportada</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('custom', this)" style="border-color:rgba(74,222,128,0.4);"><i class="fas fa-star me-1 text-warning"></i> Mis Plantillas</button>
+      </div>
+
+      {{-- Grid de Plantillas --}}
+      <div class="template-grid" id="templatesGridContainer">
+        {{-- Se renderiza dinámicamente con renderTemplateCards() --}}
       </div>
     </div>
     <div class="id-modal-footer">
-      <button class="id-btn id-btn-ghost" onclick="closeModal('templateModal')">Cancelar</button>
+      <button class="id-btn id-btn-ghost" onclick="closeModal('templateModal')">Cerrar Biblioteca</button>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: GUARDAR PÁGINA ACTUAL COMO PLANTILLA
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="saveTemplateModal">
+  <div class="id-modal" style="max-width:500px;">
+    <div class="id-modal-header">
+      <div class="id-modal-title"><i class="fas fa-bookmark text-success"></i> Guardar como Plantilla InDesign</div>
+      <button class="id-modal-close" onclick="closeModal('saveTemplateModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="id-modal-body">
+      <p style="font-size:0.75rem;color:#cbd5e1;margin-bottom:14px;">
+        La distribución, titulares, tipografías y marcos de la <strong>página actual</strong> se guardarán como una plantilla reutilizable en tu biblioteca.
+      </p>
+      <div class="id-form-row">
+        <label class="id-form-label">Nombre de la Plantilla *</label>
+        <input type="text" id="tplSaveName" class="id-form-input" placeholder="Ej: Portada Domingo Especial" required>
+      </div>
+      <div class="id-form-row">
+        <label class="id-form-label">Categoría *</label>
+        <select id="tplSaveCategory" class="id-form-input">
+          <option value="portadas">Portadas</option>
+          <option value="interior" selected>Páginas Interiores / Reportaje</option>
+          <option value="opinion">Opinión & Editorial</option>
+          <option value="deportes">Contra Ataque / Deportes</option>
+          <option value="contraportada">Contraportada</option>
+          <option value="especial">Edición Especial</option>
+        </select>
+      </div>
+      <div class="id-form-row">
+        <label class="id-form-label">Descripción Breve</label>
+        <textarea id="tplSaveDescription" class="id-form-input" rows="2" placeholder="Resumen del estilo y estructura editorial..."></textarea>
+      </div>
+      <div class="id-form-row">
+        <label class="id-form-label">Color de Distintivo</label>
+        <input type="color" id="tplSaveColor" value="#0284c7" style="height:32px;width:60px;padding:2px;cursor:pointer;background:#18191c;border:1px solid #334155;border-radius:4px;">
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <button type="button" class="id-btn id-btn-ghost" onclick="closeModal('saveTemplateModal')">Cancelar</button>
+      <button type="button" class="id-btn id-btn-success" onclick="submitSaveTemplate()"><i class="fas fa-check"></i> Guardar en Biblioteca</button>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: IMPORTAR PLANTILLA (.latitud-template)
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="importTemplateModal">
+  <div class="id-modal" style="max-width:520px;">
+    <div class="id-modal-header">
+      <div class="id-modal-title"><i class="fas fa-file-import text-primary"></i> Importar Archivo de Plantilla</div>
+      <button class="id-modal-close" onclick="closeModal('importTemplateModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="id-modal-body">
+      <div style="border:2px dashed var(--id-border);border-radius:6px;padding:26px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.02);" onclick="document.getElementById('templateFileInput').click()">
+        <i class="fas fa-file-code" style="font-size:2.2rem;color:var(--id-accent2);margin-bottom:8px;"></i>
+        <p style="font-size:0.8rem;font-weight:700;margin-bottom:4px;color:#fff;">Selecciona un archivo .latitud-template o .json</p>
+        <p style="font-size:0.68rem;color:#888;">Permite compartir maquetaciones entre redactores o equipos de diseño</p>
+        <input type="file" id="templateFileInput" style="display:none;" accept=".latitud-template,.json" onchange="onTemplateFileSelected(this)">
+      </div>
+      <div id="selectedTemplateFileInfo" style="margin-top:10px;font-size:0.75rem;color:#4ade80;display:none;">
+        <i class="fas fa-check-circle"></i> Archivo seleccionado: <strong id="selectedTemplateFileName"></strong>
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <button type="button" class="id-btn id-btn-ghost" onclick="closeModal('importTemplateModal')">Cancelar</button>
+      <button type="button" class="id-btn id-btn-primary" id="btnSubmitImportTpl" onclick="submitImportTemplate()" disabled><i class="fas fa-upload"></i> Importar Plantilla</button>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: PROGRAMAR PUBLICACIÓN AUTOMÁTICA
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="scheduleModal">
+  <div class="id-modal" style="max-width:480px;">
+    <div class="id-modal-header">
+      <div class="id-modal-title"><i class="fas fa-clock" style="color:#a855f7;"></i> Programar Publicación Automática</div>
+      <button class="id-modal-close" onclick="closeModal('scheduleModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="id-modal-body">
+      <p style="font-size:0.75rem;color:#cbd5e1;margin-bottom:14px;">
+        Configura la fecha y hora exacta en que la edición <strong>{{ $currentEdicion['numero_edicion'] }}</strong> pasará automáticamente a estado <strong>Publicada</strong> y se activará en el portal web.
+      </p>
+      <div class="id-form-row">
+        <label class="id-form-label">Fecha y Hora de Publicación *</label>
+        <input type="datetime-local" id="schedDateTimeInput" class="id-form-input" required>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button type="button" class="id-btn id-btn-ghost" onclick="setQuickSchedule(1)" style="font-size:0.7rem;padding:3px 8px;border:1px solid #334155;">
+          Mañana 06:00 AM
+        </button>
+        <button type="button" class="id-btn id-btn-ghost" onclick="setQuickSchedule(7)" style="font-size:0.7rem;padding:3px 8px;border:1px solid #334155;">
+          Próximo Domingo 07:00 AM
+        </button>
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <button type="button" class="id-btn id-btn-ghost" onclick="closeModal('scheduleModal')">Cancelar</button>
+      <button type="button" class="id-btn" style="background:#9333ea;color:#fff;border:none;" onclick="submitSchedulePublication()">
+        <i class="fas fa-calendar-check"></i> Confirmar Programación
+      </button>
     </div>
   </div>
 </div>
@@ -1519,6 +1883,10 @@ let frameIdCounter    = 1000;
 let gridVisible       = false;
 let marginsVisible    = true;
 let rulersVisible     = false;
+let snapGridActive    = true;
+let snapGridSize      = 10;
+let loadedTemplates   = [];
+let currentFilterCat  = 'all';
 
 // Undo / Redo history
 let undoHistory = [];
@@ -1542,6 +1910,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteract();
     setupKeyboard();
     updateZoomDisplay();
+    loadTemplatesCatalog();
+    updateTopBarBadges(currentEdicion.estado || (currentEdicion.publicada ? 'publicado' : 'borrador'), currentEdicion.fecha_programada);
 });
 
 // ── FORMAT SWITCHER ─────────────────────────────────
@@ -1717,6 +2087,19 @@ function createSpecialElement(type) {
         fData.w = 680;
         fData.h = 6;
         fData.color = '#cbd5e1';
+    } else if (type === 'qr') {
+        fData.w = 200;
+        fData.h = 210;
+        fData.url = 'https://latitud18.com/periodico';
+        fData.label = 'Escanea para edición digital';
+    } else if (type === 'ad') {
+        fData.w = 400;
+        fData.h = 160;
+        fData.badge = 'ESPACIO PUBLICITARIO';
+        fData.title = 'TU MARCA O EMPRESA AQUÍ';
+        fData.subtitle = 'Anuncia en la edición impresa y digital • Contacto comercial';
+        fData.bg = '#f0fdf4';
+        fData.border = '#86efac';
     }
 
     if (!currentEdicion.paginas[activePageIndex].frames) {
@@ -1737,6 +2120,11 @@ function buildFrameElement(fData, pIdx) {
     el.id = `frame-${fData.id}`;
     el.dataset.frameId = fData.id;
     el.dataset.type = fData.type;
+
+    if (fData.isLocked) {
+        el.classList.add('locked');
+        el.dataset.locked = 'true';
+    }
 
     el.style.left = (fData.x || 20) + 'px';
     el.style.top = (fData.y || 20) + 'px';
@@ -1793,18 +2181,43 @@ function buildFrameElement(fData, pIdx) {
         el.innerHTML = `<div class="frame-box-inner" contenteditable="true">${fData.content || 'Caja de contenido'}</div>`;
     } else if (fData.type === 'divider') {
         el.innerHTML = `<div class="frame-divider-inner"><div style="width:100%;height:2px;background:${fData.color || '#cbd5e1'};"></div></div>`;
+    } else if (fData.type === 'qr') {
+        const qrUrl = encodeURIComponent(fData.url || 'https://latitud18.com/periodico');
+        el.innerHTML = `
+            <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid #e2e8f0;padding:6px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.08);border-radius:3px;box-sizing:border-box;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrUrl}" alt="QR" style="width:calc(100% - 8px);max-height:calc(100% - 22px);object-fit:contain;">
+                <div style="font-size:9px;font-weight:700;color:#334155;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;">
+                    ${fData.label || 'Escanea para leer online'}
+                </div>
+            </div>
+        `;
+    } else if (fData.type === 'ad') {
+        el.innerHTML = `
+            <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:${fData.bg || '#f0fdf4'};border:2px dashed ${fData.border || '#86efac'};padding:10px;text-align:center;box-sizing:border-box;border-radius:4px;overflow:hidden;">
+                <span style="font-size:8.5px;font-weight:800;color:#64748b;letter-spacing:1px;text-transform:uppercase;display:block;">${fData.badge || 'ESPACIO PUBLICITARIO'}</span>
+                <div style="font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:#0f172a;margin:3px 0;">${fData.title || 'TU MARCA O EMPRESA AQUÍ'}</div>
+                <div style="font-size:10px;color:#475569;">${fData.subtitle || 'Anuncia en la edición impresa y digital'}</div>
+            </div>
+        `;
     } else {
         // Default text frame
         const cols = fData.columns || 1;
         el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="column-count:${cols > 1 ? cols : ''};column-gap:14px;">${fData.content || 'Texto periodístico...'}</div>`;
     }
 
-    // Handles
-    ['nw','n','ne','e','se','s','sw','w'].forEach(pos => {
-        const handle = document.createElement('div');
-        handle.className = `resize-handle ${pos}`;
-        el.appendChild(handle);
-    });
+    // Handles or Lock badge
+    if (fData.isLocked) {
+        const lockIcon = document.createElement('div');
+        lockIcon.className = 'frame-lock-badge';
+        lockIcon.innerHTML = '<i class="fas fa-lock"></i>';
+        el.appendChild(lockIcon);
+    } else {
+        ['nw','n','ne','e','se','s','sw','w'].forEach(pos => {
+            const handle = document.createElement('div');
+            handle.className = `resize-handle ${pos}`;
+            el.appendChild(handle);
+        });
+    }
 
     el.addEventListener('mousedown', (e) => {
         e.stopPropagation();
@@ -1819,10 +2232,22 @@ function initInteract() {
     interact('.id-frame')
         .draggable({
             listeners: {
+                start(event) {
+                    if (event.target.dataset.locked === 'true') return;
+                    recordHistory();
+                },
                 move(event) {
                     const target = event.target;
-                    const x = (parseFloat(target.style.left) || 0) + event.dx;
-                    const y = (parseFloat(target.style.top)  || 0) + event.dy;
+                    if (target.dataset.locked === 'true') return;
+
+                    let x = (parseFloat(target.style.left) || 0) + event.dx;
+                    let y = (parseFloat(target.style.top)  || 0) + event.dy;
+
+                    if (snapGridActive) {
+                        x = Math.round(x / snapGridSize) * snapGridSize;
+                        y = Math.round(y / snapGridSize) * snapGridSize;
+                    }
+
                     target.style.left = Math.max(0, x) + 'px';
                     target.style.top  = Math.max(0, y) + 'px';
                     updateInspectorGeometry(target);
@@ -1834,19 +2259,33 @@ function initInteract() {
         .resizable({
             edges: { left: '.w, .nw, .sw', right: '.e, .ne, .se', bottom: '.s, .se, .sw', top: '.n, .nw, .ne' },
             listeners: {
+                start(event) {
+                    if (event.target.dataset.locked === 'true') return;
+                    recordHistory();
+                },
                 move(event) {
                     const target = event.target;
+                    if (target.dataset.locked === 'true') return;
+
+                    let w = Math.max(40, event.rect.width);
+                    let h = Math.max(20, event.rect.height);
                     let x = parseFloat(target.style.left) || 0;
                     let y = parseFloat(target.style.top)  || 0;
-
-                    target.style.width  = Math.max(40, event.rect.width) + 'px';
-                    target.style.height = Math.max(20, event.rect.height) + 'px';
 
                     x += event.deltaRect.left;
                     y += event.deltaRect.top;
 
-                    target.style.left = Math.max(0, x) + 'px';
-                    target.style.top  = Math.max(0, y) + 'px';
+                    if (snapGridActive) {
+                        w = Math.round(w / snapGridSize) * snapGridSize;
+                        h = Math.round(h / snapGridSize) * snapGridSize;
+                        x = Math.round(x / snapGridSize) * snapGridSize;
+                        y = Math.round(y / snapGridSize) * snapGridSize;
+                    }
+
+                    target.style.width  = w + 'px';
+                    target.style.height = h + 'px';
+                    target.style.left   = Math.max(0, x) + 'px';
+                    target.style.top    = Math.max(0, y) + 'px';
 
                     updateInspectorGeometry(target);
                     saveFrameGeoToModel(target);
@@ -1889,7 +2328,16 @@ function populateInspector(el) {
     document.getElementById('inspMasthead').style.display = type === 'masthead' ? '' : 'none';
     document.getElementById('inspText').style.display = (type === 'article' || type === 'headline' || type === 'text') ? '' : 'none';
     document.getElementById('inspImage').style.display = type === 'image' ? '' : 'none';
+    document.getElementById('inspQr').style.display = type === 'qr' ? '' : 'none';
+    document.getElementById('inspAd').style.display = type === 'ad' ? '' : 'none';
     document.getElementById('inspActions').style.display = '';
+
+    // Lock button status
+    const lockBtnText = document.getElementById('inspLockBtnText');
+    const isLocked = fData.isLocked || el.dataset.locked === 'true';
+    if (lockBtnText) {
+        lockBtnText.textContent = isLocked ? 'Desbloquear Elemento' : 'Bloquear Elemento';
+    }
 
     if (type === 'masthead') {
         document.getElementById('inspMastheadName').value = fData.newspaperName || 'LA ESTRELLA';
@@ -1897,6 +2345,15 @@ function populateInspector(el) {
         document.getElementById('inspMastheadMotto').value = fData.motto || '';
         document.getElementById('inspMastheadLeftEar').value = fData.leftEar || '';
         document.getElementById('inspMastheadRightEar').value = fData.rightEar || '';
+    } else if (type === 'qr') {
+        document.getElementById('inspQrUrl').value = fData.url || 'https://latitud18.com/periodico';
+        document.getElementById('inspQrLabel').value = fData.label || 'Escanea para edición digital';
+    } else if (type === 'ad') {
+        document.getElementById('inspAdBadge').value = fData.badge || 'ESPACIO PUBLICITARIO';
+        document.getElementById('inspAdTitle').value = fData.title || '';
+        document.getElementById('inspAdSubtitle').value = fData.subtitle || '';
+        document.getElementById('inspAdBg').value = fData.bg || '#f0fdf4';
+        document.getElementById('inspAdBorder').value = fData.border || '#86efac';
     }
 }
 
@@ -2101,22 +2558,108 @@ function applyImageBorderColor() {
     markUnsaved();
 }
 
-// ── LAYER ACTIONS ──────────────────────────────────
+// ── LAYER ACTIONS & PROPS ──────────────────────────
 function bringToFront() {
     if (!selectedFrame) return;
+    recordHistory();
     let maxZ = 10;
     document.querySelectorAll('.id-frame').forEach(f => {
         maxZ = Math.max(maxZ, parseInt(f.style.zIndex) || 10);
     });
     selectedFrame.style.zIndex = maxZ + 1;
     saveFrameZIndex(selectedFrame);
+    document.getElementById('inspZ').value = maxZ + 1;
     markUnsaved();
+    showToast('Elemento traído al frente', 'success');
 }
 
 function sendToBack() {
     if (!selectedFrame) return;
+    recordHistory();
     selectedFrame.style.zIndex = 2;
     saveFrameZIndex(selectedFrame);
+    document.getElementById('inspZ').value = 2;
+    markUnsaved();
+    showToast('Elemento enviado al fondo', 'success');
+}
+
+function bringForward() {
+    if (!selectedFrame) return;
+    recordHistory();
+    let currentZ = parseInt(selectedFrame.style.zIndex) || 10;
+    selectedFrame.style.zIndex = currentZ + 1;
+    saveFrameZIndex(selectedFrame);
+    document.getElementById('inspZ').value = currentZ + 1;
+    markUnsaved();
+    showToast('Capa avanzada (+1)', 'success');
+}
+
+function sendBackward() {
+    if (!selectedFrame) return;
+    recordHistory();
+    let currentZ = parseInt(selectedFrame.style.zIndex) || 10;
+    selectedFrame.style.zIndex = Math.max(1, currentZ - 1);
+    saveFrameZIndex(selectedFrame);
+    document.getElementById('inspZ').value = Math.max(1, currentZ - 1);
+    markUnsaved();
+    showToast('Capa retrocedida (-1)', 'success');
+}
+
+function toggleLockSelected() {
+    if (!selectedFrame) return;
+    recordHistory();
+    const fId = selectedFrame.dataset.frameId;
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == fId);
+    if (!f) return;
+
+    const isLocked = !f.isLocked;
+    f.isLocked = isLocked;
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+
+    document.getElementById('inspLockBtnText').textContent = isLocked ? 'Desbloquear Elemento' : 'Bloquear Elemento';
+    markUnsaved();
+    showToast(isLocked ? 'Elemento bloqueado (protegido contra edición)' : 'Elemento desbloqueado', 'success');
+}
+
+function applyQrProps() {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'qr') return;
+    recordHistory();
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    f.url = document.getElementById('inspQrUrl').value;
+    f.label = document.getElementById('inspQrLabel').value;
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+    markUnsaved();
+}
+
+function applyAdProps() {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'ad') return;
+    recordHistory();
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    f.badge = document.getElementById('inspAdBadge').value;
+    f.title = document.getElementById('inspAdTitle').value;
+    f.subtitle = document.getElementById('inspAdSubtitle').value;
+    f.bg = document.getElementById('inspAdBg').value;
+    f.border = document.getElementById('inspAdBorder').value;
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
     markUnsaved();
 }
 
@@ -2143,6 +2686,10 @@ function duplicateSelected() {
 
 function deleteSelected() {
     if (!selectedFrame) return;
+    if (selectedFrame.dataset.locked === 'true') {
+        showToast('El elemento está bloqueado. Desbloquéalo primero para eliminarlo.', 'error');
+        return;
+    }
     recordHistory();
     const fId = selectedFrame.dataset.frameId;
     const page = currentEdicion.paginas[activePageIndex];
@@ -2156,8 +2703,131 @@ function deleteSelected() {
     showToast('Elemento eliminado', 'success');
 }
 
-// ── TEMPLATES LIBRARY (BOLIVIA & LATITUD 18) ────────
-function applyTemplate(type) {
+// ── TEMPLATES LIBRARY & IMPORT/EXPORT SUITE ──────────
+function loadTemplatesCatalog() {
+    fetch('{{ route("admin.periodico.templates.list") }}', {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.templates && Array.isArray(data.templates)) {
+            loadedTemplates = data.templates;
+            renderTemplateCards(loadedTemplates);
+        }
+    })
+    .catch(err => {
+        console.warn('No se pudo cargar el catálogo de plantillas remoto, usando plantillas locales.', err);
+        renderTemplateCards(loadedTemplates);
+    });
+}
+
+function renderTemplateCards(templates) {
+    const container = document.getElementById('templatesGridContainer');
+    if (!container) return;
+
+    const query = (document.getElementById('tplSearchInput')?.value || '').toLowerCase().trim();
+    let filtered = templates;
+
+    if (currentFilterCat === 'custom') {
+        filtered = filtered.filter(t => t.is_custom);
+    } else if (currentFilterCat !== 'all') {
+        filtered = filtered.filter(t => t.category === currentFilterCat);
+    }
+
+    if (query) {
+        filtered = filtered.filter(t => 
+            (t.name && t.name.toLowerCase().includes(query)) ||
+            (t.description && t.description.toLowerCase().includes(query)) ||
+            (t.category && t.category.toLowerCase().includes(query))
+        );
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 36px 12px; color: #94a3b8;">
+                <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5;"></i>
+                <h6 style="color: #cbd5e1; font-weight: 700;">No se encontraron plantillas</h6>
+                <p style="font-size: 0.72rem; margin: 0;">Prueba seleccionando otra categoría o guarda la página actual como una nueva plantilla personalizada.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const categoryIcons = {
+        portadas: 'fas fa-newspaper text-danger',
+        interior: 'fas fa-columns text-info',
+        opinion: 'fas fa-feather-alt text-warning',
+        deportes: 'fas fa-futbol text-danger',
+        contraportada: 'fas fa-book-open text-primary',
+        especial: 'fas fa-star text-warning',
+        general: 'fas fa-th-large text-secondary'
+    };
+
+    container.innerHTML = filtered.map(t => {
+        const iconClass = categoryIcons[t.category] || 'fas fa-th-large text-secondary';
+        const isCustom = !!t.is_custom;
+        const colorPill = t.preview_color || '#0284c7';
+        const framesCount = (t.frames || []).length;
+
+        return `
+            <div class="template-card" style="border-top: 3px solid ${colorPill};">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <span class="tpl-card-badge" style="background: rgba(255,255,255,0.08); color: ${colorPill};">
+                        ${t.category}
+                    </span>
+                    ${isCustom ? '<span class="badge bg-success" style="font-size:0.55rem;">Personalizada</span>' : ''}
+                </div>
+                <i class="${iconClass}"></i>
+                <h6>${t.name}</h6>
+                <p>${t.description || 'Maqueta periodística estructurada para InDesign.'}</p>
+                <div style="font-size:0.62rem;color:#64748b;margin-top:4px;">${framesCount} bloques incluidos</div>
+                <div class="tpl-card-actions">
+                    <button class="tpl-btn-apply" onclick="applyTemplateFromCatalog('${t.id}')">
+                        <i class="fas fa-check me-1"></i> Aplicar a Página
+                    </button>
+                    ${isCustom ? `
+                        <button class="tpl-btn-action" onclick="exportTemplateFile('${t.id}')" title="Exportar como .latitud-template">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="tpl-btn-action danger" onclick="deleteCustomTemplate('${t.id}')" title="Eliminar plantilla">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterTemplateCards(cat, btn) {
+    currentFilterCat = cat;
+    document.querySelectorAll('.tpl-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderTemplateCards(loadedTemplates);
+}
+
+function searchTemplates(query) {
+    renderTemplateCards(loadedTemplates);
+}
+
+function applyTemplateFromCatalog(tplId) {
+    let tpl = loadedTemplates.find(t => t.id === tplId);
+    if (!tpl) {
+        // Fallback for special blank template
+        if (tplId === 'blank') {
+            closeModal('templateModal');
+            recordHistory();
+            const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+            sheet.querySelectorAll('.id-frame').forEach(el => el.remove());
+            currentEdicion.paginas[activePageIndex].frames = [];
+            markUnsaved();
+            showToast('Lienzo en blanco aplicado', 'success');
+            return;
+        }
+        showToast('Plantilla no encontrada', 'error');
+        return;
+    }
+
     closeModal('templateModal');
     recordHistory();
 
@@ -2165,118 +2835,213 @@ function applyTemplate(type) {
     sheet.querySelectorAll('.id-frame').forEach(el => el.remove());
     currentEdicion.paginas[activePageIndex].frames = [];
 
-    const templates = {
-        la_estrella_portada: () => {
-            // 1. Cabecera Oficial
-            createCustomFrame({ type:'masthead', x:20, y:20, w:680, h:112, z:10,
-                newspaperName:'LA ESTRELLA', subBadge:'del Oriente',
-                motto:'EL PRIMER PERIÓDICO DE SANTA CRUZ • FUNDADO EN 1864',
-                editionDate:'Santa Cruz de la Sierra • ' + (currentEdicion.fecha || 'Domingo 6 de septiembre de 2026'),
-                editionNumber: currentEdicion.numero_edicion || 'N° 11.986 • 32 páginas',
-                price:'Precio en todo el país Bs 7,00',
-                leftEar:'CRE 100% Tarifa Equitativa en Santa Cruz',
-                rightEar:'DÓLAR BOLIVIA: Bs 12,58'
-            });
+    // Clona los marcos asignando nuevos IDs únicos
+    const clonedFrames = JSON.parse(JSON.stringify(tpl.frames || []));
+    clonedFrames.forEach((f, idx) => {
+        f.id = 'f-' + Date.now() + '-' + (++frameIdCounter);
+        currentEdicion.paginas[activePageIndex].frames.push(f);
+        const el = buildFrameElement(f, activePageIndex);
+        sheet.appendChild(el);
+    });
 
-            // 2. Titular Principal de Impacto con Kicker
-            createCustomFrame({ type:'headline', x:20, y:140, w:680, h:110, z:9,
-                kicker:'SEGURIDAD NACIONAL',
-                content:'<p style="font-family:\'Oswald\',sans-serif;font-size:34px;font-weight:700;line-height:1.08;color:#09090b;margin:0;">Viacha: hallan booster, pólvora negra y material bélico en zona afectada por explosiones</p>'
-            });
+    deselectAll();
+    markUnsaved();
+    showToast(`Plantilla "${tpl.name}" aplicada exitosamente a la página ${activePageIndex + 1}`, 'success');
+}
 
-            // 3. Sumario en 4 Columnas con Filetes
-            createCustomFrame({ type:'article', x:20, y:260, w:680, h:85, z:8, columns:4,
-                content:'<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11px;line-height:1.4;text-align:justify;color:#1e293b;margin:0;"><strong>RIESGO.</strong> La zona afectada por las explosiones en Viacha continúa en alto riesgo debido al hallazgo de pólvora negra y boosters de alto poder.<br><br><strong>INSPECCIÓN.</strong> El ministro de Defensa Ernesto Justiniano confirmó el uso de drones para identificar depósitos secundarios de munición militar. ► PÁG. 6</p>'
-            });
+// Compatibilidad con llamados directos anteriores
+function applyTemplate(type) {
+    const aliasMap = {
+        'la_estrella_portada': 'tpl_portada_tradicional',
+        'latitud18_broadsheet': 'tpl_portada_tabloide',
+        'editorial_opinion': 'tpl_opinion_editorial',
+        'comunidad_cultura': 'tpl_reportaje_4col',
+        'negocios_economia': 'tpl_reportaje_4col',
+        'blank': 'blank'
+    };
+    const targetId = aliasMap[type] || type;
+    applyTemplateFromCatalog(targetId);
+}
 
-            // 4. Filete Divisor
-            createCustomFrame({ type:'divider', x:20, y:355, w:680, h:4, z:5, color:'#cbd5e1' });
+// Guardar plantilla personalizada
+function openSaveTemplateModal() {
+    closeModal('templateModal');
+    document.getElementById('tplSaveName').value = `Plantilla Pág. ${activePageIndex + 1} - ${currentEdicion.titulo || 'Edición'}`;
+    openModal('saveTemplateModal');
+}
 
-            // 5. Fotonoticia Dominante
-            createCustomFrame({ type:'image', x:20, y:370, w:450, h:380, z:7,
-                src:'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1000&q=80',
-                caption:'CELEBRACIÓN. Una noche de música, danza y tradición reunió a más de 600 personas en la retreta cultural organizada por la CRE en homenaje al grito libertario de 1810 frente al "Arco de la Cruceñidad". ► PÁG. 3'
-            });
+function submitSaveTemplate() {
+    const name = document.getElementById('tplSaveName').value.trim();
+    const category = document.getElementById('tplSaveCategory').value;
+    const description = document.getElementById('tplSaveDescription').value.trim();
+    const previewColor = document.getElementById('tplSaveColor').value;
 
-            // 6. Columna Lateral de Noticias
-            createCustomFrame({ type:'box', x:485, y:370, w:215, h:185, z:6,
-                content:'<span style="font-size:9.5px;font-weight:800;color:#0B1F3A;text-transform:uppercase;">SEGURIDAD</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin:4px 0;">SURTIDOR OCULTÓ 3.000 LITROS DE COMBUSTIBLE</h6><p style="font-size:10.5px;color:#475569;line-height:1.35;margin:0;">Un surtidor de YPFB en Cabezas habría ocultado miles de litros de gasolina. ► PÁG. 10</p>'
-            });
+    if (!name) {
+        alert('Por favor introduce un nombre para la plantilla.');
+        return;
+    }
 
-            createCustomFrame({ type:'box', x:485, y:565, w:215, h:185, z:6,
-                content:'<span style="font-size:9.5px;font-weight:800;color:#D71920;text-transform:uppercase;">DEPORTES</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin:4px 0;">ORIENTE PETROLERO PIERDE 3 PUNTOS POR DEUDA</h6><p style="font-size:10.5px;color:#475569;line-height:1.35;margin:0;">El tribunal falló en contra por deuda pendiente con Diego Bejarano. ► PÁG. 15</p>'
-            });
+    const currentFrames = currentEdicion.paginas[activePageIndex]?.frames || [];
+    if (currentFrames.length === 0) {
+        if (!confirm('La página actual está vacía. ¿Deseas guardar una plantilla sin elementos?')) {
+            return;
+        }
+    }
 
-            // 7. Cintillo Inferior
-            createCustomFrame({ type:'box', x:20, y:765, w:680, h:45, z:5,
-                content:'<div style="display:flex;align-items:center;gap:8px;"><span style="background:#D71920;color:#fff;padding:2px 6px;font-size:9px;font-weight:800;">ALERTA</span><span style="font-size:11px;font-weight:700;color:#0f172a;">MENOR ABUSADA SEXUALMENTE FALLECE POR ENFERMEDAD DE TRANSMISIÓN ► PÁG. 9</span></div>'
-            });
+    fetch('{{ route("admin.periodico.templates.store") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
         },
+        body: JSON.stringify({
+            name: name,
+            category: category,
+            description: description,
+            preview_color: previewColor,
+            frames: currentFrames
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            closeModal('saveTemplateModal');
+            showToast('¡Plantilla guardada exitosamente en la biblioteca!', 'success');
+            loadTemplatesCatalog();
+            openModal('templateModal');
+        } else {
+            showToast(data.message || 'Error al guardar plantilla', 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error de conexión al guardar plantilla', 'error');
+    });
+}
 
-        latitud18_broadsheet: () => {
-            changePaperFormat('broadsheet');
-            createCustomFrame({ type:'masthead', x:20, y:20, w:780, h:110, z:10,
-                newspaperName:'LATITUD 18', subBadge:'EDICIÓN SEMANAL',
-                motto:'PERIODISMO INDEPENDIENTE • INFORMACIÓN SIN RUIDO',
-                editionDate:'Santa Cruz de la Sierra • Bolivia', editionNumber:'Edición Central', price:'Bs 7,00',
-                leftEar:'PORTAL 24/7 EN VIVO', rightEar:'COTIZACIÓN: Bs 12,58'
-            });
-            createCustomFrame({ type:'headline', x:20, y:140, w:780, h:100, z:9,
-                kicker:'INFORME ESPECIAL',
-                content:'<p style="font-family:\'Playfair Display\',serif;font-size:38px;font-weight:900;line-height:1.05;color:#0B1F3A;margin:0;">Crecimiento económico y reactivación productiva en el oriente boliviano</p>'
-            });
-            createCustomFrame({ type:'article', x:20, y:250, w:780, h:200, z:8, columns:5,
-                content:'<p style="font-family:\'Source Sans 3\',sans-serif;font-size:12px;line-height:1.5;text-align:justify;color:#1e293b;">Análisis exhaustivo sobre el desempeño de los sectores agroindustrial, forestal y tecnológico en el departamento de Santa Cruz durante el último trimestre.</p>'
-            });
-        },
-
-        editorial_opinion: () => {
-            createCustomFrame({ type:'box', x:20, y:20, w:680, h:36, z:5,
-                content:'<div style="background:#0B1F3A;color:#fff;padding:6px 12px;font-family:\'Anton\',sans-serif;font-size:18px;letter-spacing:1px;">EDITORIAL & OPINIÓN REGIONAL</div>'
-            });
-            createCustomFrame({ type:'headline', x:20, y:65, w:450, h:60, z:6,
-                content:'<p style="font-family:\'Playfair Display\',serif;font-size:24px;font-weight:900;font-style:italic;color:#0B1F3A;margin:0;">Preocupante inseguridad en recintos oficiales</p>'
-            });
-            createCustomFrame({ type:'article', x:20, y:130, w:450, h:380, z:6, columns:2,
-                content:'<p style="font-family:\'Source Sans 3\',sans-serif;font-size:12.5px;line-height:1.6;text-align:justify;color:#1e293b;"><span style="font-family:\'Anton\',sans-serif;font-size:38px;float:left;line-height:0.8;margin-right:6px;color:#D71920;">E</span>n los últimos meses se registraron cuatro incidentes relacionados con la seguridad en instalaciones públicas. El último ocurrió en Viacha, encendiendo las alarmas sobre las condiciones de control.</p>'
-            });
-            createCustomFrame({ type:'quote', x:485, y:65, w:215, h:150, z:7,
-                content:'<p style="font-size:14px;font-style:italic;line-height:1.35;margin:0;">"No solo se debe aclarar lo sucedido, sino adoptar medidas preventivas urgentes."</p><small style="display:block;margin-top:8px;font-weight:800;color:#D71920;">— CONSEJO EDITORIAL</small>'
-            });
-        },
-
-        comunidad_cultura: () => {
-            createCustomFrame({ type:'box', x:20, y:20, w:680, h:34, z:5,
-                content:'<div style="background:#0284c7;color:#fff;padding:6px 12px;font-family:\'Oswald\',sans-serif;font-size:16px;font-weight:700;">COMUNIDAD & IDENTIDAD CRUCEÑA</div>'
-            });
-            createCustomFrame({ type:'image', x:20, y:65, w:680, h:320, z:6,
-                src:'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1000&q=80',
-                caption:'TRADICIÓN. Más de 600 personas disfrutaron de taquiraris y danzas tradicionales.'
-            });
-            createCustomFrame({ type:'article', x:20, y:400, w:680, h:200, z:6, columns:4,
-                content:'<p style="font-size:11.5px;line-height:1.45;text-align:justify;color:#1e293b;">Una velada histórica con música y cultura reunió a las familias de Santa Cruz en el paseo del Arco de la Cruceñidad.</p>'
-            });
-        },
-
-        negocios_economia: () => {
-            createCustomFrame({ type:'box', x:20, y:20, w:680, h:34, z:5,
-                content:'<div style="background:#059669;color:#fff;padding:6px 12px;font-family:\'Oswald\',sans-serif;font-size:16px;font-weight:700;">NEGOCIOS & ECONOMÍA</div>'
-            });
-            createCustomFrame({ type:'headline', x:20, y:65, w:680, h:80, z:6,
-                kicker:'RUEDA DE NEGOCIOS 2026',
-                content:'<p style="font-family:\'Oswald\',sans-serif;font-size:28px;font-weight:700;color:#064e3b;margin:0;">Encuentro forestal cierra con $us 3,5 MM en intenciones comerciales</p>'
-            });
-            createCustomFrame({ type:'article', x:20, y:150, w:680, h:220, z:6, columns:4,
-                content:'<p style="font-size:11.5px;line-height:1.45;text-align:justify;color:#1e293b;">Durante cuatro horas de intensas negociaciones, 195 empresas nacionales e internacionales consolidaron acuerdos para la industria forestal sostenible.</p>'
-            });
-        },
-
-        blank: () => {}
+// Exportar plantilla actual como archivo descargable .latitud-template
+function exportCurrentAsTemplateFile() {
+    const currentFrames = currentEdicion.paginas[activePageIndex]?.frames || [];
+    const templateData = {
+        file_type: 'latitud-template',
+        version: '1.0',
+        exported_at: new Date().toISOString(),
+        template: {
+            name: `${currentEdicion.titulo || 'Periódico'} - Pág. ${activePageIndex + 1}`,
+            category: 'especial',
+            description: `Exportado desde la edición ${currentEdicion.numero_edicion}`,
+            preview_color: '#0284c7',
+            frames: currentFrames
+        }
     };
 
-    if (templates[type]) templates[type]();
-    markUnsaved();
-    showToast('Plantilla aplicada exitosamente', 'success');
+    downloadJsonAsFile(templateData, `plantilla_pag_${activePageIndex + 1}.latitud-template`);
+    showToast('Archivo .latitud-template descargado con éxito', 'success');
+}
+
+function exportTemplateFile(tplId) {
+    const tpl = loadedTemplates.find(t => t.id === tplId);
+    if (!tpl) return;
+
+    const templateData = {
+        file_type: 'latitud-template',
+        version: '1.0',
+        exported_at: new Date().toISOString(),
+        template: tpl
+    };
+
+    downloadJsonAsFile(templateData, `${tpl.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}.latitud-template`);
+    showToast(`Plantilla "${tpl.name}" exportada`, 'success');
+}
+
+function downloadJsonAsFile(obj, filename) {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute('href', dataStr);
+    a.setAttribute('download', filename);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+// Importar plantilla desde archivo
+function openImportTemplateModal() {
+    closeModal('templateModal');
+    document.getElementById('templateFileInput').value = '';
+    document.getElementById('selectedTemplateFileInfo').style.display = 'none';
+    document.getElementById('btnSubmitImportTpl').disabled = true;
+    openModal('importTemplateModal');
+}
+
+function onTemplateFileSelected(input) {
+    const file = input.files[0];
+    if (file) {
+        document.getElementById('selectedTemplateFileName').textContent = file.name;
+        document.getElementById('selectedTemplateFileInfo').style.display = 'block';
+        document.getElementById('btnSubmitImportTpl').disabled = false;
+    }
+}
+
+function submitImportTemplate() {
+    const input = document.getElementById('templateFileInput');
+    const file = input.files[0];
+    if (!file) return;
+
+    const fd = new FormData();
+    fd.append('template_file', file);
+    fd.append('_token', '{{ csrf_token() }}');
+
+    const btn = document.getElementById('btnSubmitImportTpl');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importando...';
+
+    fetch('{{ route("admin.periodico.templates.import") }}', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: fd
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Importar Plantilla';
+
+        if (data.success) {
+            closeModal('importTemplateModal');
+            showToast(data.message || '¡Plantilla importada con éxito!', 'success');
+            loadTemplatesCatalog();
+            openModal('templateModal');
+        } else {
+            showToast(data.message || 'Error al importar archivo', 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Importar Plantilla';
+        showToast('Error al procesar el archivo de plantilla', 'error');
+    });
+}
+
+function deleteCustomTemplate(tplId) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta plantilla de la biblioteca?')) return;
+
+    fetch(`{{ url('/admin/periodico/templates') }}/${tplId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        showToast('Plantilla eliminada de la biblioteca', 'success');
+        loadTemplatesCatalog();
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error al eliminar plantilla', 'error');
+    });
 }
 
 function createCustomFrame(fData) {
@@ -2372,28 +3137,148 @@ function toggleMargins() {
 // ── UNDO / REDO ────────────────────────────────────
 function recordHistory() {
     undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
-    if (undoHistory.length > 25) undoHistory.shift();
+// ── EDITORIAL WORKFLOW & PUBLICATION SUITE ─────────
+function toggleStateDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('editorialDropdownMenu')?.classList.toggle('show');
+}
+
+document.addEventListener('click', () => {
+    document.getElementById('editorialDropdownMenu')?.classList.remove('show');
+});
+
+function updateEditorialState(estado, fechaProgramada = null) {
+    document.getElementById('editorialDropdownMenu')?.classList.remove('show');
+
+    fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}/estado`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            estado: estado,
+            fecha_programada: fechaProgramada
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            currentEdicion.estado = estado;
+            if (fechaProgramada) currentEdicion.fecha_programada = fechaProgramada;
+            if (estado === 'publicado') currentEdicion.publicada = true;
+            else if (estado === 'programado') currentEdicion.publicada = false;
+
+            updateTopBarBadges(estado, fechaProgramada);
+            showToast(data.message || `Estado editorial actualizado a: ${estado}`, 'success');
+        } else {
+            showToast(data.message || 'Error al actualizar estado editorial', 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error de conexión al actualizar estado editorial', 'error');
+    });
+}
+
+function updateTopBarBadges(estado, fechaProgramada = null) {
+    const states = {
+        borrador:   { class: 'bg-secondary text-white', icon: 'fas fa-circle', text: 'Borrador' },
+        revision:   { class: 'bg-warning text-dark',    icon: 'fas fa-eye',    text: 'En Revisión' },
+        aprobado:   { class: 'bg-info text-white',      icon: 'fas fa-check',  text: 'Aprobado' },
+        programado: { class: 'text-white', style: 'background:#9333ea;', icon: 'fas fa-clock', text: 'Programado' },
+        publicado:  { class: 'bg-success text-white',   icon: 'fas fa-check-double', text: 'Publicada' }
+    };
+    const s = states[estado] || states.borrador;
+
+    // Menubar badge
+    const mbBadge = document.getElementById('topBarStateBadge');
+    const mbText  = document.getElementById('topBarStateText');
+    if (mbBadge) {
+        mbBadge.className = `badge ${s.class}`;
+        mbBadge.setAttribute('style', `font-size:0.65rem;padding:3px 6px;${s.style || ''}`);
+        if (mbText) mbText.textContent = s.text;
+    }
+
+    // Page title badge
+    const ptBadge = document.getElementById('pageStatusBadge');
+    if (ptBadge) {
+        ptBadge.className = `badge ${s.class}`;
+        ptBadge.setAttribute('style', `font-size:0.72rem;padding:4px 8px;${s.style || ''}`);
+        ptBadge.innerHTML = `<i class="${s.icon} me-1"></i> <span>${s.text}</span>`;
+    }
+
+    // Quick publish button
+    const pubBtn = document.getElementById('publishBtn');
+    const pubLbl = document.getElementById('publishBtnLabel');
+    if (pubBtn && pubLbl) {
+        if (estado === 'publicado') {
+            pubBtn.className = 'id-btn id-btn-success';
+            pubLbl.textContent = 'Publicado';
+        } else {
+            pubBtn.className = 'id-btn id-btn-danger';
+            pubLbl.textContent = 'Publicar Edición';
+        }
+    }
+}
+
+function setQuickSchedule(daysAhead) {
+    const now = new Date();
+    now.setDate(now.getDate() + daysAhead);
+    now.setHours(6, 0, 0, 0);
+    const isoLocal = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById('schedDateTimeInput').value = isoLocal;
+}
+
+function submitSchedulePublication() {
+    const dtVal = document.getElementById('schedDateTimeInput').value;
+    if (!dtVal) {
+        alert('Por favor selecciona una fecha y hora válida.');
+        return;
+    }
+    closeModal('scheduleModal');
+    updateEditorialState('programado', dtVal);
+}
+
+function toggleSnapGrid() {
+    snapGridActive = !snapGridActive;
+    const btn = document.getElementById('snapToggleBtn');
+    if (btn) btn.classList.toggle('active', snapGridActive);
+    showToast(snapGridActive ? 'Ajuste magnético a cuadrícula (10px) ACTIVADO' : 'Ajuste magnético DESACTIVADO', 'success');
+}
+
+// ── UNDO / REDO ────────────────────────────────────
+function recordHistory() {
+    undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
+    if (undoHistory.length > 40) undoHistory.shift();
     redoHistory = [];
 }
 
 function undoAction() {
-    if (undoHistory.length === 0) return;
+    if (undoHistory.length === 0) {
+        showToast('No hay más acciones para deshacer', 'info');
+        return;
+    }
     redoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
     currentEdicion = undoHistory.pop();
     renderAllPages();
     switchPage(activePageIndex);
     markUnsaved();
-    showToast('Acción deshecha', 'success');
+    showToast('Acción deshecha (Ctrl+Z)', 'success');
 }
 
 function redoAction() {
-    if (redoHistory.length === 0) return;
+    if (redoHistory.length === 0) {
+        showToast('No hay más acciones para rehacer', 'info');
+        return;
+    }
     undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
     currentEdicion = redoHistory.pop();
     renderAllPages();
     switchPage(activePageIndex);
     markUnsaved();
-    showToast('Acción rehecha', 'success');
+    showToast('Acción rehecha (Ctrl+Y)', 'success');
 }
 
 function setupKeyboard() {
@@ -2407,8 +3292,9 @@ function setupKeyboard() {
 
         if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoAction(); }
-        if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redoAction(); }
+        if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoAction(); }
+        if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redoAction(); }
+        if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) { e.preventDefault(); toggleLockSelected(); }
         if (e.key === 'Delete' || e.key === 'Backspace') {
             if (selectedFrame) { e.preventDefault(); deleteSelected(); }
         }
@@ -2420,6 +3306,8 @@ function setupKeyboard() {
         if (e.key === 'q' || e.key === 'Q') createSpecialElement('quote');
         if (e.key === 'b' || e.key === 'B') createSpecialElement('box');
         if (e.key === 'l' || e.key === 'L') createSpecialElement('divider');
+        if (e.key === 'k' || e.key === 'K') createSpecialElement('qr');
+        if (e.key === 'p' || e.key === 'P') createSpecialElement('ad');
         if (e.key === 'n' || e.key === 'N') toggleNewsDrawer();
     });
 }

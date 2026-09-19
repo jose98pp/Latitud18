@@ -30,6 +30,39 @@ class PeriodicoPublicController extends Controller
             $adminController->saveAllEdiciones($ediciones);
         }
 
+        // Auto-publicar ediciones programadas cuya fecha ya ha llegado
+        $modified = false;
+        $now = now();
+
+        foreach ($ediciones as &$ed) {
+            if (($ed['estado'] ?? '') === 'programado' && !empty($ed['fecha_programada'])) {
+                $schedTime = strtotime($ed['fecha_programada']);
+                if ($schedTime && $schedTime <= $now->timestamp) {
+                    $ed['estado'] = 'publicado';
+                    $ed['publicada'] = true;
+                    $ed['activa'] = true;
+                    $ed['fecha_publicacion'] = $now->toISOString();
+                    $modified = true;
+                }
+            }
+        }
+        unset($ed);
+
+        if ($modified) {
+            $activeFound = false;
+            foreach ($ediciones as &$ed) {
+                if (!empty($ed['activa']) && !empty($ed['publicada'])) {
+                    if ($activeFound) {
+                        $ed['activa'] = false;
+                    } else {
+                        $activeFound = true;
+                    }
+                }
+            }
+            unset($ed);
+            $adminController->saveAllEdiciones($ediciones);
+        }
+
         $edicionActiva = null;
 
         // Buscar la que esté marcada como activa

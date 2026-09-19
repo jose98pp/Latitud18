@@ -175,11 +175,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/', [PeriodicoController::class, 'store'])->name('store');
         Route::put('/{id}', [PeriodicoController::class, 'update'])->name('update');
         Route::post('/{id}/publish', [PeriodicoController::class, 'publish'])->name('publish');
+        Route::post('/{id}/estado', [PeriodicoController::class, 'updateEstado'])->name('updateEstado');
         Route::post('/{id}/upload-pdf', [PeriodicoController::class, 'uploadPdf'])->name('uploadPdf');
         Route::post('/upload-image', [PeriodicoController::class, 'uploadImage'])->name('uploadImage');
         Route::delete('/{id}', [PeriodicoController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [PeriodicoController::class, 'generatePdf'])->name('pdf');
         Route::get('/noticias/{categoryId}', [PeriodicoController::class, 'getNoticiasByCategory'])->name('noticias');
+        
+        // Rutas de Plantillas InDesign
+        Route::get('/templates/list', [PeriodicoController::class, 'getTemplates'])->name('templates.list');
+        Route::post('/templates', [PeriodicoController::class, 'storeTemplate'])->name('templates.store');
+        Route::post('/templates/import', [PeriodicoController::class, 'importTemplate'])->name('templates.import');
+        Route::delete('/templates/{id}', [PeriodicoController::class, 'deleteTemplate'])->name('templates.destroy');
     });
 
     // Configuración del Portal & Streaming

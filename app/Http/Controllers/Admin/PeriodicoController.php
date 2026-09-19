@@ -11,10 +11,12 @@ use Illuminate\Support\Str;
 class PeriodicoController extends Controller
 {
     private string $storagePath;
+    private string $templatesPath;
 
     public function __construct()
     {
         $this->storagePath = storage_path('app/periodicos.json');
+        $this->templatesPath = storage_path('app/periodico_templates.json');
     }
 
     /**
@@ -91,6 +93,8 @@ class PeriodicoController extends Controller
         if (!empty($validated['precio'])) $nuevaEdicion['precio'] = $validated['precio'];
         $nuevaEdicion['publicada'] = false;
         $nuevaEdicion['activa'] = false;
+        $nuevaEdicion['estado'] = 'borrador';
+        $nuevaEdicion['fecha_programada'] = null;
         $nuevaEdicion['created_at'] = now()->toISOString();
         $nuevaEdicion['updated_at'] = now()->toISOString();
 
@@ -158,6 +162,8 @@ class PeriodicoController extends Controller
         if (isset($data['ciudad'])) $ediciones[$foundIndex]['ciudad'] = $data['ciudad'];
         if (isset($data['slogan'])) $ediciones[$foundIndex]['slogan'] = $data['slogan'];
         if (isset($data['publicada'])) $ediciones[$foundIndex]['publicada'] = (bool)$data['publicada'];
+        if (isset($data['estado'])) $ediciones[$foundIndex]['estado'] = $data['estado'];
+        if (isset($data['fecha_programada'])) $ediciones[$foundIndex]['fecha_programada'] = $data['fecha_programada'];
         if (isset($data['pdf_url'])) $ediciones[$foundIndex]['pdf_url'] = $data['pdf_url'];
 
         // Actualizar estructura de páginas
@@ -219,6 +225,66 @@ class PeriodicoController extends Controller
 
         return redirect()->route('admin.periodico.index', ['edicion_id' => $id])
             ->with('success', '¡Edición semanal publicada con éxito en la página web!');
+    }
+
+    /**
+     * Actualiza el estado editorial de la edición (Flujo de trabajo de 5 estados)
+     * Borrador -> En Revisión -> Aprobado -> Programado -> Publicado
+     */
+    public function updateEstado(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'estado' => 'required|string|in:borrador,revision,aprobado,programado,publicado',
+            'fecha_programada' => 'nullable|string'
+        ]);
+
+        $ediciones = $this->getAllEdiciones();
+        $found = false;
+        $edicionActualizada = null;
+
+        foreach ($ediciones as &$ed) {
+            if ($ed['id'] === $id) {
+                $ed['estado'] = $validated['estado'];
+                $ed['fecha_programada'] = $validated['fecha_programada'] ?? ($ed['fecha_programada'] ?? null);
+                $ed['updated_at'] = now()->toISOString();
+                
+                if ($validated['estado'] === 'publicado') {
+                    $ed['publicada'] = true;
+                    $ed['activa'] = true;
+                    $ed['fecha_publicacion'] = now()->toISOString();
+                } elseif ($validated['estado'] === 'programado') {
+                    $ed['publicada'] = false;
+                    $ed['activa'] = false;
+                }
+                $found = true;
+                $edicionActualizada = $ed;
+                break;
+            }
+        }
+        unset($ed);
+
+        if (!$found) {
+            return response()->json(['success' => false, 'message' => 'Edición no encontrada.'], 404);
+        }
+
+        if ($validated['estado'] === 'publicado') {
+            foreach ($ediciones as &$ed) {
+                if ($ed['id'] !== $id) {
+                    $ed['activa'] = false;
+                }
+            }
+            unset($ed);
+        }
+
+        $this->saveAllEdiciones($ediciones);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado editorial actualizado a: ' . ucfirst($validated['estado']),
+            'estado' => $validated['estado'],
+            'fecha_programada' => $edicionActualizada['fecha_programada'] ?? null,
+            'edicion' => $edicionActualizada
+        ]);
     }
 
     /**
@@ -409,6 +475,8 @@ class PeriodicoController extends Controller
             'num_paginas' => 4,
             'publicada' => true,
             'activa' => true,
+            'estado' => 'publicado',
+            'fecha_programada' => null,
             'pdf_url' => null,
             'created_at' => now()->toISOString(),
             'updated_at' => now()->toISOString(),
@@ -613,6 +681,474 @@ class PeriodicoController extends Controller
                             'La propuesta fue expuesta durante el Segundo Simposio Internacional realizado en Santa Cruz, donde se recomendaron combinaciones de híbridos con métodos de control biológico.',
                             'Navia explicó que los microorganismos benéficos del suelo pueden ser identificados y multiplicados para elaborar bioinsumos que protejan las raíces y mejoren el rendimiento.'
                         ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Obtiene el catálogo completo de plantillas InDesign
+     */
+    public function getTemplates()
+    {
+        $templates = $this->getAllTemplates();
+        return response()->json([
+            'success' => true,
+            'templates' => $templates
+        ]);
+    }
+
+    /**
+     * Lee las plantillas guardadas o inicializa el catálogo maestro
+     */
+    public function getAllTemplates(): array
+    {
+        if (!file_exists($this->templatesPath)) {
+            $defaults = $this->getDefaultTemplatesCatalog();
+            $this->saveAllTemplates($defaults);
+            return $defaults;
+        }
+
+        $content = file_get_contents($this->templatesPath);
+        $data = json_decode($content, true) ?: [];
+        if (empty($data)) {
+            $data = $this->getDefaultTemplatesCatalog();
+            $this->saveAllTemplates($data);
+        }
+        return $data;
+    }
+
+    /**
+     * Guarda el listado de plantillas en disco
+     */
+    public function saveAllTemplates(array $templates): void
+    {
+        $dir = dirname($this->templatesPath);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        file_put_contents($this->templatesPath, json_encode($templates, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Guarda una nueva plantilla personalizada a partir de la página actual
+     */
+    public function storeTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'category' => 'required|string|max:50',
+            'description' => 'nullable|string|max:500',
+            'frames' => 'required|array',
+            'preview_color' => 'nullable|string|max:30',
+        ]);
+
+        $templates = $this->getAllTemplates();
+        $newTemplate = [
+            'id' => 'tpl_' . time() . '_' . Str::random(5),
+            'name' => $validated['name'],
+            'category' => $validated['category'],
+            'description' => $validated['description'] ?? '',
+            'preview_color' => $validated['preview_color'] ?? '#1e293b',
+            'frames' => $validated['frames'],
+            'created_at' => now()->toISOString(),
+            'is_custom' => true,
+        ];
+
+        $templates[] = $newTemplate;
+        $this->saveAllTemplates($templates);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plantilla "' . $newTemplate['name'] . '" guardada exitosamente.',
+            'template' => $newTemplate
+        ]);
+    }
+
+    /**
+     * Importa una plantilla desde archivo .latitud-template o JSON subido
+     */
+    public function importTemplate(Request $request)
+    {
+        $request->validate([
+            'template_file' => 'required|file|max:10240',
+        ]);
+
+        $file = $request->file('template_file');
+        $content = file_get_contents($file->getRealPath());
+        $data = json_decode($content, true);
+
+        if (!$data || (!isset($data['frames']) && !isset($data['template']['frames']))) {
+            return response()->json(['success' => false, 'message' => 'El archivo no contiene una estructura válida de plantilla .latitud-template.'], 422);
+        }
+
+        $templateData = isset($data['template']) ? $data['template'] : $data;
+
+        $templates = $this->getAllTemplates();
+        $newTemplate = [
+            'id' => 'tpl_imp_' . time() . '_' . Str::random(5),
+            'name' => ($templateData['name'] ?? 'Plantilla Importada') . ' (Importada)',
+            'category' => $templateData['category'] ?? 'general',
+            'description' => $templateData['description'] ?? 'Plantilla importada desde archivo externo',
+            'preview_color' => $templateData['preview_color'] ?? '#0284c7',
+            'frames' => $templateData['frames'] ?? [],
+            'created_at' => now()->toISOString(),
+            'is_custom' => true,
+        ];
+
+        $templates[] = $newTemplate;
+        $this->saveAllTemplates($templates);
+
+        return response()->json([
+            'success' => true,
+            'message' => '¡Plantilla "' . $newTemplate['name'] . '" importada exitosamente!',
+            'template' => $newTemplate
+        ]);
+    }
+
+    /**
+     * Elimina una plantilla personalizada
+     */
+    public function deleteTemplate($id)
+    {
+        $templates = $this->getAllTemplates();
+        $filtered = array_values(array_filter($templates, fn($t) => $t['id'] !== $id));
+
+        $this->saveAllTemplates($filtered);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plantilla eliminada de la biblioteca.'
+        ]);
+    }
+
+    /**
+     * Catálogo maestro inicial de plantillas InDesign
+     */
+    public function getDefaultTemplatesCatalog(): array
+    {
+        return [
+            [
+                'id' => 'tpl_portada_tradicional',
+                'name' => 'Portada Tradicional (Gran Formato)',
+                'category' => 'portadas',
+                'description' => 'Diseño clásico de primera plana: cabecera oficial con orejas de cotización, gran titular a 4 columnas, sumario, fotonoticia principal y llamadas laterales.',
+                'preview_color' => '#D71920',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-1',
+                        'type' => 'masthead',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 112, 'z' => 10,
+                        'newspaperName' => 'LA ESTRELLA',
+                        'subBadge' => 'del Oriente',
+                        'motto' => 'EL PRIMER PERIÓDICO DE SANTA CRUZ • FUNDADO EN 1864',
+                        'editionDate' => 'Santa Cruz de la Sierra • Bolivia',
+                        'editionNumber' => 'N° 11.986 • 32 páginas',
+                        'price' => 'Bs 7,00',
+                        'leftEar' => 'CRE 100% Tarifa Equitativa',
+                        'rightEar' => 'DÓLAR: Bs 12,58'
+                    ],
+                    [
+                        'id' => 'f-tpl-2',
+                        'type' => 'headline',
+                        'x' => 20, 'y' => 140, 'w' => 680, 'h' => 110, 'z' => 9,
+                        'kicker' => 'SEGURIDAD NACIONAL',
+                        'content' => '<p style="font-family:\'Oswald\',sans-serif;font-size:34px;font-weight:700;line-height:1.08;color:#09090b;margin:0;">Viacha: hallan booster, pólvora negra y material bélico en zona afectada por explosiones</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-3',
+                        'type' => 'article',
+                        'x' => 20, 'y' => 260, 'w' => 680, 'h' => 85, 'z' => 8,
+                        'columns' => 4,
+                        'content' => '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11px;line-height:1.4;text-align:justify;color:#1e293b;margin:0;"><strong>RIESGO.</strong> La zona afectada por las explosiones en Viacha continúa en alto riesgo debido al hallazgo de pólvora negra y boosters de alto poder.<br><br><strong>INSPECCIÓN.</strong> El ministro de Defensa Ernesto Justiniano confirmó el uso de drones para identificar depósitos secundarios de munición militar. ► PÁG. 6</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-4',
+                        'type' => 'divider',
+                        'x' => 20, 'y' => 355, 'w' => 680, 'h' => 4, 'z' => 5,
+                        'color' => '#cbd5e1'
+                    ],
+                    [
+                        'id' => 'f-tpl-5',
+                        'type' => 'image',
+                        'x' => 20, 'y' => 370, 'w' => 450, 'h' => 380, 'z' => 7,
+                        'src' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1000&q=80',
+                        'caption' => 'CELEBRACIÓN. Una noche de música, danza y tradición reunió a más de 600 personas en la retreta cultural organizada por la CRE en homenaje al grito libertario de 1810 frente al "Arco de la Cruceñidad". ► PÁG. 3'
+                    ],
+                    [
+                        'id' => 'f-tpl-6',
+                        'type' => 'box',
+                        'x' => 485, 'y' => 370, 'w' => 215, 'h' => 185, 'z' => 6,
+                        'content' => '<span style="font-size:9.5px;font-weight:800;color:#0B1F3A;text-transform:uppercase;">SEGURIDAD</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin:4px 0;">SURTIDOR OCULTÓ 3.000 LITROS DE COMBUSTIBLE</h6><p style="font-size:10.5px;color:#475569;line-height:1.35;margin:0;">Un surtidor de YPFB en Cabezas habría ocultado miles de litros de gasolina. ► PÁG. 10</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-7',
+                        'type' => 'box',
+                        'x' => 485, 'y' => 565, 'w' => 215, 'h' => 185, 'z' => 6,
+                        'content' => '<span style="font-size:9.5px;font-weight:800;color:#D71920;text-transform:uppercase;">DEPORTES</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:15px;font-weight:700;line-height:1.2;margin:4px 0;">ORIENTE PETROLERO PIERDE 3 PUNTOS POR DEUDA</h6><p style="font-size:10.5px;color:#475569;line-height:1.35;margin:0;">El tribunal falló en contra por deuda pendiente con Diego Bejarano. ► PÁG. 15</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-8',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 765, 'w' => 680, 'h' => 45, 'z' => 5,
+                        'content' => '<div style="display:flex;align-items:center;gap:8px;"><span style="background:#D71920;color:#fff;padding:2px 6px;font-size:9px;font-weight:800;">ALERTA</span><span style="font-size:11px;font-weight:700;color:#0f172a;">MENOR ABUSADA SEXUALMENTE FALLECE POR ENFERMEDAD DE TRANSMISIÓN ► PÁG. 9</span></div>'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'tpl_portada_tabloide',
+                'name' => 'Portada Tabloide / Moderna',
+                'category' => 'portadas',
+                'description' => 'Diseño contemporáneo de alto contraste: gran imagen hero a sangre, titular tipográfico audaz superpuesto y cuadrícula inferior de noticias.',
+                'preview_color' => '#0284c7',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-tab-1',
+                        'type' => 'masthead',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 90, 'z' => 10,
+                        'newspaperName' => 'LATITUD 18',
+                        'subBadge' => 'TABLOIDE',
+                        'motto' => 'EL DIARIO DIGITAL DE BOLIVIA • EDICIÓN ESPECIAL',
+                        'editionDate' => 'Santa Cruz de la Sierra',
+                        'editionNumber' => 'Edición Central',
+                        'price' => 'Bs 7,00',
+                        'leftEar' => 'PORTAL DIGITAL',
+                        'rightEar' => 'COTIZACIÓN: Bs 12,58'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-2',
+                        'type' => 'image',
+                        'x' => 20, 'y' => 120, 'w' => 680, 'h' => 360, 'z' => 5,
+                        'src' => 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000&q=80',
+                        'caption' => 'IMPACTO. Emergencia climática y sequía movilizan brigadas de rescate en la Chiquitania boliviana.'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-3',
+                        'type' => 'headline',
+                        'x' => 40, 'y' => 340, 'w' => 640, 'h' => 120, 'z' => 9,
+                        'kicker' => 'PRIMERA PLANA',
+                        'content' => '<p style="font-family:\'Montserrat\',sans-serif;font-size:30px;font-weight:900;line-height:1.05;color:#ffffff;text-shadow:0 3px 12px rgba(0,0,0,0.85);margin:0;">ALERTA ROJA EN LA CHIQUITANIA POR INCENDIOS Y OLA DE CALOR EXTREMO</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-4',
+                        'type' => 'divider',
+                        'x' => 20, 'y' => 490, 'w' => 680, 'h' => 4, 'z' => 5,
+                        'color' => '#D71920'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-5',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 510, 'w' => 215, 'h' => 250, 'z' => 6,
+                        'content' => '<img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&q=80" style="width:100%;height:110px;object-fit:cover;border-radius:2px;margin-bottom:6px;"><span style="font-size:9px;font-weight:800;color:#0284c7;text-transform:uppercase;">ECONOMÍA</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:14px;font-weight:700;line-height:1.2;margin:2px 0;">Dólar paralelo marca nuevo récord y presiona importaciones</h6><p style="font-size:10px;color:#64748b;line-height:1.3;margin:0;">Sectores comerciales piden medidas urgentes al Banco Central.</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-6',
+                        'type' => 'box',
+                        'x' => 250, 'y' => 510, 'w' => 220, 'h' => 250, 'z' => 6,
+                        'content' => '<img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80" style="width:100%;height:110px;object-fit:cover;border-radius:2px;margin-bottom:6px;"><span style="font-size:9px;font-weight:800;color:#16a34a;text-transform:uppercase;">DEPORTES</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:14px;font-weight:700;line-height:1.2;margin:2px 0;">Bolívar y The Strongest listos para el súper clásico paceño</h6><p style="font-size:10px;color:#64748b;line-height:1.3;margin:0;">El Hernando Siles espera a más de 35.000 espectadores este domingo.</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-tab-7',
+                        'type' => 'box',
+                        'x' => 485, 'y' => 510, 'w' => 215, 'h' => 250, 'z' => 6,
+                        'content' => '<img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&q=80" style="width:100%;height:110px;object-fit:cover;border-radius:2px;margin-bottom:6px;"><span style="font-size:9px;font-weight:800;color:#9333ea;text-transform:uppercase;">CULTURA</span><h6 style="font-family:\'Oswald\',sans-serif;font-size:14px;font-weight:700;line-height:1.2;margin:2px 0;">Festival Internacional de Teatro abre telón en Santa Cruz</h6><p style="font-size:10px;color:#64748b;line-height:1.3;margin:0;">Compañías de 12 países presentarán más de 40 obras gratuitas.</p>'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'tpl_reportaje_4col',
+                'name' => 'Interior: Reportaje a 4 Columnas',
+                'category' => 'interior',
+                'description' => 'Maqueta editorial a 4 columnas con cintillo de sección superior, gran titular, bajada explicativa, dropcap y recuadro de infografía/datos clave.',
+                'preview_color' => '#0f766e',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-rep-1',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 32, 'z' => 5,
+                        'content' => '<div style="background:#0F172A;color:#fff;padding:6px 12px;font-family:\'Anton\',sans-serif;font-size:16px;letter-spacing:1px;display:flex;justify-content:space-between;"><span>INFORME ESPECIAL // INVESTIGACIÓN</span><span>PÁGINA INTERIOR</span></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-rep-2',
+                        'type' => 'headline',
+                        'x' => 20, 'y' => 65, 'w' => 680, 'h' => 85, 'z' => 8,
+                        'kicker' => 'EXPANSIÓN PRODUCTIVA',
+                        'content' => '<p style="font-family:\'Playfair Display\',serif;font-size:32px;font-weight:900;line-height:1.1;color:#0f172a;margin:0;">La transición energética e industrial impulsa inversiones millonarias en el oriente boliviano</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-rep-3',
+                        'type' => 'quote',
+                        'x' => 20, 'y' => 160, 'w' => 680, 'h' => 55, 'z' => 7,
+                        'content' => '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:14px;font-style:italic;color:#475569;line-height:1.35;margin:0;">Con una inyección de capital estimada en más de $us 280 millones, proyectos de biomasa, energía solar y agroindustria transforman los corredores productivos de Santa Cruz y Beni.</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-rep-4',
+                        'type' => 'image',
+                        'x' => 20, 'y' => 230, 'w' => 430, 'h' => 240, 'z' => 7,
+                        'src' => 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
+                        'caption' => 'INFRAESTRUCTURA. Planta generadora en construcción en la zona industrial cruceña.'
+                    ],
+                    [
+                        'id' => 'f-tpl-rep-5',
+                        'type' => 'box',
+                        'x' => 465, 'y' => 230, 'w' => 235, 'h' => 240, 'z' => 6,
+                        'content' => '<div style="background:#f1f5f9;border-left:4px solid #0284c7;padding:12px;height:100%;box-sizing:border-box;"><h6 style="font-size:12px;font-weight:900;color:#0b1f3a;margin-bottom:8px;text-transform:uppercase;">CIFRAS CLAVE DEL SECTOR</h6><ul style="font-size:10.5px;color:#334155;padding-left:14px;line-height:1.6;margin:0;"><li><strong>$us 280 MM</strong> en inversión privada ejecutada</li><li><strong>4.500 empleos directos</strong> generados en 2026</li><li><strong>35% de reducción</strong> en emisiones industriales</li><li><strong>8 parques tecnológicos</strong> en etapa de ampliación</li></ul></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-rep-6',
+                        'type' => 'article',
+                        'x' => 20, 'y' => 485, 'w' => 680, 'h' => 320, 'z' => 8,
+                        'columns' => 4,
+                        'content' => '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11.5px;line-height:1.55;text-align:justify;color:#1e293b;"><span style="font-family:\'Anton\',sans-serif;font-size:36px;float:left;line-height:0.85;margin-right:6px;color:#0284c7;">E</span>l dinamismo económico de la región oriental continúa consolidándose como la locomotora del desarrollo nacional. Durante el presente año, una conjunción de inversiones de capital mixto ha posibilitado la puesta en marcha de complejos fabriles y de generación sostenible.<br><br>Empresarios del sector destacaron que el acceso a financiamiento verde y la apertura de mercados externos brindan condiciones favorables para la expansión sostenida durante la próxima década.</p>'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'tpl_opinion_editorial',
+                'name' => 'Página de Opinión & Columnistas',
+                'category' => 'opinion',
+                'description' => 'Diseño para páginas de opinión: columna editorial con firma del director a la izquierda, tribuna de columnistas con citas y caja de indicadores.',
+                'preview_color' => '#854d0e',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-op-1',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 32, 'z' => 5,
+                        'content' => '<div style="background:#0B1F3A;color:#fff;padding:6px 12px;font-family:\'Anton\',sans-serif;font-size:16px;letter-spacing:1px;display:flex;justify-content:space-between;"><span>EDITORIAL & TRIBUNA LIBRE</span><span>PÁGINA 2</span></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-op-2',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 65, 'w' => 240, 'h' => 450, 'z' => 6,
+                        'content' => '<div style="background:#fafafa;border:1px solid #e2e8f0;padding:12px;height:100%;box-sizing:border-box;"><span style="font-size:10px;font-weight:900;color:#D71920;text-transform:uppercase;">EDITORIAL DEL DIARIO</span><h5 style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:900;color:#0f172a;margin:6px 0;">El valor irremplazable de la verdad periodística</h5><p style="font-size:11px;line-height:1.5;color:#334155;text-align:justify;"><span style="font-family:\'Anton\',sans-serif;font-size:34px;float:left;line-height:0.8;margin-right:5px;color:#D71920;">E</span>n tiempos donde la desinformación circula a la velocidad de un clic, el rigor periodístico se convierte en un bien público indispensable. Investigar, contrastar y verificar no son meras formalidades, sino el pacto ético inquebrantable con nuestros lectores.</p><div style="border-top:1px solid #cbd5e1;margin-top:14px;padding-top:8px;font-weight:800;font-size:10px;color:#0f172a;">DR. CARLOS SUBIRANA<br><span style="font-weight:500;color:#64748b;">Director General</span></div></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-op-3',
+                        'type' => 'headline',
+                        'x' => 280, 'y' => 65, 'w' => 420, 'h' => 55, 'z' => 7,
+                        'kicker' => 'COLUMNA DE OPINIÓN',
+                        'content' => '<p style="font-family:\'Playfair Display\',serif;font-size:22px;font-weight:800;color:#0B1F3A;margin:0;">¿Hacia dónde va la educación en la era de la inteligencia artificial?</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-op-4',
+                        'type' => 'article',
+                        'x' => 280, 'y' => 130, 'w' => 420, 'h' => 200, 'z' => 7,
+                        'columns' => 2,
+                        'content' => '<p style="font-size:11px;line-height:1.5;text-align:justify;color:#1e293b;"><strong>POR: LIC. MARCELA JUSTINIANO.</strong> La integración de herramientas inteligentes en las aulas de colegios y universidades plantea una interrogante fundamental: ¿estamos formando pensadores críticos o simples consumidores de algoritmos? La pedagogía debe reinventarse sin perder la empatía humana.</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-op-5',
+                        'type' => 'quote',
+                        'x' => 280, 'y' => 340, 'w' => 420, 'h' => 85, 'z' => 7,
+                        'content' => '<p style="font-size:13px;font-style:italic;color:#1e293b;line-height:1.35;margin:0;">"La tecnología multiplica las respuestas, pero la filosofía sigue enseñándonos a formular las preguntas esenciales."</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-op-6',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 530, 'w' => 680, 'h' => 150, 'z' => 6,
+                        'content' => '<div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px;border-radius:4px;"><span style="font-size:10px;font-weight:900;color:#0284c7;text-transform:uppercase;">INDICADORES ECONÓMICOS DE BOLIVIA</span><div style="display:flex;gap:16px;margin-top:8px;font-size:11px;"><div style="flex:1;"><strong>DÓLAR OFICIAL:</strong> Bs 6,96</div><div style="flex:1;"><strong>DÓLAR PARALELO:</strong> Bs 12,58</div><div style="flex:1;"><strong>UFV:</strong> 3.34041</div><div style="flex:1;"><strong>EURO:</strong> Bs 14,60</div><div style="flex:1;"><strong>INFLACIÓN:</strong> 4,2%</div></div></div>'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'tpl_contraataque_deportes',
+                'name' => 'Contra Ataque / Deportes',
+                'category' => 'deportes',
+                'description' => 'Diseño vibrante de la sección deportiva: cabecera Contra Ataque, titular de fútbol, foto de acción, tabla de posiciones y crónica.',
+                'preview_color' => '#dc2626',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-dep-1',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 45, 'z' => 10,
+                        'content' => '<div style="background:linear-gradient(90deg, #D71920 0%, #111827 100%);color:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-radius:2px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-family:\'Anton\',sans-serif;font-size:26px;letter-spacing:2px;color:#fff;">CONTRA ATAQUE</span><span style="background:#fbbf24;color:#000;font-weight:900;font-size:10px;padding:2px 6px;border-radius:2px;">DEPORTES</span></div><span style="font-family:\'Oswald\',sans-serif;font-size:12px;font-weight:700;">LIGA DEPORTIVA BOLIVIANA</span></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-dep-2',
+                        'type' => 'headline',
+                        'x' => 20, 'y' => 75, 'w' => 680, 'h' => 70, 'z' => 9,
+                        'kicker' => 'CLÁSICO NACIONAL',
+                        'content' => '<p style="font-family:\'Anton\',sans-serif;font-size:32px;letter-spacing:0.5px;color:#0f172a;line-height:1.1;margin:0;">BOLÍVAR DERROTA A THE STRONGEST EN UN ÉPICO 3-2 EN LA PAZ</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-dep-3',
+                        'type' => 'image',
+                        'x' => 20, 'y' => 155, 'w' => 450, 'h' => 280, 'z' => 7,
+                        'src' => 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80',
+                        'caption' => 'FESTEJO. Los celestes celebraron el gol agónico al minuto 94 que definió la punta del torneo apertura 2026.'
+                    ],
+                    [
+                        'id' => 'f-tpl-dep-4',
+                        'type' => 'box',
+                        'x' => 485, 'y' => 155, 'w' => 215, 'h' => 280, 'z' => 6,
+                        'content' => '<div style="background:#1e293b;color:#fff;padding:10px;height:100%;box-sizing:border-box;border-radius:2px;"><h6 style="font-family:\'Oswald\',sans-serif;font-size:13px;font-weight:700;color:#fbbf24;margin-bottom:8px;text-transform:uppercase;border-bottom:1px solid #334155;padding-bottom:4px;">TABLA DE POSICIONES</h6><table style="width:100%;font-size:10px;border-collapse:collapse;color:#cbd5e1;"><tr style="color:#94a3b8;font-weight:700;"><td>#</td><td>CLUB</td><td>PJ</td><td>PTS</td></tr><tr><td>1</td><td>Bolívar</td><td>18</td><td><strong style="color:#fff;">42</strong></td></tr><tr><td>2</td><td>The Strongest</td><td>18</td><td><strong style="color:#fff;">39</strong></td></tr><tr><td>3</td><td>Always Ready</td><td>17</td><td><strong style="color:#fff;">34</strong></td></tr><tr><td>4</td><td>Oriente P.</td><td>18</td><td><strong style="color:#fff;">30</strong></td></tr><tr><td>5</td><td>Blooming</td><td>18</td><td><strong style="color:#fff;">28</strong></td></tr><tr><td>6</td><td>Wilstermann</td><td>17</td><td><strong style="color:#fff;">25</strong></td></tr></table></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-dep-5',
+                        'type' => 'article',
+                        'x' => 20, 'y' => 450, 'w' => 680, 'h' => 160, 'z' => 8,
+                        'columns' => 3,
+                        'content' => '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11.5px;line-height:1.5;text-align:justify;color:#1e293b;">En un encuentro electrizante cargado de vértigo y dramatismo en el estadio Hernando Siles, la Academia paceña se quedó con el clásico gracias a un cabezazo letal en el tiempo de descuento. Con este triunfo, Bolívar se consolida como líder absoluto del fútbol boliviano.</p>'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'tpl_contraportada_cierre',
+                'name' => 'Contraportada de Cierre & Cultura',
+                'category' => 'contraportada',
+                'description' => 'Última página del periódico: reportaje fotográfico cultural, módulo publicitario de media página y código QR de suscripción a la edición digital.',
+                'preview_color' => '#475569',
+                'is_custom' => false,
+                'frames' => [
+                    [
+                        'id' => 'f-tpl-cp-1',
+                        'type' => 'box',
+                        'x' => 20, 'y' => 20, 'w' => 680, 'h' => 34, 'z' => 5,
+                        'content' => '<div style="background:#1E293B;color:#fff;padding:6px 14px;font-family:\'Anton\',sans-serif;font-size:17px;display:flex;justify-content:space-between;"><span>CONTRAPORTADA // CULTURA & CIUDAD</span><span>ÚLTIMA PÁGINA</span></div>'
+                    ],
+                    [
+                        'id' => 'f-tpl-cp-2',
+                        'type' => 'headline',
+                        'x' => 20, 'y' => 65, 'w' => 680, 'h' => 60, 'z' => 8,
+                        'kicker' => 'ARTE Y PATRIMONIO CRUCEÑO',
+                        'content' => '<p style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:900;color:#0f172a;margin:0;">El renacer de las misiones jesuíticas a través de la música barroca</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-cp-3',
+                        'type' => 'image',
+                        'x' => 20, 'y' => 135, 'w' => 450, 'h' => 240, 'z' => 7,
+                        'src' => 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80',
+                        'caption' => 'ARMONÍA. Músicos jóvenes interpretan partituras originales del siglo XVIII en San Javier.'
+                    ],
+                    [
+                        'id' => 'f-tpl-cp-4',
+                        'type' => 'qr',
+                        'x' => 485, 'y' => 135, 'w' => 215, 'h' => 240, 'z' => 7,
+                        'url' => 'https://latitud18.com/periodico',
+                        'label' => 'Escanea para edición digital'
+                    ],
+                    [
+                        'id' => 'f-tpl-cp-5',
+                        'type' => 'article',
+                        'x' => 20, 'y' => 390, 'w' => 680, 'h' => 120, 'z' => 8,
+                        'columns' => 3,
+                        'content' => '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11.5px;line-height:1.5;text-align:justify;color:#1e293b;">El festival reúne a más de tres mil personas en los templos históricos de la Chiquitania boliviana, conservando un legado musical vivo único en el continente.</p>'
+                    ],
+                    [
+                        'id' => 'f-tpl-cp-6',
+                        'type' => 'ad',
+                        'x' => 20, 'y' => 525, 'w' => 680, 'h' => 240, 'z' => 6,
+                        'badge' => 'ESPACIO PUBLICITARIO OFICIAL',
+                        'title' => 'CRE — Cooperativa Rural de Electrificación',
+                        'subtitle' => 'Iluminando el desarrollo de Santa Cruz con energía limpia y equitativa • Más de 60 años al servicio de nuestra gente',
+                        'bg' => '#f0fdf4',
+                        'border' => '#86efac'
                     ]
                 ]
             ]
