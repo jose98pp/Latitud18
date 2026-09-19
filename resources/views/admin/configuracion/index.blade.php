@@ -179,7 +179,83 @@
                 </div>
             </div>
 
-            {{-- BLOQUE 3: INFORMACIÓN INSTITUCIONAL, CONTACTO Y FOOTER --}}
+            {{-- BLOQUE 3: CANAL OFICIAL DE YOUTUBE Y GALERÍA DE PORTADA --}}
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <h5 class="mb-0 fw-bold text-dark d-flex align-items-center">
+                            <i class="fab fa-youtube text-danger me-2 fs-5"></i> Canal Oficial de YouTube y Galería de Portada
+                        </h5>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 text-uppercase px-2 py-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                Galería Nativa Sin Marcas de Agua
+                            </span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="youtube_gallery_active" 
+                                       name="youtube_gallery_active" value="1" {{ ($settings['youtube_gallery_active'] ?? '1') == '1' ? 'checked' : '' }}>
+                                <label class="form-check-label fw-bold small text-muted" for="youtube_gallery_active">Mostrar en Portada</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="alert alert-info border-0 d-flex align-items-start mb-4" style="background-color: #f0f7ff;">
+                            <i class="fas fa-circle-info text-primary me-3 mt-1 fs-5"></i>
+                            <div class="small text-muted">
+                                <strong class="text-dark">Configuración lista para cuando crees tu canal oficial:</strong>
+                                Puedes ingresar el nombre, usuario y enlace directo de tu canal de YouTube aquí. Además, puedes destacar videos específicos o transmisiones. Si dejas la lista de videos vacía, el sistema mostrará automáticamente las últimas noticias con video y la señal en vivo configurada.
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="youtube_channel_name" class="form-label small fw-semibold text-muted">Nombre del Canal</label>
+                                <input type="text" class="form-control" id="youtube_channel_name" name="youtube_channel_name" 
+                                       value="{{ $settings['youtube_channel_name'] ?? 'Latitud 18 TV' }}" placeholder="Ej: Latitud 18 TV">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="youtube_channel_handle" class="form-label small fw-semibold text-muted">Handle / Usuario (@)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="fas fa-at text-muted"></i></span>
+                                    <input type="text" class="form-control" id="youtube_channel_handle" name="youtube_channel_handle" 
+                                           value="{{ $settings['youtube_channel_handle'] ?? '@Latitud18TV' }}" placeholder="@Latitud18TV">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="youtube_channel_badge" class="form-label small fw-semibold text-muted">Texto del Badge / Distintivo</label>
+                                <input type="text" class="form-control" id="youtube_channel_badge" name="youtube_channel_badge" 
+                                       value="{{ $settings['youtube_channel_badge'] ?? 'Canal Oficial • Cobertura 24/7' }}" placeholder="Ej: Canal Oficial • Cobertura 24/7">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="youtube_channel_url" class="form-label small fw-semibold text-muted">Enlace al Canal de YouTube (Botón Suscribirse)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="fab fa-youtube text-danger"></i></span>
+                                    <input type="url" class="form-control font-monospace" id="youtube_channel_url" name="youtube_channel_url" 
+                                           value="{{ $settings['youtube_channel_url'] ?? 'https://www.youtube.com/@UHTVBolivia' }}" placeholder="https://youtube.com/@tu-canal">
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                    Al hacer clic en "Suscribirse" o "Ver Canal", los usuarios irán a esta dirección.
+                                </small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="youtube_gallery_videos" class="form-label small fw-semibold text-muted">
+                                    Videos Destacados del Canal (IDs o URLs de YouTube)
+                                </label>
+                                <textarea class="form-control font-monospace" id="youtube_gallery_videos" name="youtube_gallery_videos" rows="3" 
+                                          placeholder="Ej: https://youtube.com/watch?v=VIDEO_ID_1, VIDEO_ID_2 (un ID o URL por línea o separados por comas)">{{ $settings['youtube_gallery_videos'] ?? '' }}</textarea>
+                                <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                    Opcional. Ingresa uno o varios IDs / enlaces de YouTube. Si lo dejas vacío, tomará automáticamente las noticias con video publicadas y la señal en vivo.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- BLOQUE 4: INFORMACIÓN INSTITUCIONAL, CONTACTO Y FOOTER --}}
             <div class="col-12">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-white border-bottom py-3">

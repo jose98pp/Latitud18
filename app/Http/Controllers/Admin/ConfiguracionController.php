@@ -35,6 +35,15 @@ class ConfiguracionController extends Controller
             'streaming_radio_url',
         ];
 
+        $youtubeGalleryKeys = [
+            'youtube_gallery_active',
+            'youtube_channel_name',
+            'youtube_channel_handle',
+            'youtube_channel_url',
+            'youtube_channel_badge',
+            'youtube_gallery_videos',
+        ];
+
         $socialKeys = [
             'social_facebook',
             'social_twitter',
@@ -52,6 +61,9 @@ class ConfiguracionController extends Controller
         if (!isset($data['streaming_radio_active'])) {
             $data['streaming_radio_active'] = '0';
         }
+        if (!isset($data['youtube_gallery_active'])) {
+            $data['youtube_gallery_active'] = '0';
+        }
 
         // Si el usuario pega una URL completa de YouTube en el campo ID, extraer automáticamente el ID
         if (!empty($data['streaming_tv_youtube_id'])) {
@@ -65,6 +77,8 @@ class ConfiguracionController extends Controller
             $group = 'general';
             if (in_array($key, $streamingKeys)) {
                 $group = 'streaming';
+            } elseif (in_array($key, $youtubeGalleryKeys)) {
+                $group = 'youtube';
             } elseif (in_array($key, $socialKeys)) {
                 $group = 'social';
             }

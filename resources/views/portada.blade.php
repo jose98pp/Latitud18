@@ -20,7 +20,10 @@
   {{-- 5. Fila 3: Opinión (4 Columnistas) & Latitud 18 TV (Videos) --}}
   @include('portada.opinion-tv')
 
-  {{-- 6. Espacio Publicitario, Newsletter Exclusivo & Explorador de Secciones --}}
+  {{-- 6. Canal Oficial de YouTube & Galería de Videos --}}
+  @include('portada.youtube-gallery')
+
+  {{-- 7. Espacio Publicitario, Newsletter Exclusivo & Explorador de Secciones --}}
   @include('portada.ads-newsletter')
 
 </div>

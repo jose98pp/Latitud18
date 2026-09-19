@@ -27,6 +27,14 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'whatsapp_phone', 'value' => '+591 70000000', 'group' => 'social'],
             ['key' => 'whatsapp_message', 'value' => 'Hola, quiero enviar una denuncia o información a Latitud 18.', 'group' => 'social'],
 
+            // Canal de YouTube y Galería de Portada
+            ['key' => 'youtube_gallery_active', 'value' => '1', 'group' => 'youtube'],
+            ['key' => 'youtube_channel_name', 'value' => 'Latitud 18 TV', 'group' => 'youtube'],
+            ['key' => 'youtube_channel_handle', 'value' => '@Latitud18TV', 'group' => 'youtube'],
+            ['key' => 'youtube_channel_url', 'value' => 'https://youtube.com/@UHTVBolivia', 'group' => 'youtube'],
+            ['key' => 'youtube_channel_badge', 'value' => 'Canal Oficial • Cobertura 24/7', 'group' => 'youtube'],
+            ['key' => 'youtube_gallery_videos', 'value' => '', 'group' => 'youtube'],
+
             // Datos de Contacto y Footer
             ['key' => 'site_name', 'value' => 'Latitud 18', 'group' => 'general'],
             ['key' => 'site_slogan', 'value' => 'Periodismo Independiente, Multimedia e Investigación', 'group' => 'general'],

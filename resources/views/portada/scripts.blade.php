@@ -130,7 +130,3 @@ document.addEventListener('DOMContentLoaded', function() {
   requestAnimationFrame(scroll);
 })();
 </script>
-
-{{-- Widget de Elfsight si está configurado --}}
-<script async src="https://static.elfsight.com/platform/platform.js"></script>
-<div class="elfsight-app-fbb50d0e-c779-44ab-bf7f-b16fd3542ccc" data-elfsight-app-lazy></div>
