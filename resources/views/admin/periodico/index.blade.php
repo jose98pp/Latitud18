@@ -1635,7 +1635,8 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       <div class="drawer-news-card" data-category="{{ $noticia->category_id }}" data-title="{{ strtolower($noticia->titulo) }}">
         <div class="dnc-header">
           @if($noticia->imagen)
-            <img class="dnc-thumb" src="{{ $noticia->imagenUrl }}" alt="">
+            @php $noticiaImgUrl = $noticia->getImageUrl(); @endphp
+            <img class="dnc-thumb" src="{{ $noticiaImgUrl }}" alt="" onerror="this.onerror=null;this.src='{{ asset('images/default-news.svg') }}'">
           @else
             <div class="dnc-no-thumb"><i class="fas fa-image"></i></div>
           @endif
@@ -1646,13 +1647,13 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         </div>
         <div class="dnc-actions">
           <span style="font-size:0.58rem;color:var(--id-text-muted);margin-right:2px;">Insertar:</span>
-          <button class="dnc-btn primary" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->imagenUrl,"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "article")'>
+          <button class="dnc-btn primary" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "article")'>
             <i class="fas fa-newspaper"></i> Artículo Completo
           </button>
-          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->imagenUrl,"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "headline")'>
+          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "headline")'>
             <i class="fas fa-heading"></i> Solo Titular
           </button>
-          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->imagenUrl,"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "photo_caption")'>
+          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "photo_caption")'>
             <i class="fas fa-camera"></i> Fotonoticia
           </button>
         </div>

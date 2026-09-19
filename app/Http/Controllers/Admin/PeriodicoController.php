@@ -313,7 +313,14 @@ class PeriodicoController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = 'periodico_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/periodico'), $filename);
+            
+            // Crear el directorio si no existe
+            $destDir = public_path('images/periodico');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            
+            $file->move($destDir, $filename);
 
             $publicUrl = asset('images/periodico/' . $filename);
 
@@ -414,7 +421,7 @@ class PeriodicoController extends Controller
                     'bajada' => Str::limit(strip_tags($n->contenido), 180),
                     'contenido' => strip_tags($n->contenido),
                     'categoria' => $n->category->name ?? 'General',
-                    'imagen' => $n->imagenUrl,
+                    'imagen' => $n->getImageUrl(),
                     'autor' => $n->autor ?? 'REDACCIÓN',
                     'fecha' => $n->created_at->format('d/m/Y'),
                 ];
