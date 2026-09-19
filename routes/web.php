@@ -74,6 +74,7 @@ Route::prefix('contraataque')->name('contraataque.')->group(function () {
     Route::get('/noticia/{id}/{slug?}', [ContraAtaqueController::class, 'show'])
         ->name('show')
         ->where('id', '[0-9]+');
+    Route::get('/api/partidos', [ContraAtaqueController::class, 'apiPartidos'])->name('api.partidos');
 });
 Route::get('/deportes', function () {
     return redirect()->route('contraataque.index');

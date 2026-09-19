@@ -69,57 +69,42 @@
             </div>
         </div>
 
-        <!-- Columna Lateral: Partidos en Vivo y Próximos -->
+        <!-- Columna Lateral: Marcadores en Tiempo Real Multi-Liga -->
         <div class="col-lg-4">
-            <div class="ca-card h-100 p-3" style="background: var(--ca-bg-card);">
-                <div class="ca-sec-header mb-3">
-                    <span class="ca-sec-title" style="font-size: 1.15rem;">DIVISIÓN PROFESIONAL</span>
-                    <span class="badge bg-danger text-white small" style="font-family: var(--ca-font-display);">FECHA 18</span>
+            <div class="ca-card h-100 p-3 d-flex flex-column" style="background: var(--ca-bg-card);">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="ca-live-dot-pulse"></span>
+                        <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem; letter-spacing: 0.5px;">MARCADORES EN DIRECTO</span>
+                    </div>
+                    <span class="badge bg-danger text-white" style="font-family: var(--ca-font-display); font-size: 0.65rem; letter-spacing: 0.5px;">
+                        EN TIEMPO REAL
+                    </span>
                 </div>
 
-                <div class="d-flex flex-column gap-3">
-                    @foreach($partidosVivo ?? [] as $p)
-                        <div class="p-2 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.2s;" onmouseover="this.style.borderColor='var(--ca-volt)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
-                            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 0.7rem;">
-                                <span style="color: #94A3B8;">{{ $p['torneo'] }}</span>
-                                @if($p['estado'] === 'EN VIVO')
-                                    <span class="ca-badge-live"><i class="fas fa-circle" style="font-size:5px;"></i> VIVO {{ $p['minuto'] }}</span>
-                                @elseif($p['estado'] === 'FINAL')
-                                    <span class="ca-badge-ft">FINALIZADO</span>
-                                @else
-                                    <span style="color: var(--ca-gold); font-weight: 700;">{{ $p['estado'] }}</span>
-                                @endif
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-between py-1">
-                                <!-- Local -->
-                                <div class="d-flex align-items-center gap-2" style="width: 40%;">
-                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: {{ $p['local_color'] }}; display: inline-block;"></span>
-                                    <span class="fw-bold text-white text-truncate" style="font-size: 0.85rem;">{{ $p['local'] }}</span>
-                                </div>
-
-                                <!-- Marcador -->
-                                <div class="text-center px-2 py-1 rounded" style="background: #000; font-family: var(--ca-font-display); font-weight: 900; font-size: 1.1rem; color: var(--ca-volt); min-width: 50px;">
-                                    {{ $p['goles_local'] }} : {{ $p['goles_visitante'] }}
-                                </div>
-
-                                <!-- Visitante -->
-                                <div class="d-flex align-items-center justify-content-end gap-2" style="width: 40%;">
-                                    <span class="fw-bold text-white text-truncate text-end">{{ $p['visitante'] }}</span>
-                                    <span style="width: 10px; height: 10px; border-radius: 50%; background: {{ $p['visitante_color'] }}; display: inline-block;"></span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-items-center mt-1 pt-1 border-top border-secondary text-muted" style="font-size: 0.68rem;">
-                                <span><i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ $p['estadio'] }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                    <div class="mt-2 text-center">
-                        <a href="#tablaPosiciones" class="btn btn-sm w-100" style="background: rgba(0, 255, 135, 0.1); border: 1px solid #00FF87; color: #00FF87; font-family: var(--ca-font-display); font-weight: 700; font-size: 0.78rem; text-decoration: none;">
-                            <i class="fas fa-list-ol me-1"></i> VER TABLA DE POSICIONES COMPLETA
-                        </a>
+                <!-- Selector de Ligas / Pestañas Desplazables -->
+                <div class="ca-leagues-nav-wrap mb-3">
+                    <div class="ca-leagues-nav" id="caLeaguesNav">
+                        @foreach($ligasDisponibles ?? [] as $key => $lg)
+                            <button type="button" 
+                                    class="ca-league-tab-btn {{ ($ligaActiva ?? 'bolivia') === $key ? 'active' : '' }}" 
+                                    data-league="{{ $key }}"
+                                    onclick="switchLeagueScoreboard('{{ $key }}', this)">
+                                <span class="me-1">{{ $lg['flag'] }}</span> {{ $lg['short'] }}
+                            </button>
+                        @endforeach
                     </div>
+                </div>
+
+                <!-- Contenedor dinámico de partidos -->
+                <div id="caMatchesContainer" class="d-flex flex-column gap-2 flex-grow-1" style="min-height: 280px;">
+                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo])
+                </div>
+
+                <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 text-center">
+                    <a href="#tablaPosiciones" class="btn btn-sm w-100" style="background: rgba(0, 255, 135, 0.1); border: 1px solid #00FF87; color: #00FF87; font-family: var(--ca-font-display); font-weight: 700; font-size: 0.78rem; text-decoration: none;">
+                        <i class="fas fa-list-ol me-1"></i> VER TABLA DE POSICIONES COMPLETA
+                    </a>
                 </div>
             </div>
         </div>
@@ -224,7 +209,12 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <strong class="text-white">{{ $row['club'] }}</strong>
+                                        <div class="d-flex align-items-center">
+                                            @if(!empty($row['logo']))
+                                                <img src="{{ $row['logo'] }}" alt="{{ $row['club'] }}" style="width: 20px; height: 20px; object-fit: contain;" class="me-2" onerror="this.style.display='none'">
+                                            @endif
+                                            <strong class="text-white">{{ $row['club'] }}</strong>
+                                        </div>
                                     </td>
                                     <td class="text-center">{{ $row['pj'] }}</td>
                                     <td class="text-center text-muted">{{ $row['g'] }}</td>
@@ -366,4 +356,187 @@
     </div>
 
 </div>
+
+<style>
+.ca-leagues-nav-wrap {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+}
+.ca-leagues-nav-wrap::-webkit-scrollbar {
+    height: 4px;
+}
+.ca-leagues-nav-wrap::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+.ca-leagues-nav {
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+}
+.ca-league-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-family: var(--ca-font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+.ca-league-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+.ca-league-tab-btn.active {
+    background: var(--ca-volt);
+    color: #000000;
+    border-color: var(--ca-volt);
+    box-shadow: 0 0 12px rgba(0, 255, 135, 0.4);
+}
+.ca-team-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.ca-live-dot-pulse {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ef4444;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: caPulseDot 1.5s infinite;
+}
+@keyframes caPulseDot {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+.ca-blink {
+    animation: caBlink 1s infinite alternate;
+}
+@keyframes caBlink {
+    from { opacity: 1; }
+    to { opacity: 0.3; }
+}
+</style>
+
+<script>
+function switchLeagueScoreboard(leagueKey, btn) {
+    const nav = document.getElementById('caLeaguesNav');
+    if (nav) {
+        nav.querySelectorAll('.ca-league-tab-btn').forEach(b => b.classList.remove('active'));
+    }
+    if (btn) {
+        btn.classList.add('active');
+    }
+
+    const container = document.getElementById('caMatchesContainer');
+    if (!container) return;
+
+    // Estado visual de carga elegante
+    container.innerHTML = `
+        <div class="p-4 text-center text-muted" style="min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="spinner-border spinner-border-sm text-success mb-2" role="status" style="width: 1.5rem; height: 1.5rem; color: var(--ca-volt) !important;"></div>
+            <span style="font-size: 0.76rem; letter-spacing: 0.5px; color: #94A3B8;">Actualizando marcadores en tiempo real...</span>
+        </div>
+    `;
+
+    fetch('{{ route("contraataque.api.partidos") }}?liga=' + encodeURIComponent(leagueKey))
+        .then(response => {
+            if (!response.ok) throw new Error('Error de red');
+            return response.json();
+        })
+        .then(data => {
+            renderMatchesList(data.matches || [], container);
+        })
+        .catch(err => {
+            container.innerHTML = `
+                <div class="p-3 text-center text-muted small rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08);">
+                    <i class="fas fa-exclamation-triangle text-warning mb-1 fs-5"></i>
+                    <p class="mb-0">No se pudieron cargar los datos en este momento.</p>
+                </div>
+            `;
+        });
+}
+
+function renderMatchesList(matches, container) {
+    if (!matches || matches.length === 0) {
+        container.innerHTML = `
+            <div class="p-4 text-center rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
+                <i class="fas fa-futbol text-muted mb-2 fs-3"></i>
+                <p class="small text-muted mb-0">No hay partidos programados en vivo para esta fecha.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    matches.forEach(p => {
+        let badgeHtml = '';
+        if (p.is_live) {
+            badgeHtml = `<span class="ca-badge-live"><i class="fas fa-circle ca-blink" style="font-size: 5px;"></i> VIVO ${p.minuto || ''}</span>`;
+        } else if (p.is_finished) {
+            badgeHtml = `<span class="ca-badge-ft">FINAL</span>`;
+        } else {
+            badgeHtml = `<span style="color: var(--ca-gold); font-weight: 700;"><i class="far fa-clock me-1"></i>${p.estado || ''}</span>`;
+        }
+
+        const localLogo = p.local_logo 
+            ? `<img src="${p.local_logo}" alt="${p.local}" class="ca-team-logo" onerror="this.style.display='none'">` 
+            : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.local_color || '#00FF87'}; display: inline-block; flex-shrink: 0;"></span>`;
+            
+        const visitLogo = p.visitante_logo 
+            ? `<img src="${p.visitante_logo}" alt="${p.visitante}" class="ca-team-logo" onerror="this.style.display='none'">` 
+            : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.visitante_color || '#FFFFFF'}; display: inline-block; flex-shrink: 0;"></span>`;
+
+        html += `
+            <div class="p-2 rounded ca-match-item" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); transition: all 0.2s ease;">
+                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-secondary border-opacity-10" style="font-size: 0.68rem;">
+                    <span class="text-truncate me-2" style="color: #94A3B8; font-weight: 600;">
+                        <span class="me-1">${p.flag || '⚽'}</span> ${p.torneo || 'Fútbol'}
+                    </span>
+                    ${badgeHtml}
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between py-1">
+                    <div class="d-flex align-items-center gap-2" style="width: 40%; overflow: hidden;">
+                        ${localLogo}
+                        <span class="fw-bold text-white text-truncate" style="font-size: 0.84rem;" title="${p.local_full || p.local}">
+                            ${p.local}
+                        </span>
+                    </div>
+
+                    <div class="text-center px-2 py-1 rounded ca-score-box" style="background: #000; font-family: var(--ca-font-display); font-weight: 900; font-size: 1.05rem; color: var(--ca-volt); min-width: 54px; letter-spacing: 1px; border: 1px solid rgba(0,255,135,0.25);">
+                        ${p.goles_local} : ${p.goles_visitante}
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-2" style="width: 40%; overflow: hidden;">
+                        <span class="fw-bold text-white text-truncate text-end" style="font-size: 0.84rem;" title="${p.visitante_full || p.visitante}">
+                            ${p.visitante}
+                        </span>
+                        ${visitLogo}
+                    </div>
+                </div>
+
+                ${p.estadio ? `
+                    <div class="d-flex align-items-center mt-1 pt-1 border-top border-secondary border-opacity-10 text-muted" style="font-size: 0.66rem;">
+                        <span class="text-truncate"><i class="fas fa-location-dot me-1 text-danger"></i>${p.estadio}</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+</script>
 @endsection

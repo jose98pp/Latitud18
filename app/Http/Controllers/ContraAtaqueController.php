@@ -8,44 +8,45 @@ use App\Models\Category;
 use App\Models\Banner;
 use App\Models\ArticuloOpinion;
 use App\Models\Columnista;
+use App\Services\SportsDataService;
 
 class ContraAtaqueController extends Controller
 {
-    /**
-     * Obtener IDs de categorías relacionadas a deportes
-     */
-    private function getSportsCategoryIds()
+    protected SportsDataService $sportsService;
+
+    public function __construct(SportsDataService $sportsService)
     {
-        return Category::where('name', 'LIKE', '%deport%')
-            ->orWhere('name', 'LIKE', '%futbol%')
-            ->orWhere('name', 'LIKE', '%contra%')
-            ->pluck('id');
+        $this->sportsService = $sportsService;
     }
 
     /**
-     * Query base de noticias de deportes
+     * Obtener IDs de categorías relacionadas estrictamente a deportes (Categoría 9 Deportes)
+     */
+    private function getSportsCategoryIds()
+    {
+        $catIds = Category::where(function($q) {
+            $q->where('id', 9)
+              ->orWhere('name', 'LIKE', '%deport%')
+              ->orWhere('name', 'LIKE', '%futbol%')
+              ->orWhere('name', 'LIKE', '%contra%');
+        })->pluck('id');
+
+        if ($catIds->isEmpty()) {
+            return collect([9]);
+        }
+
+        return $catIds;
+    }
+
+    /**
+     * Query base de noticias de deportes (100% Exclusivo de Deportes)
      */
     private function getSportsNewsQuery()
     {
         $catIds = $this->getSportsCategoryIds();
 
         return Noticia::publicadaActiva()
-            ->where(function($q) use ($catIds) {
-                if ($catIds->isNotEmpty()) {
-                    $q->whereIn('category_id', $catIds);
-                }
-                $q->orWhere('titulo', 'LIKE', '%fútbol%')
-                  ->orWhere('titulo', 'LIKE', '%futbol%')
-                  ->orWhere('titulo', 'LIKE', '%deporte%')
-                  ->orWhere('titulo', 'LIKE', '%mundial%')
-                  ->orWhere('titulo', 'LIKE', '%copa%')
-                  ->orWhere('titulo', 'LIKE', '%liga%')
-                  ->orWhere('titulo', 'LIKE', '%fifa%')
-                  ->orWhere('titulo', 'LIKE', '%bolívar%')
-                  ->orWhere('titulo', 'LIKE', '%oriente%')
-                  ->orWhere('titulo', 'LIKE', '%blooming%')
-                  ->orWhere('titulo', 'LIKE', '%strongest%');
-            });
+            ->whereIn('category_id', $catIds);
     }
 
     /**
@@ -55,30 +56,27 @@ class ContraAtaqueController extends Controller
     {
         try {
             $categorias = Category::all();
-            $categoriaDeportes = Category::where('name', 'LIKE', '%deport%')
-                ->orWhere('name', 'LIKE', '%futbol%')
-                ->orWhere('name', 'LIKE', '%contra%')
+            $categoriaDeportes = Category::where('id', 9)
+                ->orWhere('name', 'LIKE', '%deport%')
                 ->first();
 
             $sportsCatIds = $this->getSportsCategoryIds();
 
-            // Obtener noticias de deportes de la BD
+            // Obtener noticias de deportes de la BD (Exclusivamente de la categoría Deportes)
             $noticiasDB = $this->getSportsNewsQuery()
                 ->with(['category', 'galeria'])
                 ->orderBy('created_at', 'desc')
                 ->take(24)
                 ->get();
 
-            // Si hubiera menos de 8 noticias, completar con las últimas noticias reales de la BD
-            if ($noticiasDB->count() < 8) {
-                $existingIds = $noticiasDB->pluck('id')->toArray();
-                $fillers = Noticia::publicadaActiva()
-                    ->whereNotIn('id', $existingIds)
+            // Respaldo de seguridad si aún no cargara
+            if ($noticiasDB->isEmpty()) {
+                $noticiasDB = Noticia::publicadaActiva()
+                    ->where('category_id', 9)
                     ->with(['category', 'galeria'])
                     ->orderBy('created_at', 'desc')
-                    ->take(8 - $noticiasDB->count())
+                    ->take(24)
                     ->get();
-                $noticiasDB = $noticiasDB->merge($fillers);
             }
 
             $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
@@ -87,22 +85,27 @@ class ContraAtaqueController extends Controller
             $categoriaDeportes = null;
             $noticiasDB = collect([]);
             $banners = collect([]);
+            $sportsCatIds = collect([9]);
         }
 
         $heroNews = $noticiasDB->first();
         $destacadas = $noticiasDB->slice(1, 4)->values();
         $masNoticias = $noticiasDB->slice(5, 12)->values();
 
-        // Partidos de la Fecha / Live Scores (División Profesional de Bolivia)
-        $partidosVivo = $this->getLiveMatches();
+        // Ligas disponibles para el Scoreboard Multi-Liga
+        $ligasDisponibles = $this->sportsService->getLeagues();
+        $ligaActiva = 'bolivia';
 
-        // Tabla de Posiciones División Profesional de Bolivia 2026
-        $tablaPosiciones = $this->getLeagueTable();
+        // Partidos en tiempo real (iniciando con la Liga Boliviana)
+        $partidosVivo = $this->sportsService->getMatches($ligaActiva);
+
+        // Tabla de Posiciones Oficial en Tiempo Real (División Profesional)
+        $tablaPosiciones = $this->sportsService->getBolivianStandings();
 
         // Videos y Jugadas reales de la BD
-        $videosDestacados = $this->getRealVideoHighlights($sportsCatIds ?? collect([]));
+        $videosDestacados = $this->getRealVideoHighlights($sportsCatIds);
 
-        // Columnistas de Opinión Deportiva (reales o editoriales)
+        // Columnistas de Opinión Deportiva
         $columnistasDeportes = $this->getRealSportsColumnists();
 
         return view('contraataque.index', compact(
@@ -115,8 +118,28 @@ class ContraAtaqueController extends Controller
             'tablaPosiciones',
             'videosDestacados',
             'columnistasDeportes',
-            'banners'
+            'banners',
+            'ligasDisponibles',
+            'ligaActiva'
         ));
+    }
+
+    /**
+     * Endpoint API AJAX para alternar partidos en tiempo real entre ligas
+     */
+    public function apiPartidos(Request $request)
+    {
+        $liga = $request->query('liga', 'bolivia');
+        $leagues = $this->sportsService->getLeagues();
+        $matches = $this->sportsService->getMatches($liga);
+
+        return response()->json([
+            'status' => 'success',
+            'liga' => $liga,
+            'liga_meta' => $leagues[$liga] ?? $leagues['bolivia'],
+            'matches' => $matches,
+            'count' => count($matches),
+        ]);
     }
 
     /**
@@ -141,36 +164,21 @@ class ContraAtaqueController extends Controller
         $noticia->increment('views');
 
         $categorias = Category::all();
-        $partidosVivo = $this->getLiveMatches();
-        $tablaPosiciones = $this->getLeagueTable();
+        $partidosVivo = $this->sportsService->getMatches('bolivia');
+        $tablaPosiciones = $this->sportsService->getBolivianStandings();
+        $ligasDisponibles = $this->sportsService->getLeagues();
+        $ligaActiva = 'bolivia';
 
         $catIds = $this->getSportsCategoryIds();
 
+        // Noticias relacionadas estrictamente de la categoría Deportes
         $relacionadas = Noticia::publicadaActiva()
             ->where('id', '!=', $id)
-            ->where(function($q) use ($catIds, $noticia) {
-                if ($catIds->isNotEmpty()) {
-                    $q->whereIn('category_id', $catIds);
-                }
-                if ($noticia->category_id) {
-                    $q->orWhere('category_id', $noticia->category_id);
-                }
-            })
+            ->whereIn('category_id', $catIds)
             ->with('category')
             ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
-
-        if ($relacionadas->count() < 4) {
-            $existingRelIds = $relacionadas->pluck('id')->push($id)->toArray();
-            $moreRel = Noticia::publicadaActiva()
-                ->whereNotIn('id', $existingRelIds)
-                ->with('category')
-                ->orderBy('created_at', 'desc')
-                ->take(4 - $relacionadas->count())
-                ->get();
-            $relacionadas = $relacionadas->merge($moreRel);
-        }
 
         $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
 
@@ -180,7 +188,9 @@ class ContraAtaqueController extends Controller
             'partidosVivo',
             'tablaPosiciones',
             'relacionadas',
-            'banners'
+            'banners',
+            'ligasDisponibles',
+            'ligaActiva'
         ));
     }
 
@@ -190,8 +200,10 @@ class ContraAtaqueController extends Controller
     public function seccion($seccion)
     {
         $categorias = Category::all();
-        $partidosVivo = $this->getLiveMatches();
-        $tablaPosiciones = $this->getLeagueTable();
+        $partidosVivo = $this->sportsService->getMatches('bolivia');
+        $tablaPosiciones = $this->sportsService->getBolivianStandings();
+        $ligasDisponibles = $this->sportsService->getLeagues();
+        $ligaActiva = 'bolivia';
 
         $seccionTitulo = match($seccion) {
             'futbol-boliviano' => 'Fútbol Boliviano — División Profesional',
@@ -204,63 +216,63 @@ class ContraAtaqueController extends Controller
         };
 
         $catIds = $this->getSportsCategoryIds();
-        $query = Noticia::publicadaActiva()->with(['category', 'galeria']);
+        $query = Noticia::publicadaActiva()
+            ->whereIn('category_id', $catIds)
+            ->with(['category', 'galeria']);
 
         // Filtrar según la subsección deportiva
         switch ($seccion) {
             case 'futbol-boliviano':
-                $query->where(function($q) use ($catIds) {
-                    $q->where(function($sub) {
-                        $sub->where('titulo', 'LIKE', '%bolivia%')
-                            ->orWhere('titulo', 'LIKE', '%división%')
-                            ->orWhere('titulo', 'LIKE', '%liga%')
-                            ->orWhere('titulo', 'LIKE', '%oriente%')
-                            ->orWhere('titulo', 'LIKE', '%blooming%')
-                            ->orWhere('titulo', 'LIKE', '%bolívar%')
-                            ->orWhere('titulo', 'LIKE', '%strongest%')
-                            ->orWhere('titulo', 'LIKE', '%wilstermann%')
-                            ->orWhere('titulo', 'LIKE', '%aurora%')
-                            ->orWhere('titulo', 'LIKE', '%tahuichi%');
-                    });
-                    if ($catIds->isNotEmpty()) {
-                        $q->orWhereIn('category_id', $catIds);
-                    }
+                $query->where(function($q) {
+                    $q->where('titulo', 'LIKE', '%bolivia%')
+                        ->orWhere('titulo', 'LIKE', '%división%')
+                        ->orWhere('titulo', 'LIKE', '%liga%')
+                        ->orWhere('titulo', 'LIKE', '%oriente%')
+                        ->orWhere('titulo', 'LIKE', '%blooming%')
+                        ->orWhere('titulo', 'LIKE', '%bolívar%')
+                        ->orWhere('titulo', 'LIKE', '%strongest%')
+                        ->orWhere('titulo', 'LIKE', '%always%')
+                        ->orWhere('titulo', 'LIKE', '%wilstermann%')
+                        ->orWhere('titulo', 'LIKE', '%aurora%')
+                        ->orWhere('titulo', 'LIKE', '%clausura%')
+                        ->orWhere('titulo', 'LIKE', '%apertura%');
                 });
                 break;
 
             case 'la-verde':
-                $query->where(function($q) use ($catIds) {
+                $query->where(function($q) {
                     $q->where('titulo', 'LIKE', '%verde%')
                       ->orWhere('titulo', 'LIKE', '%selección%')
-                      ->orWhere('titulo', 'LIKE', '%eliminatoria%')
-                      ->orWhere('titulo', 'LIKE', '%conmebol%')
-                      ->orWhere('titulo', 'LIKE', '%bolivia%');
-                    if ($catIds->isNotEmpty()) {
-                        $q->orWhereIn('category_id', $catIds);
-                    }
+                      ->orWhere('titulo', 'LIKE', '%seleccion%')
+                      ->orWhere('titulo', 'LIKE', '%eliminatorias%')
+                      ->orWhere('titulo', 'LIKE', '%villegas%')
+                      ->orWhere('titulo', 'LIKE', '%copa américa%')
+                      ->orWhere('titulo', 'LIKE', '%fbf%');
                 });
                 break;
 
             case 'internacional':
-                $query->where(function($q) use ($catIds) {
-                    $q->where('titulo', 'LIKE', '%mundial%')
-                      ->orWhere('titulo', 'LIKE', '%fifa%')
-                      ->orWhere('titulo', 'LIKE', '%champions%')
-                      ->orWhere('titulo', 'LIKE', '%copa%')
+                $query->where(function($q) {
+                    $q->where('titulo', 'LIKE', '%champions%')
+                      ->orWhere('titulo', 'LIKE', '%libertadores%')
+                      ->orWhere('titulo', 'LIKE', '%sudamericana%')
+                      ->orWhere('titulo', 'LIKE', '%messi%')
+                      ->orWhere('titulo', 'LIKE', '%cr7%')
+                      ->orWhere('titulo', 'LIKE', '%ronaldo%')
+                      ->orWhere('titulo', 'LIKE', '%premier%')
+                      ->orWhere('titulo', 'LIKE', '%madrid%')
+                      ->orWhere('titulo', 'LIKE', '%barcelona%')
                       ->orWhere('titulo', 'LIKE', '%españa%')
                       ->orWhere('titulo', 'LIKE', '%argentina%')
                       ->orWhere('titulo', 'LIKE', '%brasil%')
                       ->orWhere('titulo', 'LIKE', '%inglaterra%')
                       ->orWhere('titulo', 'LIKE', '%real madrid%')
                       ->orWhere('titulo', 'LIKE', '%colombia%');
-                    if ($catIds->isNotEmpty()) {
-                        $q->orWhereIn('category_id', $catIds);
-                    }
                 });
                 break;
 
             case 'motores':
-                $query->where(function($q) use ($catIds) {
+                $query->where(function($q) {
                     $q->where('titulo', 'LIKE', '%dakar%')
                       ->orWhere('titulo', 'LIKE', '%rally%')
                       ->orWhere('titulo', 'LIKE', '%motor%')
@@ -268,37 +280,28 @@ class ContraAtaqueController extends Controller
                       ->orWhere('titulo', 'LIKE', '%volkswagen%')
                       ->orWhere('titulo', 'LIKE', '%vehículo%')
                       ->orWhere('titulo', 'LIKE', '%auto%');
-                    if ($catIds->isNotEmpty()) {
-                        $q->orWhereIn('category_id', $catIds);
-                    }
                 });
                 break;
 
             case 'polideportivo':
-                $query->where(function($q) use ($catIds) {
+                $query->where(function($q) {
                     $q->where('titulo', 'LIKE', '%básquet%')
                       ->orWhere('titulo', 'LIKE', '%basquet%')
                       ->orWhere('titulo', 'LIKE', '%atletismo%')
                       ->orWhere('titulo', 'LIKE', '%tenis%')
                       ->orWhere('titulo', 'LIKE', '%natación%')
                       ->orWhere('titulo', 'LIKE', '%campamento%');
-                    if ($catIds->isNotEmpty()) {
-                        $q->orWhereIn('category_id', $catIds);
-                    }
                 });
                 break;
 
             default:
-                if ($catIds->isNotEmpty()) {
-                    $query->whereIn('category_id', $catIds);
-                }
                 break;
         }
 
         $noticias = $query->orderBy('created_at', 'desc')->paginate(12);
 
-        // Si la consulta arroja 0 resultados específicos, cargar noticias generales de deportes para que la sección nunca esté vacía
-        if ($noticias->isEmpty() && $catIds->isNotEmpty()) {
+        // Si la consulta arroja 0 resultados específicos, cargar las últimas noticias de deportes
+        if ($noticias->isEmpty()) {
             $noticias = Noticia::publicadaActiva()
                 ->whereIn('category_id', $catIds)
                 ->with(['category', 'galeria'])
@@ -315,7 +318,9 @@ class ContraAtaqueController extends Controller
             'categorias',
             'partidosVivo',
             'tablaPosiciones',
-            'banners'
+            'banners',
+            'ligasDisponibles',
+            'ligaActiva'
         ));
     }
 
@@ -328,11 +333,7 @@ class ContraAtaqueController extends Controller
             $videosRaw = Noticia::publicadaActiva()
                 ->whereNotNull('video_youtube')
                 ->where('video_youtube', '!=', '')
-                ->where(function($q) use ($sportsCatIds) {
-                    if ($sportsCatIds->isNotEmpty()) {
-                        $q->whereIn('category_id', $sportsCatIds);
-                    }
-                })
+                ->whereIn('category_id', $sportsCatIds)
                 ->with('category')
                 ->latest()
                 ->take(3)
@@ -344,6 +345,7 @@ class ContraAtaqueController extends Controller
                     ->whereNotNull('video_youtube')
                     ->where('video_youtube', '!=', '')
                     ->whereNotIn('id', $existingVidIds)
+                    ->whereIn('category_id', $sportsCatIds)
                     ->with('category')
                     ->latest()
                     ->take(3 - $videosRaw->count())
@@ -413,94 +415,15 @@ class ContraAtaqueController extends Controller
     }
 
     /**
-     * Datos de Partidos de la División Profesional
+     * Compatibilidad hacia atrás
      */
     private function getLiveMatches(): array
     {
-        return [
-            [
-                'id' => 'm1',
-                'estado' => 'EN VIVO',
-                'minuto' => "68'",
-                'torneo' => 'División Profesional — Clausura',
-                'local' => 'Oriente Petrolero',
-                'local_code' => 'ORI',
-                'local_color' => '#15803d',
-                'goles_local' => 2,
-                'visitante' => 'Blooming',
-                'visitante_code' => 'BLO',
-                'visitante_color' => '#0284c7',
-                'goles_visitante' => 1,
-                'estadio' => 'Tahuichi Aguilera (Santa Cruz)',
-                'destacado' => true
-            ],
-            [
-                'id' => 'm2',
-                'estado' => 'FINAL',
-                'minuto' => 'FT',
-                'torneo' => 'División Profesional — Clausura',
-                'local' => 'The Strongest',
-                'local_code' => 'STR',
-                'local_color' => '#ca8a04',
-                'goles_local' => 3,
-                'visitante' => 'Bolívar',
-                'visitante_code' => 'BOL',
-                'visitante_color' => '#38bdf8',
-                'goles_visitante' => 2,
-                'estadio' => 'Hernando Siles (La Paz)',
-                'destacado' => false
-            ],
-            [
-                'id' => 'm3',
-                'estado' => 'HOY 19:30',
-                'minuto' => 'Próximo',
-                'torneo' => 'División Profesional — Clausura',
-                'local' => 'Always Ready',
-                'local_code' => 'ALW',
-                'local_color' => '#dc2626',
-                'goles_local' => '-',
-                'visitante' => 'Wilstermann',
-                'visitante_code' => 'WIL',
-                'visitante_color' => '#991b1b',
-                'goles_visitante' => '-',
-                'estadio' => 'Villa Ingenio (El Alto)',
-                'destacado' => false
-            ],
-            [
-                'id' => 'm4',
-                'estado' => 'HOY 20:30',
-                'minuto' => 'Próximo',
-                'torneo' => 'Copa Libertadores',
-                'local' => 'Real Madrid',
-                'local_code' => 'RMA',
-                'local_color' => '#0f172a',
-                'goles_local' => '-',
-                'visitante' => 'Manchester City',
-                'visitante_code' => 'MCI',
-                'visitante_color' => '#0ea5e9',
-                'goles_visitante' => '-',
-                'estadio' => 'Santiago Bernabéu',
-                'destacado' => false
-            ]
-        ];
+        return $this->sportsService->getMatches('bolivia');
     }
 
-    /**
-     * Tabla de posiciones actualizada de la División Profesional
-     */
     private function getLeagueTable(): array
     {
-        return [
-            ['pos' => 1, 'club' => 'Bolívar', 'pj' => 18, 'g' => 13, 'e' => 2, 'p' => 3, 'gf' => 42, 'gc' => 16, 'dg' => '+26', 'pts' => 41, 'zona' => 'libertadores'],
-            ['pos' => 2, 'club' => 'The Strongest', 'pj' => 18, 'g' => 12, 'e' => 3, 'p' => 3, 'gf' => 38, 'gc' => 19, 'dg' => '+19', 'pts' => 39, 'zona' => 'libertadores'],
-            ['pos' => 3, 'club' => 'Always Ready', 'pj' => 17, 'g' => 10, 'e' => 4, 'p' => 3, 'gf' => 31, 'gc' => 17, 'dg' => '+14', 'pts' => 34, 'zona' => 'libertadores'],
-            ['pos' => 4, 'club' => 'Oriente Petrolero', 'pj' => 18, 'g' => 9, 'e' => 4, 'p' => 5, 'gf' => 29, 'gc' => 22, 'dg' => '+7', 'pts' => 31, 'zona' => 'sudamericana'],
-            ['pos' => 5, 'club' => 'Blooming', 'pj' => 18, 'g' => 8, 'e' => 5, 'p' => 5, 'gf' => 27, 'gc' => 24, 'dg' => '+3', 'pts' => 29, 'zona' => 'sudamericana'],
-            ['pos' => 6, 'club' => 'Aurora', 'pj' => 17, 'g' => 8, 'e' => 4, 'p' => 5, 'gf' => 26, 'gc' => 23, 'dg' => '+3', 'pts' => 28, 'zona' => 'sudamericana'],
-            ['pos' => 7, 'club' => 'San Antonio Bulo Bulo', 'pj' => 18, 'g' => 7, 'e' => 5, 'p' => 6, 'gf' => 24, 'gc' => 22, 'dg' => '+2', 'pts' => 26, 'zona' => 'sudamericana'],
-            ['pos' => 8, 'club' => 'Wilstermann', 'pj' => 17, 'g' => 6, 'e' => 6, 'p' => 5, 'gf' => 22, 'gc' => 20, 'dg' => '+2', 'pts' => 24, 'zona' => 'neutro'],
-            ['pos' => 9, 'club' => 'Real Tomayapo', 'pj' => 18, 'g' => 6, 'e' => 4, 'p' => 8, 'gf' => 20, 'gc' => 26, 'dg' => '-6', 'pts' => 22, 'zona' => 'neutro'],
-            ['pos' => 10, 'club' => 'Guabirá', 'pj' => 18, 'g' => 5, 'e' => 4, 'p' => 9, 'gf' => 19, 'gc' => 28, 'dg' => '-9', 'pts' => 19, 'zona' => 'neutro'],
-        ];
+        return $this->sportsService->getBolivianStandings();
     }
 }

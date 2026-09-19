@@ -379,10 +379,10 @@
                         <span style="color:var(--ca-gold); font-weight:700; font-size:0.68rem;">{{ $partido['estado'] }}</span>
                     @endif
 
-                    <strong style="color:#fff;">{{ $partido['local_code'] }}</strong>
+                    <strong style="color:#fff;">{{ $partido['local_code'] ?? ($partido['local'] ?? 'LOC') }}</strong>
                     <span style="font-weight:900; color:var(--ca-volt);">{{ $partido['goles_local'] }} - {{ $partido['goles_visitante'] }}</span>
-                    <strong style="color:#fff;">{{ $partido['visitante_code'] }}</strong>
-                    <span style="color:#64748B; font-size:0.7rem;">({{ $partido['estadio'] }})</span>
+                    <strong style="color:#fff;">{{ $partido['visitante_code'] ?? ($partido['visitante'] ?? 'VIS') }}</strong>
+                    <span style="color:#64748B; font-size:0.7rem;">({{ $partido['estadio'] ?? '' }})</span>
                 </div>
             @endforeach
         </div>

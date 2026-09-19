@@ -586,38 +586,21 @@
         <!-- Columna Lateral: Marcadores, Posiciones y Widget -->
         <div class="col-lg-4">
 
-            <!-- Partidos de la Fecha -->
+            <!-- Partidos de la Fecha / Marcadores en Tiempo Real -->
             <div class="ca-card p-3 mb-4">
-                <div class="ca-sec-header mb-3">
-                    <span class="ca-sec-title" style="font-size: 1.05rem;">PARTIDOS DE LA FECHA</span>
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                    <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem;">PARTIDOS EN DIRECTO</span>
+                    <span class="badge bg-danger text-white small" style="font-family: var(--ca-font-display);">EN VIVO</span>
                 </div>
                 <div class="d-flex flex-column gap-2">
-                    @foreach($partidosVivo ?? [] as $p)
-                        <div class="p-2 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
-                            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 0.68rem;">
-                                <span class="text-muted">{{ $p['torneo'] }}</span>
-                                @if($p['estado'] === 'EN VIVO')
-                                    <span class="ca-badge-live"><i class="fas fa-circle" style="font-size:4px;"></i> {{ $p['minuto'] }}</span>
-                                @elseif($p['estado'] === 'FINAL')
-                                    <span class="ca-badge-ft">FINAL</span>
-                                @else
-                                    <span style="color: var(--ca-gold); font-weight: 700;">{{ $p['estado'] }}</span>
-                                @endif
-                            </div>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="fw-bold text-white small text-truncate" style="max-width: 42%;">{{ $p['local'] }}</span>
-                                <span class="fw-bold text-success px-2 py-0 rounded" style="background:#000; font-family: var(--ca-font-display); font-size: 0.95rem;">{{ $p['goles_local'] }} - {{ $p['goles_visitante'] }}</span>
-                                <span class="fw-bold text-white small text-truncate text-end" style="max-width: 42%;">{{ $p['visitante'] }}</span>
-                            </div>
-                        </div>
-                    @endforeach
+                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo])
                 </div>
             </div>
 
             <!-- Tabla de Posiciones Compacta -->
             <div class="ca-card p-3 mb-4">
                 <div class="ca-sec-header mb-3">
-                    <span class="ca-sec-title" style="font-size: 1.05rem;">POSICIONES LIGA</span>
+                    <span class="ca-sec-title" style="font-size: 1.05rem;">POSICIONES LIGA BOLIVIANA</span>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-dark table-sm mb-0" style="font-size: 0.75rem;">
@@ -633,7 +616,14 @@
                             @foreach(array_slice($tablaPosiciones ?? [], 0, 6) as $r)
                                 <tr>
                                     <td>{{ $r['pos'] }}</td>
-                                    <td><strong class="text-white">{{ $r['club'] }}</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if(!empty($r['logo']))
+                                                <img src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
+                                            @endif
+                                            <strong class="text-white">{{ $r['club'] }}</strong>
+                                        </div>
+                                    </td>
                                     <td class="text-center text-muted">{{ $r['pj'] }}</td>
                                     <td class="text-center fw-bold" style="color: var(--ca-volt);">{{ $r['pts'] }}</td>
                                 </tr>
