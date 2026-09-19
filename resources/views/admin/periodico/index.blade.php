@@ -65,6 +65,54 @@
   --paper-h:       1040px;
 }
 
+/* ══════════════════════════════════════════ FULLSCREEN MODE */
+.id-app.fullscreen-mode {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99990 !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  grid-template-rows: 42px 40px 1fr 110px !important;
+}
+
+.id-app.fullscreen-mode ~ * { display: none !important; }
+
+body.editor-fullscreen {
+  overflow: hidden;
+}
+
+body.editor-fullscreen .content-wrapper,
+body.editor-fullscreen .main-header,
+body.editor-fullscreen .main-sidebar,
+body.editor-fullscreen .main-footer {
+  display: none !important;
+}
+
+body.editor-fullscreen .content-wrapper > .content-header { display: none !important; }
+
+#fullscreen-overlay-indicator {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 14px;
+  z-index: 100000;
+  background: rgba(0,0,0,0.72);
+  border: 1px solid rgba(167,139,250,0.5);
+  color: #a78bfa;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  gap: 6px;
+  align-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s;
+}
+#fullscreen-overlay-indicator.visible { display: flex; }
+#fullscreen-overlay-indicator:hover { background: rgba(0,0,0,0.9); }
+
 /* ══════════════════════════════════════════ APP SHELL */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1118,6 +1166,13 @@
 
     <div class="id-menubar-sep"></div>
 
+    {{-- Pantalla Completa --}}
+    <button class="id-btn id-btn-ghost" id="fullscreenBtn" onclick="toggleFullscreenEditor()" title="Expandir editor a pantalla completa (F11)" style="color:#a78bfa;border:1px solid rgba(167,139,250,0.3);">
+      <i class="fas fa-expand" id="fullscreenIcon"></i> <span id="fullscreenLabel">Pantalla Completa</span>
+    </button>
+
+    <div class="id-menubar-sep"></div>
+
     {{-- Plantillas --}}
     <button class="id-btn id-btn-ghost" onclick="openModal('templateModal')" style="color:#38bdf8;">
       <i class="fas fa-th-large"></i> Plantillas InDesign
@@ -1282,9 +1337,9 @@
     </button>
 
     {{-- Divider / Pleca --}}
-    <button class="id-tool-btn" id="tool-line" onclick="createSpecialElement('divider')" title="Pleca / Filete Divisor (L)">
+    <button class="id-tool-btn" id="tool-line" onclick="createSpecialElement('divider')" title="Pleca / Filete Divisor (D)">
       <i class="fas fa-minus" style="color:#94a3b8;"></i>
-      <span class="hotkey">L</span>
+      <span class="hotkey">D</span>
     </button>
 
     {{-- QR Code Digital --}}
@@ -1866,6 +1921,12 @@
 <div class="id-toast" id="idToast">
   <i class="fas fa-check-circle" id="idToastIcon"></i>
   <span id="idToastMsg">Guardado</span>
+</div>
+
+{{-- Fullscreen Exit Indicator --}}
+<div id="fullscreen-overlay-indicator" onclick="toggleFullscreenEditor()" title="Salir de pantalla completa (Esc)">
+  <i class="fas fa-compress"></i>
+  <span>Salir de Pantalla Completa</span>
 </div>
 
 <script>
@@ -2497,6 +2558,10 @@ function setColumns(n) {
 
 // ── IMAGE HANDLING ─────────────────────────────────
 function openImagePicker() { openModal('imagePickerModal'); }
+
+function applyImageUrl() {
+    applyImageUrlToFrame();
+}
 
 function applyImageUrlToFrame() {
     const url = document.getElementById('imageUrlInput').value;
@@ -3134,9 +3199,6 @@ function toggleMargins() {
     document.getElementById('marginToggleBtn').classList.toggle('active', marginsVisible);
 }
 
-// ── UNDO / REDO ────────────────────────────────────
-function recordHistory() {
-    undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
 // ── EDITORIAL WORKFLOW & PUBLICATION SUITE ─────────
 function toggleStateDropdown(e) {
     e.stopPropagation();
@@ -3248,6 +3310,102 @@ function toggleSnapGrid() {
     showToast(snapGridActive ? 'Ajuste magnético a cuadrícula (10px) ACTIVADO' : 'Ajuste magnético DESACTIVADO', 'success');
 }
 
+// ── FULLSCREEN EDITOR MODE ─────────────────────────
+let isFullscreen = false;
+
+function toggleFullscreenEditor() {
+    const app = document.getElementById('idApp');
+    const indicator = document.getElementById('fullscreen-overlay-indicator');
+    const icon = document.getElementById('fullscreenIcon');
+    const label = document.getElementById('fullscreenLabel');
+
+    isFullscreen = !isFullscreen;
+
+    if (isFullscreen) {
+        app.classList.add('fullscreen-mode');
+        document.body.classList.add('editor-fullscreen');
+        // Hide Laravel admin layout elements
+        document.querySelectorAll('.main-header, .main-sidebar, .main-footer, .content-header').forEach(el => {
+            if (el) el.style.display = 'none';
+        });
+        // Make the content wrapper and its parent full-screen
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const appWrapper = document.querySelector('.wrapper');
+        if (contentWrapper) {
+            contentWrapper.style.marginLeft = '0';
+            contentWrapper.style.padding = '0';
+            contentWrapper.style.minHeight = '100vh';
+        }
+        if (appWrapper) {
+            appWrapper.style.overflow = 'hidden';
+        }
+        window.scrollTo(0, 0);
+        if (indicator) indicator.classList.add('visible');
+        if (icon) { icon.className = 'fas fa-compress'; }
+        if (label) label.textContent = 'Salir Pantalla Completa';
+        // Try native fullscreen API
+        try {
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        } catch(e) {}
+        showToast('Modo Pantalla Completa activado — Presiona Esc o haz clic en el indicador para salir', 'success');
+    } else {
+        exitFullscreen();
+    }
+}
+
+function exitFullscreen() {
+    isFullscreen = false;
+    const app = document.getElementById('idApp');
+    const indicator = document.getElementById('fullscreen-overlay-indicator');
+    const icon = document.getElementById('fullscreenIcon');
+    const label = document.getElementById('fullscreenLabel');
+
+    app.classList.remove('fullscreen-mode');
+    document.body.classList.remove('editor-fullscreen');
+
+    // Restore admin layout
+    document.querySelectorAll('.main-header, .main-sidebar, .main-footer, .content-header').forEach(el => {
+        if (el) el.style.display = '';
+    });
+    const contentWrapper = document.querySelector('.content-wrapper');
+    const appWrapper = document.querySelector('.wrapper');
+    if (contentWrapper) {
+        contentWrapper.style.marginLeft = '';
+        contentWrapper.style.padding = '';
+        contentWrapper.style.minHeight = '';
+    }
+    if (appWrapper) appWrapper.style.overflow = '';
+
+    if (indicator) indicator.classList.remove('visible');
+    if (icon) icon.className = 'fas fa-expand';
+    if (label) label.textContent = 'Pantalla Completa';
+
+    try {
+        if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen();
+    } catch(e) {}
+
+    showToast('Modo Pantalla Completa desactivado', 'success');
+}
+
+// Exit fullscreen on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isFullscreen) {
+        exitFullscreen();
+    }
+    // F11 to toggle
+    if (e.key === 'F11' && document.getElementById('idApp')) {
+        e.preventDefault();
+        toggleFullscreenEditor();
+    }
+});
+
+// Sync with native fullscreen API exit (user presses Esc in browser)
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && isFullscreen) {
+        exitFullscreen();
+    }
+});
+
 // ── UNDO / REDO ────────────────────────────────────
 function recordHistory() {
     undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
@@ -3305,7 +3463,7 @@ function setupKeyboard() {
         if (e.key === 'i' || e.key === 'I') createSpecialElement('image');
         if (e.key === 'q' || e.key === 'Q') createSpecialElement('quote');
         if (e.key === 'b' || e.key === 'B') createSpecialElement('box');
-        if (e.key === 'l' || e.key === 'L') createSpecialElement('divider');
+        if (e.key === 'd' || e.key === 'D') createSpecialElement('divider');
         if (e.key === 'k' || e.key === 'K') createSpecialElement('qr');
         if (e.key === 'p' || e.key === 'P') createSpecialElement('ad');
         if (e.key === 'n' || e.key === 'N') toggleNewsDrawer();
