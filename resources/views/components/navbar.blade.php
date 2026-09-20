@@ -73,10 +73,33 @@
     </div>
     <div style="margin-top:16px">
       <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);font-weight:800;margin-bottom:10px">Síguenos en Redes</p>
-      <div style="display:flex;gap:8px">
-        <a href="https://facebook.com/uhtvbolivia" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'"><i class="fab fa-facebook-f" style="font-size:.85rem"></i></a>
-        <a href="https://www.youtube.com/@UHTVBolivia" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'"><i class="fab fa-youtube" style="font-size:.85rem"></i></a>
-        <a href="https://instagram.com/uhtvbolivia" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'"><i class="fab fa-instagram" style="font-size:.85rem"></i></a>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        @php
+          $fbUrl = setting('social_facebook', 'https://facebook.com/uhtvbolivia');
+          $ytUrl = setting('social_youtube', 'https://www.youtube.com/@UHTVBolivia');
+          $igUrl = setting('social_instagram', 'https://instagram.com/uhtvbolivia');
+          $twUrl = setting('social_twitter');
+          $tkUrl = setting('social_tiktok');
+          $waNum = setting('whatsapp_phone');
+        @endphp
+        @if($fbUrl)
+          <a href="{{ $fbUrl }}" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'" title="Facebook"><i class="fab fa-facebook-f" style="font-size:.85rem"></i></a>
+        @endif
+        @if($ytUrl)
+          <a href="{{ $ytUrl }}" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'" title="YouTube"><i class="fab fa-youtube" style="font-size:.85rem"></i></a>
+        @endif
+        @if($igUrl)
+          <a href="{{ $igUrl }}" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'" title="Instagram"><i class="fab fa-instagram" style="font-size:.85rem"></i></a>
+        @endif
+        @if($twUrl)
+          <a href="{{ $twUrl }}" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'" title="X (Twitter)"><i class="fab fa-x-twitter" style="font-size:.85rem"></i></a>
+        @endif
+        @if($tkUrl)
+          <a href="{{ $tkUrl }}" target="_blank" style="width:36px;height:36px;background:var(--color-navy-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'" title="TikTok"><i class="fab fa-tiktok" style="font-size:.85rem"></i></a>
+        @endif
+        @if($waNum)
+          <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $waNum) }}?text={{ urlencode(setting('whatsapp_message', 'Hola')) }}" target="_blank" style="width:36px;height:36px;background:#25D366;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;transition:all .2s" title="WhatsApp"><i class="fab fa-whatsapp" style="font-size:.95rem"></i></a>
+        @endif
       </div>
     </div>
   </div>

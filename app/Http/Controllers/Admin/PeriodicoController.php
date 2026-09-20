@@ -348,12 +348,22 @@ class PeriodicoController extends Controller
             $file = $request->file('pdf_file');
             $filename = 'edicion_' . $id . '_' . time() . '.pdf';
             
-            $destDir = public_path('storage/ediciones_pdf');
+            $destDir = storage_path('app/public/ediciones_pdf');
             if (!file_exists($destDir)) {
                 mkdir($destDir, 0755, true);
             }
             
             $file->move($destDir, $filename);
+
+            // Asegurar sincronización en public/storage si no es enlace simbólico
+            $pubDir = public_path('storage/ediciones_pdf');
+            if (!is_link(public_path('storage')) && file_exists(public_path('storage'))) {
+                if (!file_exists($pubDir)) {
+                    @mkdir($pubDir, 0755, true);
+                }
+                @copy($destDir . '/' . $filename, $pubDir . '/' . $filename);
+            }
+
             $publicUrl = asset('storage/ediciones_pdf/' . $filename);
 
             $ediciones = $this->getAllEdiciones();

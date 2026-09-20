@@ -43,6 +43,9 @@ class Columnista extends Model
         if ($this->avatar && (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://'))) {
             return $this->avatar;
         }
+        if ($this->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nombre) . '&background=0B1F3A&color=fff&size=150';
     }
 }

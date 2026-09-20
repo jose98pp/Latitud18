@@ -118,13 +118,17 @@
     display: flex;
 }
 
-/* Scale down paper to fit viewport on smaller screens */
+/* Responsive viewport handling for smaller screens */
 @media (max-width: 900px) {
-    .reader-stage-viewport { padding: 10px 0; }
+    .reader-stage-viewport {
+        padding: 12px 6px 30px;
+        overflow-x: hidden;
+    }
     .reader-paper-sheet, .reader-paper-sheet.frames-mode {
         transform-origin: top center;
-        transform: scale(calc((100vw - 20px) / 820));
-        margin-bottom: calc(((100vw - 20px) / 820 - 1) * 1160px);
+        transition: transform 0.2s ease;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -818,6 +822,38 @@
 let currentPageIndex = 0;
 const totalPages = {{ count($edicionActiva['paginas'] ?? []) }};
 
+function updateMobileScale() {
+    const viewportWidth = window.innerWidth;
+    const viewport = document.querySelector('.reader-stage-viewport');
+    if (!viewport) return;
+
+    if (viewportWidth < 860) {
+        const targetWidth = 820;
+        const availableWidth = viewportWidth - 20;
+        const scale = Math.min(1, Math.max(0.35, availableWidth / targetWidth));
+        
+        const sheets = document.querySelectorAll('.reader-paper-sheet');
+        sheets.forEach(sheet => {
+            sheet.style.transform = `scale(${scale})`;
+            sheet.style.transformOrigin = 'top center';
+        });
+
+        const activeSheet = document.querySelector('.reader-paper-sheet.active');
+        if (activeSheet) {
+            const rawHeight = activeSheet.offsetHeight || 1160;
+            const scaledHeight = rawHeight * scale;
+            viewport.style.height = `${Math.round(scaledHeight) + 40}px`;
+        }
+    } else {
+        const sheets = document.querySelectorAll('.reader-paper-sheet');
+        sheets.forEach(sheet => {
+            sheet.style.transform = '';
+            sheet.style.transformOrigin = '';
+        });
+        viewport.style.height = '';
+    }
+}
+
 function goToPage(index) {
     if (index < 0 || index >= totalPages) return;
     currentPageIndex = index;
@@ -835,6 +871,7 @@ function goToPage(index) {
     document.getElementById('btnNextPage').disabled = (index === totalPages - 1);
 
     window.scrollTo({ top: 120, behavior: 'smooth' });
+    setTimeout(updateMobileScale, 50);
 }
 
 function prevPage() {
@@ -849,6 +886,41 @@ function nextPage() {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') prevPage();
     if (e.key === 'ArrowRight') nextPage();
+});
+
+// Soporte para gestos táctiles Swipe en smartphones y tablets
+let touchStartX = 0;
+let touchStartY = 0;
+const stageViewport = document.querySelector('.reader-stage-viewport');
+if (stageViewport) {
+    stageViewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+
+    stageViewport.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1) {
+            const diffX = touchStartX - e.changedTouches[0].clientX;
+            const diffY = touchStartY - e.changedTouches[0].clientY;
+            // Deslizamiento horizontal prioritario mayor a 45px
+            if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.3) {
+                if (diffX > 0) {
+                    nextPage();
+                } else {
+                    prevPage();
+                }
+            }
+        }
+    }, { passive: true });
+}
+
+window.addEventListener('resize', updateMobileScale);
+window.addEventListener('orientationchange', updateMobileScale);
+document.addEventListener('DOMContentLoaded', () => {
+    updateMobileScale();
+    setTimeout(updateMobileScale, 300);
 });
 </script>
 @endsection

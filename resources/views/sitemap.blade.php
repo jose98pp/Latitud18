@@ -19,6 +19,14 @@
         <priority>0.9</priority>
     </url>
 
+    {{-- Portal Deportivo Contra Ataque --}}
+    <url>
+        <loc>{{ route('contraataque.index') }}</loc>
+        <lastmod>{{ now()->toAtomString() }}</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
     {{-- Sección de Opinión --}}
     <url>
         <loc>{{ route('opinion.index') }}</loc>

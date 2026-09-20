@@ -47,7 +47,7 @@
     "name": "Latitud18",
     "logo": {
       "@type": "ImageObject",
-      "url": "{{ asset('img/core-img/latitud18_logo.svg') }}"
+      "url": "{{ setting('site_logo') ? asset(setting('site_logo')) : asset('images/Logo.jpg') }}"
     }
   }
 }

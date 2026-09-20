@@ -62,7 +62,7 @@
     "name": "Contra Ataque Deportes",
     "logo": {
       "@type": "ImageObject",
-      "url": "{{ asset('img/core-img/latitud18_logo.svg') }}"
+      "url": "{{ file_exists(public_path('images/contraataque-logo.jpg')) ? asset('images/contraataque-logo.jpg') : asset('images/Logo.jpg') }}"
     }
   }
 }

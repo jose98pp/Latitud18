@@ -45,7 +45,11 @@ class OpinionController extends Controller
         if ($request->hasFile('avatar_file')) {
             $file = $request->file('avatar_file');
             $filename = time() . '_' . Str::slug($request->nombre) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/columnistas'), $filename);
+            $destDir = public_path('images/columnistas');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $file->move($destDir, $filename);
             $avatarPath = 'images/columnistas/' . $filename;
         } elseif ($request->filled('avatar_url')) {
             $avatarPath = $request->avatar_url;
@@ -88,7 +92,15 @@ class OpinionController extends Controller
         if ($request->hasFile('avatar_file')) {
             $file = $request->file('avatar_file');
             $filename = time() . '_' . Str::slug($request->nombre) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/columnistas'), $filename);
+            $destDir = public_path('images/columnistas');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            // Eliminar avatar anterior si existe
+            if ($columnista->avatar && file_exists(public_path($columnista->avatar))) {
+                @unlink(public_path($columnista->avatar));
+            }
+            $file->move($destDir, $filename);
             $columnista->avatar = 'images/columnistas/' . $filename;
         } elseif ($request->filled('avatar_url')) {
             $columnista->avatar = $request->avatar_url;

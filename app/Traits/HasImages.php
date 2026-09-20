@@ -126,6 +126,25 @@ trait HasImages
     }
 
     /**
+     * Accessor para URL de imagen (alias en español para $model->imagen_url y $model->imagenUrl)
+     */
+    public function getImagenUrlAttribute(): string
+    {
+        return $this->getImageUrl();
+    }
+
+    /**
+     * Método alias para obtener la URL de la imagen
+     *
+     * @param string|null $imageField
+     * @return string
+     */
+    public function getImagenUrl(?string $imageField = null): string
+    {
+        return $this->getImageUrl($imageField);
+    }
+
+    /**
      * Accessor para URLs responsive
      */
     public function getResponsiveImageUrlsAttribute(): array
