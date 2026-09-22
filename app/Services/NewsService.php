@@ -124,6 +124,31 @@ class NewsService
                 ->get()
                 ->groupBy('location');
 
+            // 10. Edición Activa del Periódico Digital (para Kiosko en Portada)
+            $edicionPeriodico = null;
+            try {
+                $periodicosPath = storage_path('app/periodicos.json');
+                if (file_exists($periodicosPath)) {
+                    $ediciones = json_decode(file_get_contents($periodicosPath), true) ?: [];
+                    foreach ($ediciones as $ed) {
+                        if (!empty($ed['activa']) && !empty($ed['publicada'])) {
+                            $edicionPeriodico = $ed;
+                            break;
+                        }
+                    }
+                    if (!$edicionPeriodico) {
+                        foreach ($ediciones as $ed) {
+                            if (!empty($ed['publicada'])) {
+                                $edicionPeriodico = $ed;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (\Throwable $ep) {
+                $edicionPeriodico = null;
+            }
+
             return [
                 'noticias' => $noticias,
                 'noticiaInvestigacion' => $noticiaInvestigacion,
@@ -134,6 +159,7 @@ class NewsService
                 'articulosOpinion' => $articulosOpinion,
                 'noticiasConVideo' => $noticiasConVideo,
                 'banners' => $banners,
+                'edicionPeriodico' => $edicionPeriodico,
             ];
         });
     } catch (\Throwable $e) {
@@ -149,6 +175,7 @@ class NewsService
             'articulosOpinion' => collect(),
             'noticiasConVideo' => collect(),
             'banners' => collect(),
+            'edicionPeriodico' => null,
         ];
     }
 }

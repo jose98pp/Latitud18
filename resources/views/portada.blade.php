@@ -11,19 +11,22 @@
   {{-- 2. Ticker Dinámico de Últimas Noticias --}}
   @include('portada.ticker')
 
-  {{-- 3. Fila 1 de Categorías (Split Layout: 3 Columnas) --}}
+  {{-- 3. Edición Impresa / Periódico Digital (Kiosko - estilo El Mundo) --}}
+  @include('portada.edicion-impresa')
+
+  {{-- 4. Fila 1 de Categorías (Split Layout: 3 Columnas) --}}
   @include('portada.categorias-top')
 
-  {{-- 4. Fila 2 de Categorías (3 Columnas + Latitud 18 Investiga) --}}
+  {{-- 5. Fila 2 de Categorías (3 Columnas + Latitud 18 Investiga) --}}
   @include('portada.categorias-secondary')
 
-  {{-- 5. Fila 3: Opinión (4 Columnistas) & Latitud 18 TV (Videos) --}}
+  {{-- 6. Fila 3: Opinión (4 Columnistas) & Latitud 18 TV (Videos) --}}
   @include('portada.opinion-tv')
 
-  {{-- 6. Canal Oficial de YouTube & Galería de Videos --}}
+  {{-- 7. Canal Oficial de YouTube & Galería de Videos --}}
   @include('portada.youtube-gallery')
 
-  {{-- 7. Espacio Publicitario, Newsletter Exclusivo & Explorador de Secciones --}}
+  {{-- 8. Espacio Publicitario, Newsletter Exclusivo & Explorador de Secciones --}}
   @include('portada.ads-newsletter')
 
 </div>

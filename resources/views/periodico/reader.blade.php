@@ -386,6 +386,91 @@
     background: #FAFAFA;
     padding: 8px 12px;
 }
+
+/* ====================================================
+   TOOLBAR EDITORIAL (Controles: Zoom, Doble Página, Fullscreen)
+   ==================================================== */
+.reader-toolbar-strip {
+    background: #111827;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.reader-tool-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.reader-tool-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+.reader-tool-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #CBD5E0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+.reader-tool-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border-color: rgba(255,255,255,0.3);
+}
+.reader-tool-btn.active {
+    background: var(--reader-red);
+    color: #fff;
+    border-color: var(--reader-red);
+}
+.reader-tool-btn.zoom-val {
+    background: transparent;
+    border-color: transparent;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 800;
+    min-width: 46px;
+    text-align: center;
+    cursor: default;
+    pointer-events: none;
+}
+/* MODO DOBLE PÁGINA */
+.reader-stage-viewport.double-page-mode {
+    padding: 24px 8px 60px;
+}
+.reader-stage-viewport.double-page-mode .reader-paper-sheet.active {
+    flex-direction: row;
+    gap: 2px;
+    width: auto;
+    max-width: 1640px;
+}
+/* ZOOM */
+.reader-stage-viewport .reader-zoom-wrapper {
+    transform-origin: top center;
+    transition: transform 0.2s ease;
+}
+/* FULLSCREEN */
+.newspaper-reader-container:-webkit-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
+.newspaper-reader-container:-moz-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
+.newspaper-reader-container:fullscreen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 </style>
 
 <div class="container py-3">
@@ -449,6 +534,39 @@
                     Pág {{ $pag['numero'] ?? ($idx + 1) }}: {{ $pag['nombre'] ?? 'Página ' . ($idx + 1) }}
                 </button>
             @endforeach
+        </div>
+
+        {{-- TOOLBAR EDITORIAL: ZOOM + DOBLE PÁGINA + PANTALLA COMPLETA --}}
+        <div class="reader-toolbar-strip" id="readerToolbar">
+          <div class="reader-tool-group">
+            <span class="reader-tool-label"><i class="fas fa-search-plus"></i> Zoom:</span>
+            <button class="reader-tool-btn" onclick="readerZoomOut()" title="Reducir">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="reader-tool-btn zoom-val" id="readerZoomLabel">100%</span>
+            <button class="reader-tool-btn" onclick="readerZoomIn()" title="Ampliar">
+              <i class="fas fa-plus"></i>
+            </button>
+            <button class="reader-tool-btn" onclick="readerZoomReset()" title="Tamaño real">
+              <i class="fas fa-redo-alt"></i> Reset
+            </button>
+          </div>
+
+          <div class="reader-tool-group">
+            <span class="reader-tool-label"><i class="fas fa-columns"></i> Vista:</span>
+            <button class="reader-tool-btn active" id="btnSinglePage" onclick="readerSetSinglePage()" title="Vista de página individual">
+              <i class="fas fa-file-alt"></i> Página Simple
+            </button>
+            <button class="reader-tool-btn" id="btnDoublePage" onclick="readerSetDoublePage()" title="Vista de doble página (periódico abierto)">
+              <i class="fas fa-book-open"></i> Doble Página
+            </button>
+          </div>
+
+          <div class="reader-tool-group">
+            <button class="reader-tool-btn" onclick="readerToggleFullscreen()" id="btnReaderFullscreen" title="Pantalla completa (F)">
+              <i class="fas fa-expand" id="readerFsIcon"></i> Pantalla Completa
+            </button>
+          </div>
         </div>
 
         <!-- STAGE DONDE SE RENDERIZAN LAS PÁGINAS DEL PERIÓDICO -->
@@ -882,10 +1000,16 @@ function nextPage() {
     if (currentPageIndex < totalPages - 1) goToPage(currentPageIndex + 1);
 }
 
-// Teclas izquierda/derecha para pasar páginas
+// Teclas izquierda/derecha para pasar páginas, y F para fullscreen
 document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea') return;
     if (e.key === 'ArrowLeft') prevPage();
     if (e.key === 'ArrowRight') nextPage();
+    if (e.key === 'f' || e.key === 'F') { e.preventDefault(); readerToggleFullscreen(); }
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); readerZoomIn(); }
+    if (e.key === '-') { e.preventDefault(); readerZoomOut(); }
+    if (e.key === '0') { e.preventDefault(); readerZoomReset(); }
 });
 
 // Soporte para gestos táctiles Swipe en smartphones y tablets
@@ -915,6 +1039,109 @@ if (stageViewport) {
         }
     }, { passive: true });
 }
+
+// ============================================================
+// CONTROLES DE TOOLBAR EDITORIAL: ZOOM + DOBLE PÁGINA + FULLSCREEN
+// ============================================================
+
+// -- ZOOM --
+const ZOOM_LEVELS = [0.5, 0.65, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0];
+let currentZoomIdx = 3; // 1.0 = 100%
+
+function applyReaderZoom() {
+    const scale = ZOOM_LEVELS[currentZoomIdx];
+    const label = document.getElementById('readerZoomLabel');
+    if (label) label.textContent = Math.round(scale * 100) + '%';
+    document.querySelectorAll('.reader-paper-sheet').forEach(sheet => {
+        sheet.style.transform = `scale(${scale})`;
+        sheet.style.transformOrigin = 'top center';
+    });
+}
+
+function readerZoomIn() {
+    if (currentZoomIdx < ZOOM_LEVELS.length - 1) {
+        currentZoomIdx++;
+        applyReaderZoom();
+    }
+}
+
+function readerZoomOut() {
+    if (currentZoomIdx > 0) {
+        currentZoomIdx--;
+        applyReaderZoom();
+    }
+}
+
+function readerZoomReset() {
+    currentZoomIdx = 3; // back to 100%
+    applyReaderZoom();
+}
+
+// -- DOBLE PÁGINA --
+let isDoublePageMode = false;
+
+function readerSetSinglePage() {
+    isDoublePageMode = false;
+    const vp = document.getElementById('readerViewport');
+    if (vp) vp.classList.remove('double-page-mode');
+    // Mostrar solo la página activa
+    document.querySelectorAll('.reader-paper-sheet').forEach((sheet, idx) => {
+        sheet.classList.toggle('active', idx === currentPageIndex);
+    });
+    document.getElementById('btnSinglePage').classList.add('active');
+    document.getElementById('btnDoublePage').classList.remove('active');
+    applyReaderZoom();
+}
+
+function readerSetDoublePage() {
+    isDoublePageMode = true;
+    const vp = document.getElementById('readerViewport');
+    if (vp) vp.classList.add('double-page-mode');
+    // Mostrar la página actual y la siguiente (spread abierto)
+    const spreadIdx1 = currentPageIndex % 2 === 0 ? currentPageIndex : currentPageIndex - 1;
+    const spreadIdx2 = spreadIdx1 + 1;
+    document.querySelectorAll('.reader-paper-sheet').forEach((sheet, idx) => {
+        sheet.classList.toggle('active', idx === spreadIdx1 || idx === spreadIdx2);
+    });
+    document.getElementById('btnDoublePage').classList.add('active');
+    document.getElementById('btnSinglePage').classList.remove('active');
+    // Ajustar zoom para que quepan dos páginas
+    if (currentZoomIdx > 2) { currentZoomIdx = 2; } // max 80% en doble página
+    applyReaderZoom();
+}
+
+// -- PANTALLA COMPLETA --
+function readerToggleFullscreen() {
+    const container = document.querySelector('.newspaper-reader-container') || document.getElementById('readerViewport');
+    const icon = document.getElementById('readerFsIcon');
+    const btn = document.getElementById('btnReaderFullscreen');
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+
+    if (!isFs) {
+        if (container.requestFullscreen) container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+    }
+}
+
+function updateReaderFsBtn() {
+    const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+    const icon = document.getElementById('readerFsIcon');
+    const btn = document.getElementById('btnReaderFullscreen');
+    if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+    if (btn) {
+        const span = btn.childNodes[1];
+        if (span) span.textContent = isFs ? ' Salir de Pantalla Completa' : ' Pantalla Completa';
+    }
+}
+
+document.addEventListener('fullscreenchange', updateReaderFsBtn);
+document.addEventListener('webkitfullscreenchange', updateReaderFsBtn);
+document.addEventListener('mozfullscreenchange', updateReaderFsBtn);
 
 window.addEventListener('resize', updateMobileScale);
 window.addEventListener('orientationchange', updateMobileScale);
