@@ -45,14 +45,88 @@ function closeSearchModal(){
   document.getElementById('search-modal-suite').classList.remove('active');
 }
 
-// Live Modal (TV & Radio)
-function openLiveModal(){
-  document.getElementById('live-streaming-modal-suite').classList.add('active');
-  document.body.style.overflow='hidden';
+// Live Modal & TV Player Controller
+let isTvPlaying = true;
+let isTvMuted = false;
+let isGraphicsVisible = true;
+
+function sendTvCommand(func, args) {
+  const iframe = document.getElementById('liveTvIframe');
+  if (!iframe || !iframe.contentWindow) return;
+  try {
+    iframe.contentWindow.postMessage(JSON.stringify({
+      event: 'command',
+      func: func,
+      args: args || []
+    }), '*');
+  } catch (err) {
+    console.warn('Error enviando comando a YouTube:', err);
+  }
 }
-function closeLiveModal(){
-  document.getElementById('live-streaming-modal-suite').classList.remove('active');
-  document.body.style.overflow='';
+
+function openLiveModal(videoId, title) {
+  const modal = document.getElementById('live-streaming-modal-suite');
+  if (!modal) return;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  const iframe = document.getElementById('liveTvIframe');
+  const headline = document.getElementById('lt-headline-text');
+  const subheadline = document.getElementById('lt-subheadline-text');
+  const headerTitle = document.getElementById('liveModalTitleHeader');
+  const extBtn = document.getElementById('btnTvExternal');
+
+  const defaultYtId = iframe ? iframe.getAttribute('data-default-id') : 'lvbgd2JETfI';
+  const targetId = videoId || defaultYtId || 'lvbgd2JETfI';
+
+  if (title) {
+    if (headline) headline.textContent = title;
+    if (subheadline) subheadline.textContent = 'Transmisión en directo';
+    if (headerTitle) headerTitle.textContent = title.toUpperCase();
+  }
+
+  if (extBtn) {
+    extBtn.href = `https://www.youtube.com/watch?v=${targetId}`;
+  }
+
+  // Recarga e inicializa el iframe de YouTube asegurando reproducción limpia
+  if (iframe) {
+    const origin = encodeURIComponent(window.location.origin);
+    const newSrc = `https://www.youtube-nocookie.com/embed/${targetId}?autoplay=1&mute=0&enablejsapi=1&rel=0&playsinline=1&controls=1&origin=${origin}`;
+    
+    if (iframe.src !== newSrc) {
+      iframe.src = newSrc;
+    } else {
+      sendTvCommand('playVideo');
+    }
+  }
+
+  isTvPlaying = true;
+  const playBtn = document.getElementById('btnTvPlayPause');
+  if (playBtn) {
+    const icon = playBtn.querySelector('i');
+    const label = playBtn.querySelector('span');
+    if (icon) icon.className = 'fas fa-pause';
+    if (label) label.textContent = 'Pausar';
+    playBtn.classList.remove('paused');
+  }
+}
+
+function closeLiveModal() {
+  const modal = document.getElementById('live-streaming-modal-suite');
+  if (modal) modal.classList.remove('active');
+  document.body.style.overflow = '';
+
+  // Pausar video de inmediato para silenciar audio
+  sendTvCommand('pauseVideo');
+
+  // Si estaba en pantalla completa, salir
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+
+  // Detener radio si estaba sonando
   const a = document.getElementById('global-radio-audio');
   if (a && !a.paused) { 
     a.pause(); 
@@ -61,26 +135,162 @@ function closeLiveModal(){
   }
 }
 
-// Radio streaming player
-function toggleRadioPlay(){
-  const a = document.getElementById('global-radio-audio');
-  const icon = document.getElementById('radio-play-icon');
-  if (!a) return;
-  if (a.paused) {
-    a.play().then(() => { if (icon) icon.className = 'fas fa-pause'; }).catch(e => console.log('Error playing stream:', e));
-  } else {
-    a.pause();
+function toggleTvPlayPause() {
+  const btn = document.getElementById('btnTvPlayPause');
+  const icon = btn ? btn.querySelector('i') : null;
+  const label = btn ? btn.querySelector('span') : null;
+
+  if (isTvPlaying) {
+    sendTvCommand('pauseVideo');
+    isTvPlaying = false;
     if (icon) icon.className = 'fas fa-play';
+    if (label) label.textContent = 'Reanudar';
+    if (btn) btn.classList.add('paused');
+  } else {
+    sendTvCommand('playVideo');
+    isTvPlaying = true;
+    if (icon) icon.className = 'fas fa-pause';
+    if (label) label.textContent = 'Pausar';
+    if (btn) btn.classList.remove('paused');
   }
 }
 
-// Lower third switcher
-function switchLowerThird(badge,headline,sub,btn){
-  document.getElementById('lt-badge-text').textContent=badge;
-  document.getElementById('lt-headline-text').textContent=headline;
-  document.getElementById('lt-subheadline-text').textContent=sub;
-  document.querySelectorAll('.btn-lt-switcher').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function toggleTvMute() {
+  const btn = document.getElementById('btnTvMute');
+  const icon = btn ? btn.querySelector('i') : null;
+  const label = btn ? btn.querySelector('span') : null;
+
+  if (isTvMuted) {
+    sendTvCommand('unMute');
+    isTvMuted = false;
+    if (icon) icon.className = 'fas fa-volume-up';
+    if (label) label.textContent = 'Audio';
+    if (btn) btn.classList.remove('muted');
+  } else {
+    sendTvCommand('mute');
+    isTvMuted = true;
+    if (icon) icon.className = 'fas fa-volume-mute';
+    if (label) label.textContent = 'Silenciado';
+    if (btn) btn.classList.add('muted');
+  }
+}
+
+function toggleTvFullscreen() {
+  const frame = document.getElementById('tvSetWrapper') || document.getElementById('tvScreenFrame');
+  if (!frame) return;
+
+  const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+  if (!isFs) {
+    if (frame.requestFullscreen) {
+      frame.requestFullscreen().catch(err => {
+        const ifr = document.getElementById('liveTvIframe');
+        if (ifr && ifr.requestFullscreen) ifr.requestFullscreen();
+      });
+    } else if (frame.webkitRequestFullscreen) {
+      frame.webkitRequestFullscreen();
+    } else if (frame.mozRequestFullScreen) {
+      frame.mozRequestFullScreen();
+    } else if (frame.msRequestFullscreen) {
+      frame.msRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+}
+
+function toggleTvGraphics() {
+  const box = document.getElementById('lower-third-box');
+  const btn = document.getElementById('btnToggleGraphics');
+  if (!box) return;
+  const icon = btn ? btn.querySelector('i') : null;
+  const label = btn ? btn.querySelector('span') : null;
+
+  isGraphicsVisible = !isGraphicsVisible;
+  if (isGraphicsVisible) {
+    box.classList.remove('hidden-graphics');
+    if (icon) icon.className = 'fas fa-eye-slash';
+    if (label) label.textContent = 'Ocultar Zócalo';
+  } else {
+    box.classList.add('hidden-graphics');
+    if (icon) icon.className = 'fas fa-eye';
+    if (label) label.textContent = 'Mostrar Zócalo';
+  }
+}
+
+function reloadLiveTv() {
+  const iframe = document.getElementById('liveTvIframe');
+  if (!iframe) return;
+  const currSrc = iframe.src;
+  iframe.src = '';
+  setTimeout(() => {
+    iframe.src = currSrc;
+  }, 100);
+}
+
+// Sincronizar icono del botón al cambiar estado de pantalla completa
+function updateTvFullscreenButtonState() {
+  const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+  const btn = document.getElementById('btnTvFullscreen');
+  if (!btn) return;
+  const icon = btn.querySelector('i');
+  const label = btn.querySelector('span');
+  if (isFs) {
+    if (icon) icon.className = 'fas fa-compress';
+    if (label) label.textContent = 'Salir';
+  } else {
+    if (icon) icon.className = 'fas fa-expand';
+    if (label) label.textContent = 'Pantalla Completa';
+  }
+}
+document.addEventListener('fullscreenchange', updateTvFullscreenButtonState);
+document.addEventListener('webkitfullscreenchange', updateTvFullscreenButtonState);
+document.addEventListener('mozfullscreenchange', updateTvFullscreenButtonState);
+
+// Atajos de teclado cuando el modal está abierto
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('live-streaming-modal-suite');
+  if (!modal || !modal.classList.contains('active')) return;
+  
+  // No interferir si el usuario está escribiendo en el chat
+  const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  if (tag === 'input' || tag === 'textarea') return;
+
+  if (e.key === 'Escape') {
+    if (!document.fullscreenElement) {
+      closeLiveModal();
+    }
+  } else if (e.key === 'f' || e.key === 'F') {
+    e.preventDefault();
+    toggleTvFullscreen();
+  } else if (e.key === ' ' || e.code === 'Space') {
+    e.preventDefault();
+    toggleTvPlayPause();
+  } else if (e.key === 'm' || e.key === 'M') {
+    e.preventDefault();
+    toggleTvMute();
+  }
+});
+
+// Switcher de Rótulos
+function switchLowerThird(badge, headline, sub, btn) {
+  const box = document.getElementById('lower-third-box');
+  if (box && !isGraphicsVisible) {
+    toggleTvGraphics();
+  }
+  document.getElementById('lt-badge-text').textContent = badge;
+  document.getElementById('lt-headline-text').textContent = headline;
+  document.getElementById('lt-subheadline-text').textContent = sub;
+  document.querySelectorAll('.btn-lt-switcher').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 }
 
 // Live Chat Simulator
