@@ -471,18 +471,95 @@
 .newspaper-reader-container:-webkit-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 .newspaper-reader-container:-moz-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 .newspaper-reader-container:fullscreen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
+
+/* DearFlip Mode Toggle Tabs */
+.reader-mode-tabs {
+    display: flex;
+    background: #0d1117;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.reader-mode-tab {
+    flex: 1;
+    padding: 11px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+.reader-mode-tab:hover { color: #94a3b8; background: rgba(255,255,255,0.03); }
+.reader-mode-tab.active {
+    color: #fff;
+    border-bottom-color: var(--reader-red);
+    background: rgba(215,25,32,0.08);
+}
+.reader-mode-tab .tab-badge {
+    background: var(--reader-red);
+    color: #fff;
+    font-size: 0.5rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* DearFlip Container */
+.dflip-wrapper {
+    display: none;
+    background: #1a1f2e;
+    min-height: 700px;
+    padding: 24px 16px;
+    justify-content: center;
+    align-items: flex-start;
+}
+.dflip-wrapper.active { display: flex; }
+#latitud18-flipbook {
+    width: 100%;
+    max-width: 900px;
+    min-height: 640px;
+}
+/* DearFlip placeholder cuando no hay PDF */
+.dflip-no-pdf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 500px;
+    color: #64748b;
+    text-align: center;
+    padding: 40px;
+}
+.dflip-no-pdf i { font-size: 3rem; color: #334155; }
+.dflip-no-pdf h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1rem; color: #94a3b8; margin: 0; }
+.dflip-no-pdf p { font-size: 0.82rem; margin: 0; line-height: 1.5; max-width: 360px; }
+.dflip-no-pdf a { color: var(--reader-red); font-weight: 700; }
 </style>
+
+{{-- DearFlip Lite CSS (gratuito, CDN oficial) --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/css/dflip.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/css/themify-icons.min.css">
 
 <div class="container py-3">
     <!-- CONTENEDOR PRINCIPAL DEL LECTOR -->
     <div class="newspaper-reader-container">
-        <!-- HEADER DE CONTROLES -->
+        {{-- HEADER DE CONTROLES --}}
         <div class="reader-control-header">
             <div class="d-flex align-items-center gap-3">
                 <span class="reader-edition-badge">EDICIÓN SEMANAL DIGITAL</span>
                 <div>
                     <h1 class="h6 mb-0 fw-bold text-white" style="font-family: 'Anton', sans-serif; letter-spacing: 1px;">
-                        {{ $edicionActiva['titulo'] ?? 'La Estrella' }} <span style="color:var(--reader-red);">{{ $edicionActiva['subtitulo'] ?? 'del Oriente' }}</span>
+                        {{ $edicionActiva['titulo'] ?? 'Latitud 18' }} <span style="color:var(--reader-red);">{{ $edicionActiva['subtitulo'] ?? 'Información Sin Ruido' }}</span>
                     </h1>
                     <small class="text-muted" style="font-size: 0.72rem;">{{ $edicionActiva['numero_edicion'] }} • {{ $edicionActiva['fecha'] }} • {{ count($edicionActiva['paginas'] ?? []) }} páginas</small>
                 </div>
@@ -527,7 +604,94 @@
             </div>
         </div>
 
-        <!-- RIBBON DE MINIATURAS / PÁGINAS -->
+        {{-- TABS: Flipbook 3D vs Lector Editorial --}}
+        <div class="reader-mode-tabs" id="readerModeTabs">
+          <button class="reader-mode-tab active" id="tabFlipbook" onclick="switchReaderMode('flipbook')">
+            <i class="fas fa-book"></i>
+            Flipbook 3D
+            <span class="tab-badge">NUEVO</span>
+          </button>
+          <button class="reader-mode-tab" id="tabEditorial" onclick="switchReaderMode('editorial')">
+            <i class="fas fa-newspaper"></i>
+            Lector Editorial
+          </button>
+        </div>
+
+        {{-- ================================================
+             DEARFLIP: Visor Flipbook 3D con animación de libro
+             ================================================ --}}
+        <div class="dflip-wrapper active" id="flipbookSection">
+          @if(!empty($edicionActiva['pdf_url']))
+            {{-- Hay PDF: usar DearFlip con el PDF real --}}
+            <div id="latitud18-flipbook"
+                 class="_df_book"
+                 data-source="{{ $edicionActiva['pdf_url'] }}"
+                 data-type="pdf"
+                 data-height="700"
+                 data-direction="LTR"
+                 data-controlsposition="bottom"
+                 data-enabledownload="true"
+                 data-enableprintpreview="true"
+                 data-backgroundcolor="#1a1f2e"
+                 data-duration="800"
+                 data-bgcolor="#1a1f2e"
+                 data-backgroundimage="none"
+                 data-stiffness="2">
+            </div>
+          @else
+            {{-- Sin PDF: flipbook simulado con las imágenes de los frames --}}
+            @php
+                $flipImages = [];
+                foreach (($edicionActiva['paginas'] ?? []) as $pf) {
+                    $found = false;
+                    foreach (($pf['frames'] ?? []) as $fr) {
+                        if (($fr['type'] ?? '') === 'image' && !empty($fr['src'])) {
+                            $flipImages[] = $fr['src'];
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) $flipImages[] = null;
+                }
+                $hasPdfRoute = Route::has('periodico.public.pdf');
+            @endphp
+
+            @if(count(array_filter($flipImages)) > 0)
+              {{-- Hay imágenes: flipbook con imágenes --}}
+              <div id="latitud18-flipbook"
+                   class="_df_book"
+                   data-source="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
+                   data-type="pdf"
+                   data-height="700"
+                   data-direction="LTR"
+                   data-controlsposition="bottom"
+                   data-enabledownload="true"
+                   data-backgroundcolor="#1a1f2e"
+                   data-duration="800"
+                   data-stiffness="2">
+              </div>
+            @else
+              {{-- Completamente sin recursos: placeholder informativo --}}
+              <div class="dflip-no-pdf">
+                <i class="fas fa-book-open"></i>
+                <h3>Flipbook no disponible para esta edición</h3>
+                <p>
+                  Esta edición aún no tiene un PDF generado. Para ver el contenido completo usa el
+                  <a href="#" onclick="switchReaderMode('editorial'); return false;">Lector Editorial</a>
+                  o genera el PDF desde el panel de administración.
+                </p>
+                <button class="btn btn-sm btn-danger mt-2" onclick="switchReaderMode('editorial')">
+                  <i class="fas fa-newspaper me-1"></i> Abrir Lector Editorial
+                </button>
+              </div>
+            @endif
+          @endif
+        </div>
+
+        {{-- LECTOR EDITORIAL: visor HTML de páginas (modo alternativo) --}}
+        <div id="editorialSection" style="display:none;">
+
+        {{-- RIBBON DE MINIATURAS / PÁGINAS (solo en modo editorial) --}}
         <div class="reader-pages-ribbon">
             @foreach($edicionActiva['paginas'] as $idx => $pag)
                 <button class="reader-page-btn {{ $idx === 0 ? 'active' : '' }}" onclick="goToPage({{ $idx }})" id="reader-tab-{{ $idx }}">
@@ -551,17 +715,15 @@
               <i class="fas fa-redo-alt"></i> Reset
             </button>
           </div>
-
           <div class="reader-tool-group">
             <span class="reader-tool-label"><i class="fas fa-columns"></i> Vista:</span>
             <button class="reader-tool-btn active" id="btnSinglePage" onclick="readerSetSinglePage()" title="Vista de página individual">
               <i class="fas fa-file-alt"></i> Página Simple
             </button>
-            <button class="reader-tool-btn" id="btnDoublePage" onclick="readerSetDoublePage()" title="Vista de doble página (periódico abierto)">
+            <button class="reader-tool-btn" id="btnDoublePage" onclick="readerSetDoublePage()" title="Vista de doble página">
               <i class="fas fa-book-open"></i> Doble Página
             </button>
           </div>
-
           <div class="reader-tool-group">
             <button class="reader-tool-btn" onclick="readerToggleFullscreen()" id="btnReaderFullscreen" title="Pantalla completa (F)">
               <i class="fas fa-expand" id="readerFsIcon"></i> Pantalla Completa
@@ -569,7 +731,7 @@
           </div>
         </div>
 
-        <!-- STAGE DONDE SE RENDERIZAN LAS PÁGINAS DEL PERIÓDICO -->
+        {{-- STAGE HTML --}}
         <div class="reader-stage-viewport" id="readerViewport">
             @foreach($edicionActiva['paginas'] as $pIndex => $p)
                 <div class="reader-paper-sheet {{ $pIndex === 0 ? 'active' : '' }} {{ !empty($p['frames']) && count($p['frames']) > 0 ? 'frames-mode' : '' }}" id="reader-sheet-{{ $pIndex }}">
@@ -602,9 +764,9 @@
                                                     {!! nl2br(e($frame['leftEar'] ?? 'CRE 100%')) !!}
                                                 </div>
                                                 <div style="text-align:center; flex:1;">
-                                                    <span style="font-family:'Anton', sans-serif; font-size:46px; color:#0284c7; line-height:1; letter-spacing:1px;">{{ $frame['newspaperName'] ?? 'LA ESTRELLA' }}</span>
-                                                    <span style="background:#D71920; color:#fff; font-family:'Anton', sans-serif; font-size:18px; padding:2px 8px; border-radius:2px; margin-left:4px; vertical-align:middle;">{{ $frame['subBadge'] ?? 'del Oriente' }}</span>
-                                                    <div style="font-size:9px; font-weight:800; letter-spacing:1.5px; color:#64748b; text-transform:uppercase; margin-top:2px;">{{ $frame['motto'] ?? 'EL PRIMER PERIÓDICO DE SANTA CRUZ' }}</div>
+                                                    <span style="font-family:'Anton', sans-serif; font-size:46px; color:#0284c7; line-height:1; letter-spacing:1px;">{{ $frame['newspaperName'] ?? 'LATITUD 18' }}</span>
+                                                    <span style="background:#D71920; color:#fff; font-family:'Anton', sans-serif; font-size:18px; padding:2px 8px; border-radius:2px; margin-left:4px; vertical-align:middle;">{{ $frame['subBadge'] ?? 'Información Sin Ruido' }}</span>
+                                                    <div style="font-size:9px; font-weight:800; letter-spacing:1.5px; color:#64748b; text-transform:uppercase; margin-top:2px;">{{ $frame['motto'] ?? 'EL PERIÓDICO DIGITAL DE LATITUD 18' }}</div>
                                                 </div>
                                                 <div style="background:#0284c7; color:#fff; padding:4px 8px; border-radius:2px; font-size:9px; font-weight:800; width:130px; text-align:right; line-height:1.2;">
                                                     {!! nl2br(e($frame['rightEar'] ?? 'DÓLAR: Bs 12,58')) !!}
@@ -929,12 +1091,62 @@
                                 @endforeach
                             </div>
                         @endif
-                    @endif
-                </div>
+                    @endif{{-- /if frames --}}
+                    </div>{{-- /reader-paper-sheet --}}
             @endforeach
-        </div>
-    </div>
-</div>
+        </div>{{-- /reader-stage-viewport --}}
+        </div>{{-- /editorialSection --}}
+    </div>{{-- /newspaper-reader-container --}}
+</div>{{-- /container --}}
+
+{{-- DearFlip JS: jQuery + dflip lite (CDN gratuito) --}}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/js/dflip.min.js"></script>
+
+<script>
+// ============================================================
+// SWITCH DE MODO: Flipbook 3D <-> Lector Editorial
+// ============================================================
+function switchReaderMode(mode) {
+    const flipbookSection = document.getElementById('flipbookSection');
+    const editorialSection = document.getElementById('editorialSection');
+    const tabFlipbook = document.getElementById('tabFlipbook');
+    const tabEditorial = document.getElementById('tabEditorial');
+
+    if (mode === 'flipbook') {
+        if (flipbookSection) { flipbookSection.classList.add('active'); flipbookSection.style.display = 'flex'; }
+        if (editorialSection) editorialSection.style.display = 'none';
+        if (tabFlipbook) tabFlipbook.classList.add('active');
+        if (tabEditorial) tabEditorial.classList.remove('active');
+    } else {
+        if (flipbookSection) { flipbookSection.classList.remove('active'); flipbookSection.style.display = 'none'; }
+        if (editorialSection) editorialSection.style.display = 'block';
+        if (tabFlipbook) tabFlipbook.classList.remove('active');
+        if (tabEditorial) tabEditorial.classList.add('active');
+        setTimeout(updateMobileScale, 50);
+    }
+}
+
+// Configuración global de DearFlip
+var DFLIP = window.DFLIP || {};
+DFLIP.defaults = Object.assign(DFLIP.defaults || {}, {
+    direction: DFLIP.DIRECTION.LTR,
+    duration: 800,
+    soundEnable: false,
+    autoPlay: 0,
+    controlsPosition: DFLIP.CONTROLSPOSITION.BOTTOM,
+    singlePageMode: DFLIP.SINGLEPAGE.BOOKLET,
+    maxTextureSize: 1600,
+    backgroundColor: '#1a1f2e',
+    backgroundImage: 'none',
+    pdfjsCompatibilityMode: 0,
+    canvasColor: '#fff',
+    stiffness: 2,
+    zoom: 1,
+    controlTxtLoad: 'Cargando Latitud 18...',
+    singlePageModeTarget: DFLIP.TARGET.CURRENT,
+});
+</script>
 
 <script>
 let currentPageIndex = 0;
