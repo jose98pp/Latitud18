@@ -472,83 +472,202 @@
 .newspaper-reader-container:-moz-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 .newspaper-reader-container:fullscreen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 
-/* DearFlip Mode Toggle Tabs */
-.reader-mode-tabs {
-    display: flex;
-    background: #0d1117;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.reader-mode-tab {
-    flex: 1;
-    padding: 11px 16px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #64748b;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-}
-.reader-mode-tab:hover { color: #94a3b8; background: rgba(255,255,255,0.03); }
-.reader-mode-tab.active {
-    color: #fff;
-    border-bottom-color: var(--reader-red);
-    background: rgba(215,25,32,0.08);
-}
-.reader-mode-tab .tab-badge {
-    background: var(--reader-red);
-    color: #fff;
-    font-size: 0.5rem;
-    padding: 1px 5px;
-    border-radius: 2px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-/* DearFlip Container */
-.dflip-wrapper {
-    display: none;
-    background: #1a1f2e;
-    min-height: 700px;
-    padding: 24px 16px;
-    justify-content: center;
-    align-items: flex-start;
-}
-.dflip-wrapper.active { display: flex; }
-#latitud18-flipbook {
-    width: 100%;
-    max-width: 900px;
+/* ====================================================
+   FLIPBOOK 3D PURO (sin dependencias externas)
+   ==================================================== */
+.l18-flipbook-wrap {
+    background: radial-gradient(ellipse at center, #1e2a3a 0%, #0d1117 100%);
     min-height: 640px;
-}
-/* DearFlip placeholder cuando no hay PDF */
-.dflip-no-pdf {
-    display: flex;
+    padding: 32px 16px 40px;
+    display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    min-height: 500px;
-    color: #64748b;
-    text-align: center;
-    padding: 40px;
+    justify-content: flex-start;
+    gap: 24px;
 }
-.dflip-no-pdf i { font-size: 3rem; color: #334155; }
-.dflip-no-pdf h3 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1rem; color: #94a3b8; margin: 0; }
-.dflip-no-pdf p { font-size: 0.82rem; margin: 0; line-height: 1.5; max-width: 360px; }
-.dflip-no-pdf a { color: var(--reader-red); font-weight: 700; }
+.l18-flipbook-wrap.active { display: flex; }
+
+/* STAGE DEL LIBRO */
+.l18-book-stage {
+    perspective: 2400px;
+    perspective-origin: 50% 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* EL LIBRO ABIERTO */
+.l18-book-open {
+    position: relative;
+    display: flex;
+    box-shadow:
+        -20px 20px 60px rgba(0,0,0,0.8),
+        20px 20px 60px rgba(0,0,0,0.8),
+        0 4px 20px rgba(0,0,0,0.5);
+    border-radius: 2px;
+}
+
+/* LOMO DEL LIBRO */
+.l18-book-spine {
+    width: 20px;
+    flex-shrink: 0;
+    background: linear-gradient(to right, #0a0f18 0%, #1e3050 30%, #2a4070 50%, #1e3050 70%, #0a0f18 100%);
+    box-shadow: inset 2px 0 6px rgba(255,255,255,0.06), inset -2px 0 6px rgba(255,255,255,0.06);
+    z-index: 10;
+    align-self: stretch;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+/* PÁGINA IZQUIERDA */
+.l18-left-page, .l18-right-page {
+    width: var(--fb-page-w, 380px);
+    height: var(--fb-page-h, 540px);
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+}
+.l18-left-page {
+    border-right: 1px solid rgba(0,0,0,0.12);
+    box-shadow: inset -10px 0 30px rgba(0,0,0,0.12);
+}
+.l18-right-page {
+    border-left: 1px solid rgba(0,0,0,0.06);
+    box-shadow: inset 10px 0 30px rgba(0,0,0,0.06);
+}
+
+/* PÁGINA QUE SE DOBLA (animación 3D) */
+.l18-flip-page {
+    position: absolute;
+    top: 0;
+    width: var(--fb-page-w, 380px);
+    height: var(--fb-page-h, 540px);
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1);
+    z-index: 20;
+    pointer-events: none;
+}
+.l18-flip-page.is-flipping { transform: rotateY(-180deg); }
+.l18-flip-page.flipped { transform: rotateY(-180deg); }
+
+.l18-flip-front, .l18-flip-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+}
+.l18-flip-front {
+    background: #fff;
+    box-shadow: -5px 0 20px rgba(0,0,0,0.25);
+}
+.l18-flip-back {
+    background: #fff;
+    transform: rotateY(180deg);
+    box-shadow: 5px 0 20px rgba(0,0,0,0.15);
+    border-left: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Sombra de curvatura del papel durante el giro */
+.l18-flip-front::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, rgba(0,0,0,0.18) 0%, transparent 100%);
+    pointer-events: none;
+}
+.l18-flip-back::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(0,0,0,0.1) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* Contenido escalado dentro de cada hoja */
+.l18-page-content {
+    width: 794px;
+    height: 1123px;
+    transform-origin: top left;
+    transform: scale(var(--fb-scale, 0.478));
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* CONTROLES INFERIORES */
+.l18-flipbook-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 40px;
+    padding: 8px 20px;
+    backdrop-filter: blur(10px);
+}
+.l18-fb-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.l18-fb-btn:hover:not(:disabled) {
+    background: var(--reader-red);
+    border-color: var(--reader-red);
+    color: #fff;
+    transform: scale(1.08);
+}
+.l18-fb-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.l18-fb-page-indicator {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: #e2e8f0;
+    min-width: 90px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+.l18-fb-thumbnails {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.l18-fb-thumb {
+    width: 26px; height: 36px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.5rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.l18-fb-thumb:hover { border-color: var(--reader-red); color: #fff; }
+.l18-fb-thumb.active {
+    background: var(--reader-red);
+    border-color: var(--reader-red);
+    color: #fff;
+    transform: scaleY(1.1);
+}
 </style>
 
-{{-- DearFlip Lite CSS (gratuito, CDN oficial) --}}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/css/dflip.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/css/themify-icons.min.css">
 
 <div class="container py-3">
     <!-- CONTENEDOR PRINCIPAL DEL LECTOR -->
@@ -605,88 +724,133 @@
         </div>
 
         {{-- TABS: Flipbook 3D vs Lector Editorial --}}
-        <div class="reader-mode-tabs" id="readerModeTabs">
-          <button class="reader-mode-tab active" id="tabFlipbook" onclick="switchReaderMode('flipbook')">
-            <i class="fas fa-book"></i>
-            Flipbook 3D
-            <span class="tab-badge">NUEVO</span>
+        <div style="display:flex; background:#0d1117; border-bottom:1px solid rgba(255,255,255,0.08);">
+          <button style="flex:1;padding:11px 16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:#fff;border:none;background:rgba(215,25,32,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border-bottom:2px solid var(--reader-red);transition:all 0.2s;" id="tabFlipbook" onclick="switchReaderMode('flipbook')">
+            <i class="fas fa-book"></i> Flipbook 3D
+            <span style="background:var(--reader-red);color:#fff;font-size:0.5rem;padding:1px 5px;border-radius:2px;font-weight:800;letter-spacing:0.5px;">3D</span>
           </button>
-          <button class="reader-mode-tab" id="tabEditorial" onclick="switchReaderMode('editorial')">
-            <i class="fas fa-newspaper"></i>
-            Lector Editorial
+          <button style="flex:1;padding:11px 16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:#64748b;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;border-bottom:2px solid transparent;transition:all 0.2s;" id="tabEditorial" onclick="switchReaderMode('editorial')">
+            <i class="fas fa-newspaper"></i> Lector Editorial
           </button>
         </div>
 
-        {{-- ================================================
-             DEARFLIP: Visor Flipbook 3D con animación de libro
-             ================================================ --}}
-        <div class="dflip-wrapper active" id="flipbookSection">
-          @if(!empty($edicionActiva['pdf_url']))
-            {{-- Hay PDF: usar DearFlip con el PDF real --}}
-            <div id="latitud18-flipbook"
-                 class="_df_book"
-                 data-source="{{ $edicionActiva['pdf_url'] }}"
-                 data-type="pdf"
-                 data-height="700"
-                 data-direction="LTR"
-                 data-controlsposition="bottom"
-                 data-enabledownload="true"
-                 data-enableprintpreview="true"
-                 data-backgroundcolor="#1a1f2e"
-                 data-duration="800"
-                 data-bgcolor="#1a1f2e"
-                 data-backgroundimage="none"
-                 data-stiffness="2">
+        {{-- FLIPBOOK 3D PURO: Visor con animación CSS de libro real --}}
+        <div class="l18-flipbook-wrap active" id="flipbookSection"
+             style="--fb-page-w:380px; --fb-page-h:540px; --fb-scale:0.478;">
+
+          {{-- Título editorial del libro --}}
+          <div style="text-align:center; margin-bottom:4px;">
+            <div style="font-family:'Anton',sans-serif; font-size:1rem; color:#fff; letter-spacing:2px; line-height:1;">
+              {{ strtoupper($edicionActiva['titulo'] ?? 'LATITUD 18') }}
+              <span style="background:var(--reader-red);color:#fff;font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:800;padding:2px 6px;border-radius:2px;vertical-align:middle;margin-left:4px;">{{ $edicionActiva['subtitulo'] ?? 'Información Sin Ruido' }}</span>
             </div>
-          @else
-            {{-- Sin PDF: flipbook simulado con las imágenes de los frames --}}
-            @php
-                $flipImages = [];
-                foreach (($edicionActiva['paginas'] ?? []) as $pf) {
-                    $found = false;
-                    foreach (($pf['frames'] ?? []) as $fr) {
-                        if (($fr['type'] ?? '') === 'image' && !empty($fr['src'])) {
-                            $flipImages[] = $fr['src'];
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if (!$found) $flipImages[] = null;
-                }
-                $hasPdfRoute = Route::has('periodico.public.pdf');
-            @endphp
+            <div style="font-family:'Montserrat',sans-serif;font-size:0.62rem;color:#64748b;font-weight:600;margin-top:2px;">
+              {{ $edicionActiva['numero_edicion'] ?? '' }} · {{ $edicionActiva['fecha'] ?? '' }}
+            </div>
+          </div>
 
-            @if(count(array_filter($flipImages)) > 0)
-              {{-- Hay imágenes: flipbook con imágenes --}}
-              <div id="latitud18-flipbook"
-                   class="_df_book"
-                   data-source="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
-                   data-type="pdf"
-                   data-height="700"
-                   data-direction="LTR"
-                   data-controlsposition="bottom"
-                   data-enabledownload="true"
-                   data-backgroundcolor="#1a1f2e"
-                   data-duration="800"
-                   data-stiffness="2">
+          {{-- EL LIBRO 3D --}}
+          <div class="l18-book-stage">
+            <div class="l18-book-open" id="l18Book">
+              {{-- Página izquierda (par o portada izquierda) --}}
+              <div class="l18-left-page" id="l18LeftPage">
+                <div class="l18-page-content" id="l18LeftContent"></div>
               </div>
-            @else
-              {{-- Completamente sin recursos: placeholder informativo --}}
-              <div class="dflip-no-pdf">
-                <i class="fas fa-book-open"></i>
-                <h3>Flipbook no disponible para esta edición</h3>
-                <p>
-                  Esta edición aún no tiene un PDF generado. Para ver el contenido completo usa el
-                  <a href="#" onclick="switchReaderMode('editorial'); return false;">Lector Editorial</a>
-                  o genera el PDF desde el panel de administración.
-                </p>
-                <button class="btn btn-sm btn-danger mt-2" onclick="switchReaderMode('editorial')">
-                  <i class="fas fa-newspaper me-1"></i> Abrir Lector Editorial
-                </button>
+              {{-- Lomo central --}}
+              <div class="l18-book-spine"></div>
+              {{-- Página derecha --}}
+              <div class="l18-right-page" id="l18RightPage">
+                <div class="l18-page-content" id="l18RightContent"></div>
               </div>
-            @endif
-          @endif
+              {{-- Hoja que se dobla (se construye por JS) --}}
+              <div class="l18-flip-page" id="l18FlipPage" style="right:0; left:auto; transform-origin:left center;">
+                <div class="l18-flip-front" id="l18FlipFront">
+                  <div class="l18-page-content" id="l18FlipFrontContent"></div>
+                </div>
+                <div class="l18-flip-back" id="l18FlipBack">
+                  <div class="l18-page-content" id="l18FlipBackContent"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- CONTROLES INFERIORES --}}
+          <div class="l18-flipbook-controls">
+            <button class="l18-fb-btn" id="l18BtnFirst" onclick="fbGoToSpread(0)" title="Primera página">
+              <i class="fas fa-step-backward"></i>
+            </button>
+            <button class="l18-fb-btn" id="l18BtnPrev" onclick="fbPrevSpread()" title="Página anterior">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="l18-fb-thumbnails" id="l18Thumbs">
+              @foreach($edicionActiva['paginas'] as $fi => $fp)
+                <div class="l18-fb-thumb {{ $fi === 0 ? 'active' : '' }}" onclick="fbGoToSpread({{ $fi }})" title="Pág {{ $fp['numero'] ?? ($fi+1) }}">
+                  {{ $fp['numero'] ?? ($fi+1) }}
+                </div>
+              @endforeach
+            </div>
+            <span class="l18-fb-page-indicator" id="l18FbIndicator">Pág 1–2 / {{ count($edicionActiva['paginas'] ?? []) }}</span>
+            <button class="l18-fb-btn" id="l18BtnNext" onclick="fbNextSpread()" title="Página siguiente">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="l18-fb-btn" id="l18BtnLast" onclick="fbGoToSpread({{ count($edicionActiva['paginas'] ?? []) - 1 }})" title="Última página">
+              <i class="fas fa-step-forward"></i>
+            </button>
+            <button class="l18-fb-btn" onclick="readerToggleFullscreen()" title="Pantalla completa (F)">
+              <i class="fas fa-expand" id="fbFsIcon"></i>
+            </button>
+          </div>
+
+          {{-- Instrucción de navegación --}}
+          <div style="font-family:'Montserrat',sans-serif;font-size:0.6rem;color:#475569;text-align:center;margin-top:-8px;">
+            <i class="fas fa-hand-point-right"></i> Usa las flechas, swipe o teclas ← → para pasar páginas
+          </div>
         </div>
+
+        {{-- PÁGINAS OCULTAS (fuente de contenido para el flipbook JS) --}}
+        <div id="l18PagesSource" style="display:none; visibility:hidden; position:absolute; pointer-events:none; width:0; height:0; overflow:hidden;">
+          @foreach($edicionActiva['paginas'] as $pi => $p)
+            <div id="l18-src-page-{{ $pi }}">
+              @if(!empty($p['frames']) && count($p['frames']) > 0)
+                <div style="position:relative; width:794px; min-height:1123px; background:#fff; overflow:hidden;">
+                  @foreach($p['frames'] as $frame)
+                    @php
+                      $fx = $frame['x'] ?? 0; $fy = $frame['y'] ?? 0;
+                      $fw = $frame['w'] ?? 200; $fh = $frame['h'] ?? 100;
+                      $fz = $frame['z'] ?? 10; $fop = $frame['opacity'] ?? 1;
+                      $ftype = $frame['type'] ?? 'text';
+                    @endphp
+                    <div style="position:absolute;left:{{$fx}}px;top:{{$fy}}px;width:{{$fw}}px;height:{{$fh}}px;z-index:{{$fz}};opacity:{{$fop}};overflow:hidden;box-sizing:border-box;">
+                      @if($ftype === 'image' && !empty($frame['src']))
+                        <img src="{{ $frame['src'] }}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">
+                      @elseif($ftype === 'text' || $ftype === 'article')
+                        <div style="font-family:'Source Sans 3',sans-serif;font-size:{{ $frame['styles']['fontSize'] ?? '11px' }};line-height:1.45;color:#111;padding:4px;overflow:hidden;height:100%;">
+                          @if(!empty($frame['headline']))<strong style="font-family:'Playfair Display',serif;font-size:16px;display:block;margin-bottom:4px;">{{ $frame['headline'] }}</strong>@endif
+                          {!! nl2br(e($frame['content'] ?? '')) !!}
+                        </div>
+                      @elseif($ftype === 'masthead')
+                        <div style="background:#D71920;color:#fff;text-align:center;padding:6px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+                          <div style="font-family:'Anton',sans-serif;font-size:36px;letter-spacing:1px;line-height:1;">{{ $frame['newspaperName'] ?? 'LATITUD 18' }}</div>
+                          <div style="font-size:10px;font-weight:700;opacity:0.9;">{{ $frame['subBadge'] ?? 'Información Sin Ruido' }}</div>
+                        </div>
+                      @endif
+                    </div>
+                  @endforeach
+                </div>
+              @else
+                <div style="width:794px;min-height:1123px;background:#fff;padding:24px 32px;display:flex;flex-direction:column;font-family:'Source Sans 3',sans-serif;">
+                  <div style="border-bottom:3px solid #D71920;padding-bottom:8px;margin-bottom:12px;font-family:'Anton',sans-serif;font-size:28px;color:#0B1F3A;letter-spacing:1px;">
+                    {{ $p['nombre'] ?? 'Página ' . ($pi+1) }}
+                  </div>
+                  @if(!empty($p['titular_principal']['titulo']))
+                    <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:#000;margin-bottom:8px;">{{ $p['titular_principal']['titulo'] }}</h2>
+                  @endif
+                </div>
+              @endif
+            </div>
+          @endforeach
+        </div>
+
 
         {{-- LECTOR EDITORIAL: visor HTML de páginas (modo alternativo) --}}
         <div id="editorialSection" style="display:none;">
@@ -1099,10 +1263,6 @@
     </div>{{-- /newspaper-reader-container --}}
 </div>{{-- /container --}}
 
-{{-- DearFlip JS: jQuery + dflip lite (CDN gratuito) --}}
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dflip@2.4.0/dist/js/dflip.min.js"></script>
-
 <script>
 // ============================================================
 // SWITCH DE MODO: Flipbook 3D <-> Lector Editorial
@@ -1116,36 +1276,204 @@ function switchReaderMode(mode) {
     if (mode === 'flipbook') {
         if (flipbookSection) { flipbookSection.classList.add('active'); flipbookSection.style.display = 'flex'; }
         if (editorialSection) editorialSection.style.display = 'none';
-        if (tabFlipbook) tabFlipbook.classList.add('active');
-        if (tabEditorial) tabEditorial.classList.remove('active');
+        if (tabFlipbook) {
+            tabFlipbook.style.color = '#fff';
+            tabFlipbook.style.background = 'rgba(215,25,32,0.08)';
+            tabFlipbook.style.borderBottomColor = 'var(--reader-red)';
+        }
+        if (tabEditorial) {
+            tabEditorial.style.color = '#64748b';
+            tabEditorial.style.background = 'transparent';
+            tabEditorial.style.borderBottomColor = 'transparent';
+        }
     } else {
         if (flipbookSection) { flipbookSection.classList.remove('active'); flipbookSection.style.display = 'none'; }
         if (editorialSection) editorialSection.style.display = 'block';
-        if (tabFlipbook) tabFlipbook.classList.remove('active');
-        if (tabEditorial) tabEditorial.classList.add('active');
+        if (tabFlipbook) {
+            tabFlipbook.style.color = '#64748b';
+            tabFlipbook.style.background = 'transparent';
+            tabFlipbook.style.borderBottomColor = 'transparent';
+        }
+        if (tabEditorial) {
+            tabEditorial.style.color = '#fff';
+            tabEditorial.style.background = 'rgba(215,25,32,0.08)';
+            tabEditorial.style.borderBottomColor = 'var(--reader-red)';
+        }
         setTimeout(updateMobileScale, 50);
     }
 }
 
-// Configuración global de DearFlip
-var DFLIP = window.DFLIP || {};
-DFLIP.defaults = Object.assign(DFLIP.defaults || {}, {
-    direction: DFLIP.DIRECTION.LTR,
-    duration: 800,
-    soundEnable: false,
-    autoPlay: 0,
-    controlsPosition: DFLIP.CONTROLSPOSITION.BOTTOM,
-    singlePageMode: DFLIP.SINGLEPAGE.BOOKLET,
-    maxTextureSize: 1600,
-    backgroundColor: '#1a1f2e',
-    backgroundImage: 'none',
-    pdfjsCompatibilityMode: 0,
-    canvasColor: '#fff',
-    stiffness: 2,
-    zoom: 1,
-    controlTxtLoad: 'Cargando Latitud 18...',
-    singlePageModeTarget: DFLIP.TARGET.CURRENT,
-});
+// ============================================================
+// MOTOR DEL FLIPBOOK 3D PURO (sin dependencias externas)
+// ============================================================
+(function() {
+    const TOTAL_PAGES = {{ count($edicionActiva['paginas'] ?? []) }};
+    let fbSpread = 0;          // índice de la página izquierda actual (0, 2, 4…)
+    let fbAnimating = false;   // evita doble click durante animación
+    let fbTouchX = 0;
+
+    function getSrcPage(idx) {
+        if (idx < 0 || idx >= TOTAL_PAGES) return null;
+        const el = document.getElementById('l18-src-page-' + idx);
+        return el ? el.innerHTML : null;
+    }
+
+    function setPageContent(containerId, html) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+        c.innerHTML = html || '';
+    }
+
+    function renderBlank(containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+        c.innerHTML = '<div style="width:794px;height:1123px;background:#f9fafb;display:flex;align-items:center;justify-content:center;"><span style=\'font-family:Montserrat,sans-serif;font-size:18px;color:#cbd5e0;\'>·</span></div>';
+    }
+
+    // Renderiza las páginas estáticas del spread actual
+    function renderCurrentSpread() {
+        const leftHtml = getSrcPage(fbSpread);
+        const rightHtml = getSrcPage(fbSpread + 1);
+        setPageContent('l18LeftContent', leftHtml || '');
+        if (!leftHtml) renderBlank('l18LeftContent');
+        setPageContent('l18RightContent', rightHtml || '');
+        if (!rightHtml) renderBlank('l18RightContent');
+        updateFbControls();
+    }
+
+    function updateFbControls() {
+        const indicator = document.getElementById('l18FbIndicator');
+        const btnPrev = document.getElementById('l18BtnPrev');
+        const btnNext = document.getElementById('l18BtnNext');
+        const btnFirst = document.getElementById('l18BtnFirst');
+        const btnLast = document.getElementById('l18BtnLast');
+        const thumbs = document.querySelectorAll('.l18-fb-thumb');
+
+        if (indicator) {
+            const right = Math.min(fbSpread + 2, TOTAL_PAGES);
+            indicator.textContent = 'Pág ' + (fbSpread + 1) + (right > fbSpread + 1 ? '–' + right : '') + ' / ' + TOTAL_PAGES;
+        }
+        if (btnPrev) btnPrev.disabled = (fbSpread === 0);
+        if (btnFirst) btnFirst.disabled = (fbSpread === 0);
+        const lastSpread = TOTAL_PAGES % 2 === 0 ? TOTAL_PAGES - 2 : TOTAL_PAGES - 1;
+        if (btnNext) btnNext.disabled = (fbSpread >= lastSpread);
+        if (btnLast) btnLast.disabled = (fbSpread >= lastSpread);
+
+        thumbs.forEach((t, i) => {
+            t.classList.toggle('active', i === fbSpread || i === fbSpread + 1);
+        });
+    }
+
+    // Animación de volteo de hoja hacia adelante (siguiente spread)
+    function flipForward() {
+        if (fbAnimating || fbSpread + 2 >= TOTAL_PAGES) return;
+        fbAnimating = true;
+
+        const flipPage = document.getElementById('l18FlipPage');
+        const flipFront = document.getElementById('l18FlipFrontContent');
+        const flipBack  = document.getElementById('l18FlipBackContent');
+
+        // La hoja que se dobla muestra: frente = página derecha actual, dorso = página izquierda siguiente spread
+        setPageContent(flipFront.id, getSrcPage(fbSpread + 1) || '');
+        setPageContent(flipBack.id,  getSrcPage(fbSpread + 2) || '');
+
+        // Posicionamos la hoja encima de la página derecha
+        flipPage.style.left = 'auto';
+        flipPage.style.right = '0';
+        flipPage.style.transformOrigin = 'left center';
+        flipPage.style.transform = 'rotateY(0deg)';
+        flipPage.style.zIndex = '20';
+
+        // Forzamos reflow para que empiece la transición
+        void flipPage.offsetWidth;
+        flipPage.classList.add('is-flipping');
+
+        setTimeout(() => {
+            fbSpread += 2;
+            renderCurrentSpread();
+            flipPage.classList.remove('is-flipping');
+            flipPage.style.transform = '';
+            fbAnimating = false;
+        }, 720);
+    }
+
+    // Animación de volteo hacia atrás (spread anterior)
+    function flipBackward() {
+        if (fbAnimating || fbSpread === 0) return;
+        fbAnimating = true;
+
+        const flipPage = document.getElementById('l18FlipPage');
+        const flipFront = document.getElementById('l18FlipFrontContent');
+        const flipBack  = document.getElementById('l18FlipBackContent');
+
+        // Hoja ya doblada (parte de la derecha, mirando hacia izquierda)
+        setPageContent(flipFront.id, getSrcPage(fbSpread) || '');        // dorso (lo que se ve girando)
+        setPageContent(flipBack.id,  getSrcPage(fbSpread - 1) || '');    // frente desde atrás
+
+        flipPage.style.left = '0';
+        flipPage.style.right = 'auto';
+        flipPage.style.transformOrigin = 'right center';
+        flipPage.style.transform = 'rotateY(180deg)';
+        flipPage.style.zIndex = '20';
+        void flipPage.offsetWidth;
+
+        requestAnimationFrame(() => {
+            flipPage.style.transition = 'transform 0.7s cubic-bezier(0.645,0.045,0.355,1)';
+            flipPage.style.transform = 'rotateY(0deg)';
+        });
+
+        setTimeout(() => {
+            fbSpread -= 2;
+            renderCurrentSpread();
+            flipPage.style.transform = '';
+            flipPage.style.transition = '';
+            flipPage.style.transformOrigin = 'left center';
+            fbAnimating = false;
+        }, 720);
+    }
+
+    // API pública
+    window.fbNextSpread = flipForward;
+    window.fbPrevSpread = flipBackward;
+    window.fbGoToSpread = function(targetPage) {
+        const normalizedSpread = targetPage % 2 === 0 ? targetPage : targetPage - 1;
+        if (normalizedSpread === fbSpread) return;
+        fbSpread = Math.max(0, Math.min(normalizedSpread, TOTAL_PAGES - 1));
+        renderCurrentSpread();
+    };
+
+    // Soporte táctil en el libro
+    const bookEl = document.getElementById('l18Book');
+    if (bookEl) {
+        bookEl.addEventListener('touchstart', (e) => { fbTouchX = e.touches[0].clientX; }, { passive: true });
+        bookEl.addEventListener('touchend', (e) => {
+            const diff = fbTouchX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) { diff > 0 ? flipForward() : flipBackward(); }
+        }, { passive: true });
+        bookEl.style.cursor = 'ew-resize';
+    }
+
+    // Escalar el libro responsivo
+    function scaleFb() {
+        const wrap = document.getElementById('flipbookSection');
+        if (!wrap) return;
+        const available = Math.min(wrap.offsetWidth - 32, 900);
+        const bookWidth = 780 + 20; // 2 páginas + lomo
+        const scale = Math.min(1, available / bookWidth);
+        wrap.style.setProperty('--fb-page-w', Math.round(380 * scale) + 'px');
+        wrap.style.setProperty('--fb-page-h', Math.round(540 * scale) + 'px');
+        wrap.style.setProperty('--fb-scale', (0.478 * scale).toFixed(3));
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCurrentSpread();
+        scaleFb();
+        setTimeout(scaleFb, 100);
+    });
+    window.addEventListener('resize', scaleFb);
+})();
+
 </script>
 
 <script>
