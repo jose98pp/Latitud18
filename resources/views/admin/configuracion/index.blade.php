@@ -36,10 +36,11 @@
                                 <label class="form-label fw-bold mb-0 text-dark d-flex align-items-center">
                                     <i class="fas fa-tv text-primary me-2"></i> Televisión En Vivo (YouTube Live / Video)
                                 </label>
-                                <div class="form-check form-switch m-0">
+                                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
                                     <input class="form-check-input" type="checkbox" role="switch" id="streaming_tv_active" 
                                            name="streaming_tv_active" value="1" {{ ($settings['streaming_tv_active'] ?? '1') == '1' ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-bold small text-muted" for="streaming_tv_active">Activar Señal</label>
+                                    <label class="form-check-label fw-bold small text-muted" for="streaming_tv_active">Transmitiendo al Aire</label>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle ms-1" style="font-size: 0.68rem;">Muestra botón "EN VIVO"</span>
                                 </div>
                             </div>
 

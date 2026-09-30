@@ -118,6 +118,93 @@
         </div>
     </div>
 
+    @php
+        $streamingActive = setting('streaming_tv_active', '0') == '1';
+        $streamingTitle = setting('streaming_tv_title', 'Transmisión En Vivo');
+        $streamingYtId = setting('streaming_tv_youtube_id', '');
+    @endphp
+    <!-- Live Streaming Control Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-card p-4 border-start border-4 {{ $streamingActive ? 'border-danger' : 'border-secondary' }}" style="background: {{ $streamingActive ? 'linear-gradient(135deg, rgba(220,53,69,0.05) 0%, rgba(255,255,255,1) 100%)' : 'var(--lat-bg-card, #FFFFFF)' }};">
+                <div class="row align-items-center g-3">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon {{ $streamingActive ? 'bg-danger text-white' : 'bg-secondary bg-opacity-10 text-muted' }} me-3" style="width: 54px; height: 54px; border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                    <h5 class="mb-0 fw-bold" style="font-family:'Montserrat',sans-serif;color:var(--lat-text);">Señal de Transmisión (En Vivo)</h5>
+                                    @if($streamingActive)
+                                        <span class="badge bg-danger d-inline-flex align-items-center gap-1" style="animation: pulse 1.5s infinite; font-size: 0.72rem; letter-spacing: 0.5px;">
+                                            <i class="fas fa-circle" style="font-size: 6px;"></i> EN EL AIRE
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary text-uppercase" style="font-size: 0.7rem;">Fuera del Aire</span>
+                                    @endif
+                                </div>
+                                <p class="small mb-0 text-muted">
+                                    @if($streamingActive)
+                                        <strong class="text-danger">Transmitiendo:</strong> {{ Str::limit($streamingTitle, 45) }}
+                                        <span class="d-none d-md-inline">• El botón <span class="badge bg-danger" style="font-size:0.65rem;">EN VIVO</span> está activo en la cabecera del portal.</span>
+                                    @else
+                                        La transmisión está desactivada. El botón "EN VIVO" no es visible para el público.
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12 text-lg-end text-start">
+                        <div class="d-flex align-items-center justify-content-lg-end justify-content-start gap-2 flex-wrap">
+                            <form action="{{ route('admin.streaming.toggle') }}" method="POST" class="d-inline m-0">
+                                @csrf
+                                @if($streamingActive)
+                                    <button type="submit" class="btn btn-outline-danger fw-bold btn-sm px-3 py-2 shadow-sm">
+                                        <i class="fas fa-stop-circle me-1"></i> Detener Transmisión
+                                    </button>
+                                @else
+                                    <button type="submit" class="btn btn-danger fw-bold btn-sm px-3 py-2 shadow-sm">
+                                        <i class="fas fa-play-circle me-1"></i> Activar Transmisión En Vivo
+                                    </button>
+                                @endif
+                            </form>
+
+                            <button type="button" class="btn btn-light border btn-sm px-3 py-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#quickLiveConfigCollapse" aria-expanded="false">
+                                <i class="fas fa-edit me-1 text-danger"></i> Configurar Enlace
+                            </button>
+
+                            <a href="{{ route('admin.configuracion.index') }}" class="btn btn-outline-secondary btn-sm px-2 py-2" title="Configuración avanzada">
+                                <i class="fas fa-sliders-h"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collapse para cambiar enlace de YouTube o Título al instante -->
+                <div class="collapse mt-3 pt-3 border-top" id="quickLiveConfigCollapse">
+                    <form action="{{ route('admin.streaming.quickUpdate') }}" method="POST" class="row g-2 align-items-end">
+                        @csrf
+                        <div class="col-md-5">
+                            <label class="form-label small fw-semibold text-muted mb-1">Título de la Emisión En Vivo</label>
+                            <input type="text" name="streaming_tv_title" class="form-control form-control-sm" value="{{ $streamingTitle }}" placeholder="Ej: Noticiero Edición Central En Vivo">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-muted mb-1">Enlace o ID de YouTube Live</label>
+                            <input type="text" name="streaming_tv_youtube_id" class="form-control form-control-sm font-monospace" value="{{ $streamingYtId }}" placeholder="https://youtube.com/watch?v=... o ID">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" name="activate" value="1" class="btn btn-danger btn-sm w-100 fw-bold">
+                                <i class="fas fa-satellite-dish me-1"></i> Guardar y Salir al Aire
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-4">

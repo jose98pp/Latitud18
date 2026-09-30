@@ -226,9 +226,10 @@
                             <i class="fas fa-newspaper me-3"></i>
                             <span>Noticias</span>
                             @php
+                                // \Throwable cubre Error (p.ej. user null) y Exception (DB/caixa)
                                 try {
-                                    $noticiasCount = auth()->user()->noticias()->count();
-                                } catch (\Exception $e) {
+                                    $noticiasCount = auth()->user()?->noticias()->count() ?? 0;
+                                } catch (\Throwable $e) {
                                     $noticiasCount = 0;
                                 }
                             @endphp
@@ -266,7 +267,7 @@
                             @php
                                 try {
                                     $pendientesCount = \App\Models\Comentario::where('aprobado', false)->count();
-                                } catch (\Exception $e) {
+                                } catch (\Throwable $e) {
                                     $pendientesCount = 0;
                                 }
                             @endphp
@@ -290,7 +291,7 @@
                             @php
                                 try {
                                     $newsletterCount = \App\Models\NewsletterSubscriber::where('activo', true)->count();
-                                } catch (\Exception $e) {
+                                } catch (\Throwable $e) {
                                     $newsletterCount = 0;
                                 }
                             @endphp
@@ -392,8 +393,8 @@
                                 <div class="fw-bold text-primary">
                                     @php
                                         try {
-                                            echo auth()->user()->noticias()->count();
-                                        } catch (\Exception $e) {
+                                            echo auth()->user()?->noticias()->count() ?? 0;
+                                        } catch (\Throwable $e) {
                                             echo 0;
                                         }
                                     @endphp
@@ -404,8 +405,8 @@
                                 <div class="fw-bold text-success">
                                     @php
                                         try {
-                                            echo auth()->user()->noticias()->where('publicada', true)->count();
-                                        } catch (\Exception $e) {
+                                            echo auth()->user()?->noticias()->where('publicada', true)->count() ?? 0;
+                                        } catch (\Throwable $e) {
                                             echo 0;
                                         }
                                     @endphp
@@ -413,6 +414,25 @@
                             </div>
                         </div>
                         
+                        <!-- Transmisión En Vivo Status / Toggle en Cabecera -->
+                        @php
+                            $topLiveActive = setting('streaming_tv_active', '0') == '1';
+                        @endphp
+                        <form action="{{ route('admin.streaming.toggle') }}" method="POST" class="d-inline m-0">
+                            @csrf
+                            @if($topLiveActive)
+                                <button type="submit" class="btn btn-sm btn-danger d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm rounded-pill fw-bold" style="font-size:0.75rem;" title="Al aire en el portal. Clic para detener transmisión">
+                                    <span style="width:7px;height:7px;background:#fff;border-radius:50%;animation:pulse 1.2s infinite;display:inline-block"></span>
+                                    <span>EN VIVO</span>
+                                </button>
+                            @else
+                                <button type="submit" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="font-size:0.75rem;" title="Transmisión inactiva. Clic para activar EN VIVO">
+                                    <i class="fas fa-satellite-dish text-muted" style="font-size:0.7rem;"></i>
+                                    <span class="d-none d-sm-inline text-muted fw-semibold">Off Air</span>
+                                </button>
+                            @endif
+                        </form>
+
                         <!-- Toggle de modo oscuro -->
                         <button data-dark-mode-toggle class="btn btn-link text-muted p-2 me-2" type="button" aria-label="Cambiar modo oscuro">
                             <i class="fas fa-sun sun-icon fa-lg hidden"></i>
@@ -420,48 +440,66 @@
                         </button>
 
                         <!-- Notifications -->
+                        @php
+                            $notifCount = 0;
+                            $notifs = [];
+                            try {
+                                $nNoticia = \App\Models\Noticia::where('publicada', false)->count();
+                                $nComentario = \App\Models\Comentario::where('aprobado', false)->count();
+                                $notifCount = $nNoticia + $nComentario;
+
+                                if ($nComentario > 0) {
+                                    $notifs[] = [
+                                        'icono' => 'fas fa-comment text-info',
+                                        'texto' => $nComentario . ' comentario' . ($nComentario == 1 ? '' : 's') . ' pendiente' . ($nComentario == 1 ? '' : 's') . ' de aprobacion',
+                                        'url' => route('admin.comentarios.index'),
+                                    ];
+                                }
+                                if ($nNoticia > 0) {
+                                    $notifs[] = [
+                                        'icono' => 'fas fa-newspaper text-primary',
+                                        'texto' => $nNoticia . ' noticia' . ($nNoticia == 1 ? '' : 's') . ' sin publicar',
+                                        'url' => route('admin.noticias.index'),
+                                    ];
+                                }
+                            } catch (\Throwable $e) {
+                                $notifCount = 0;
+                                $notifs = [];
+                            }
+                        @endphp
                         <div class="dropdown">
-                            <button class="btn btn-link text-muted position-relative p-2" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-link text-muted position-relative p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notificaciones">
                                 <i class="fas fa-bell fa-lg"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
-                                    3
-                                </span>
+                                @if($notifCount > 0)
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                                        {{ $notifCount > 99 ? '99+' : $notifCount }}
+                                    </span>
+                                @endif
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
                                 <li class="dropdown-header">
                                     <i class="fas fa-bell me-2"></i>Notificaciones
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="d-flex">
-                                            <div class="flex-shrink-0">
-                                                <i class="fas fa-newspaper text-primary"></i>
+                                @forelse($notifs as $n)
+                                    <li>
+                                        <a class="dropdown-item" href="{{ $n['url'] }}">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0">
+                                                    <i class="{{ $n['icono'] }}"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="small">{{ $n['texto'] }}</div>
+                                                    <div class="small text-muted">Requiere atencion</div>
+                                                </div>
                                             </div>
-                                            <div class="flex-grow-1 ms-3">
-                                                <div class="small">Nueva noticia pendiente de revisión</div>
-                                                <div class="small text-muted">Hace 2 horas</div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <div class="d-flex">
-                                            <div class="flex-shrink-0">
-                                                <i class="fas fa-comment text-info"></i>
-                                            </div>
-                                            <div class="flex-grow-1 ms-3">
-                                                <div class="small">Nuevo comentario en artículo</div>
-                                                <div class="small text-muted">Hace 4 horas</div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item text-center small" href="#">Ver todas las notificaciones</a>
-                                </li>
+                                        </a>
+                                    </li>
+                                @empty
+                                    <li>
+                                        <span class="dropdown-item text-center small text-muted">No hay notificaciones pendientes</span>
+                                    </li>
+                                @endforelse
                             </ul>
                         </div>
                         
@@ -493,7 +531,7 @@
                     </div>
                 @endif
                 
-                @if($errors->any())
+                @if(isset($errors) && $errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <div class="d-flex align-items-center mb-2">
                             <i class="fas fa-exclamation-triangle me-2"></i>

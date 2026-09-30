@@ -44,13 +44,18 @@
     </a>
 
     <!-- ACCESOS RÁPIDOS MÓVIL -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+    @php
+      $mobileLiveActive = (setting('streaming_tv_active', '0') == '1') || (setting('streaming_radio_active', '0') == '1');
+    @endphp
+    <div style="display:grid;grid-template-columns:{{ $mobileLiveActive ? '1fr 1fr' : '1fr' }};gap:8px;margin-bottom:14px">
       <button onclick="closeMobileMenu();openSearchModal()" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--color-navy-subtle);border:1px solid var(--color-border);border-radius:4px;font-size:.8rem;font-weight:700;color:var(--color-navy);cursor:pointer">
         <i class="fas fa-search" style="color:var(--color-red)"></i> Buscar
       </button>
+      @if($mobileLiveActive)
       <button onclick="closeMobileMenu();openLiveModal()" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--color-red);border:none;border-radius:4px;font-size:.8rem;font-weight:800;color:#fff;cursor:pointer">
         <span style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite"></span> En Vivo
       </button>
+      @endif
     </div>
 
     <div>

@@ -192,6 +192,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Configuración del Portal & Streaming
     Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::put('/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+    Route::post('/streaming/toggle', [ConfiguracionController::class, 'toggleLive'])->name('streaming.toggle');
+    Route::post('/streaming/quick-update', [ConfiguracionController::class, 'quickUpdateLive'])->name('streaming.quickUpdate');
 
     // Moderación de Comentarios
     Route::get('/comentarios', [ComentarioController::class, 'index'])->name('comentarios.index');

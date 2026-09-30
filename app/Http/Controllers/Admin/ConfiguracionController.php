@@ -88,4 +88,64 @@ class ConfiguracionController extends Controller
 
         return redirect()->route('admin.configuracion.index')->with('success', 'Configuración actualizada exitosamente.');
     }
+
+    /**
+     * Alterna rápidamente el estado de la transmisión en vivo (ON/OFF)
+     */
+    public function toggleLive(Request $request)
+    {
+        $current = SiteSetting::get('streaming_tv_active', '0');
+        
+        if ($request->has('state')) {
+            $new = $request->input('state') == '1' ? '1' : '0';
+        } else {
+            $new = ($current == '1') ? '0' : '1';
+        }
+
+        SiteSetting::set('streaming_tv_active', $new, 'streaming');
+
+        $msg = ($new == '1')
+            ? '🔴 Transmisión EN VIVO activada. El botón ya se muestra a los visitantes del portal.'
+            : '⚪ Transmisión finalizada. El botón EN VIVO se ha ocultado del portal.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'active' => $new == '1',
+                'message' => $msg
+            ]);
+        }
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Actualiza y activa la transmisión en vivo rápidamente desde el dashboard
+     */
+    public function quickUpdateLive(Request $request)
+    {
+        $request->validate([
+            'streaming_tv_youtube_id' => 'nullable|string|max:255',
+            'streaming_tv_title' => 'nullable|string|max:255',
+        ]);
+
+        if ($request->filled('streaming_tv_youtube_id')) {
+            $cleanedYtId = extract_youtube_id($request->input('streaming_tv_youtube_id'));
+            SiteSetting::set('streaming_tv_youtube_id', $cleanedYtId ?: $request->input('streaming_tv_youtube_id'), 'streaming');
+        }
+
+        if ($request->filled('streaming_tv_title')) {
+            SiteSetting::set('streaming_tv_title', $request->input('streaming_tv_title'), 'streaming');
+        }
+
+        // Si se envió el flag para activar
+        $activate = $request->input('activate', '1') == '1' ? '1' : '0';
+        SiteSetting::set('streaming_tv_active', $activate, 'streaming');
+
+        $msg = ($activate == '1')
+            ? '🔴 Transmisión EN VIVO configurada y activada al aire.'
+            : 'Configuración de transmisión guardada (Fuera del aire).';
+
+        return back()->with('success', $msg);
+    }
 }

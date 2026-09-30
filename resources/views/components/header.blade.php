@@ -46,18 +46,16 @@
       <button onclick="openSearchModal()" class="header-btn header-btn-search" title="Buscar noticias">
         <i class="fas fa-search"></i> <span class="btn-label">BUSCAR</span>
       </button>
-      <button onclick="openLiveModal()" class="header-btn header-btn-live" title="Señal de TV y Radio en Vivo">
-        <span style="width:7px;height:7px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block"></span> <span class="btn-label">EN VIVO</span>
-      </button>
-      <button id="btn-pwa-install" onclick="triggerPwaInstall()" class="header-btn header-btn-pwa" style="display:none;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2)" title="Instalar Aplicación Web">
-        <i class="fas fa-download"></i> <span class="btn-label">APP</span>
-      </button>
-      <a href="{{ route('contraataque.index') }}" class="header-btn header-btn-sports" title="Sección de Deportes Contra Ataque">
-        <i class="fas fa-bolt" style="color:#FF3B30"></i> <span class="btn-label">CONTRA ATAQUE</span>
-      </a>
-      <a href="{{ route('periodico.public.index') }}" class="header-btn header-btn-newspaper" title="Ver Periódico Digital Semanal">
-        <i class="fas fa-newspaper"></i> <span class="btn-label">PERIÓDICO DIGITAL</span>
-      </a>
+      @php
+        $streamingTvActive = setting('streaming_tv_active', '0') == '1';
+        $streamingRadioActive = setting('streaming_radio_active', '0') == '1';
+        $isLiveActive = $streamingTvActive || $streamingRadioActive;
+      @endphp
+      @if($isLiveActive)
+        <button onclick="openLiveModal()" class="header-btn header-btn-live" title="Señal de TV y Radio en Vivo">
+          <span style="width:7px;height:7px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block"></span> <span class="btn-label">EN VIVO</span>
+        </button>
+      @endif
       <button onclick="toggleTheme()" class="header-btn-theme" title="Cambiar tema día/noche" aria-label="Cambiar tema día/noche">
         <i class="fas fa-sun" id="themeIconSun" style="display:none"></i>
         <i class="fas fa-moon" id="themeIconMoon"></i>
