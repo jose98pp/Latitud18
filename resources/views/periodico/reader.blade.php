@@ -472,157 +472,205 @@
 .newspaper-reader-container:-moz-full-screen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 .newspaper-reader-container:fullscreen { width: 100vw !important; height: 100vh !important; border-radius: 0; overflow-y: auto; }
 
-/* Tabs de modo: Flipbook 3D / Lector Editorial */
-.reader-mode-tabs {
-    display: flex;
-    background: #0d1117;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.reader-mode-tab {
-    flex: 1;
-    padding: 11px 16px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #64748b;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-}
-.reader-mode-tab:hover { color: #94a3b8; background: rgba(255,255,255,0.03); }
-.reader-mode-tab.active {
-    color: #fff;
-    border-bottom-color: var(--reader-red);
-    background: rgba(215,25,32,0.08);
-}
-
 /* ====================================================
-   FLIPBOOK CSS3 PROPIO (sin CDN ni dependencias externas)
+   FLIPBOOK 3D — VISOR LIBRO REAL (sin CDN)
+   Periódico en doble página, contenido real del editor
    ==================================================== */
 
-/* Contenedor del visor flipbook */
+/* Contenedor principal del flipbook */
 .fb-wrapper {
     display: none;
-    background: radial-gradient(ellipse at center, #1e293b 0%, #0b1120 100%);
-    min-height: 680px;
-    padding: 28px 16px 40px;
+    background: linear-gradient(160deg, #0a0f1e 0%, #111827 50%, #0a0f1e 100%);
+    min-height: 700px;
+    padding: 20px 12px 32px;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+.fb-wrapper::before {
+    content:'';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(215,25,32,0.06) 0%, transparent 70%);
+    pointer-events: none;
 }
 .fb-wrapper.active { display: flex; }
 
-/* Escenario del libro */
+/* Escenario 3D */
 .fb-stage {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    perspective: 2400px;
+    align-items: center;
+    perspective: 2800px;
+    perspective-origin: 50% 40%;
 }
 
-/* Contenedor del libro (doble página) */
+/* Contenedor del libro abierto */
 .fb-book {
     display: flex;
     align-items: stretch;
     position: relative;
-    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7));
+    transform-style: preserve-3d;
+    /* Ligera inclinación 3D para sensación de profundidad */
+    transform: rotateX(2deg);
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+}
+.fb-book:hover { transform: rotateX(0deg); }
+
+/* El lomo del libro — sombra de encuadernación */
+.fb-spine {
+    width: 14px;
+    background: linear-gradient(to right,
+        rgba(0,0,0,0.30) 0%,
+        rgba(0,0,0,0.06) 30%,
+        rgba(255,255,255,0.06) 50%,
+        rgba(0,0,0,0.06) 70%,
+        rgba(0,0,0,0.30) 100%
+    );
+    flex-shrink: 0;
+    align-self: stretch;
+    z-index: 3;
+    position: relative;
+}
+.fb-spine::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 5px; right: 5px;
+    background: linear-gradient(to bottom,
+        rgba(215,25,32,0.4) 0%, rgba(215,25,32,0.1) 15%,
+        transparent 40%, transparent 80%,
+        rgba(0,0,0,0.2) 100%);
 }
 
-/* Cada "hoja" del libro */
+/* Hoja del libro — proporciones de periódico */
 .fb-page {
-    width: 370px;
-    min-height: 530px;
-    background: #fff;
+    /* Periódico tabloide: aprox 280×390mm → ratio 1:1.393 */
+    width: clamp(280px, 38vw, 440px);
+    /* altura = width × 1.39 */
+    aspect-ratio: 280 / 390;
+    max-height: 82vh;
+    background: #fffef9;
     position: relative;
     overflow: hidden;
     transform-style: preserve-3d;
     flex-shrink: 0;
 }
 
-/* Página izquierda (recto) */
+/* Contenedor interno que escala el contenido del editor */
+.fb-page-inner {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+/* El contenido renderizado del periódico se escala para caber */
+.fb-page-inner > .fb-page-source,
+.fb-page-inner > div {
+    width: 794px; /* ancho del editor */
+    height: 1123px; /* alto del editor */
+    transform-origin: top left;
+    /* JS calcula el scale */
+}
+
+/* Sombra interna (curva de página) */
 .fb-page-left {
-    border-radius: 4px 0 0 4px;
-    border-right: 2px solid rgba(0,0,0,0.12);
+    border-radius: 3px 0 0 3px;
+    border-right: 1.5px solid rgba(0,0,0,0.15);
     transform-origin: right center;
-    box-shadow: -6px 0 20px rgba(0,0,0,0.25), inset -4px 0 10px rgba(0,0,0,0.08);
+    box-shadow:
+        -8px 0 24px rgba(0,0,0,0.4),
+        inset -12px 0 20px -8px rgba(0,0,0,0.18),
+        inset -1px 0 0 rgba(255,255,255,0.15);
 }
-
-/* Página derecha (verso) */
 .fb-page-right {
-    border-radius: 0 4px 4px 0;
-    border-left: 2px solid rgba(0,0,0,0.12);
+    border-radius: 0 3px 3px 0;
+    border-left: 1.5px solid rgba(0,0,0,0.15);
     transform-origin: left center;
-    box-shadow: 6px 0 20px rgba(0,0,0,0.25), inset 4px 0 10px rgba(0,0,0,0.08);
+    box-shadow:
+        8px 0 24px rgba(0,0,0,0.4),
+        inset 12px 0 20px -8px rgba(0,0,0,0.18),
+        inset 1px 0 0 rgba(255,255,255,0.15);
 }
 
-/* Animaciones de volteo */
-.fb-page.flipping-out {
-    animation: flipOut 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Esquinas de las páginas (efecto de papel con textura) */
+.fb-page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 4;
 }
-.fb-page.flipping-in {
-    animation: flipIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Línea de doblez del papel */
+.fb-page-left::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 28px;
+    background: linear-gradient(to left, rgba(0,0,0,0.08) 0%, transparent 100%);
+    z-index: 3;
+    pointer-events: none;
+}
+.fb-page-right::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 28px;
+    background: linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 100%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* ======================== ANIMACIONES DE VOLTEO ======================== */
+.fb-page.flipping-out {
+    animation: fbFlipOut 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: left center;
 }
 .fb-page-left.flipping-out {
-    animation: flipOutLeft 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: fbFlipOutLeft 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: right center;
+}
+.fb-page.flipping-in {
+    animation: fbFlipIn 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: left center;
 }
 .fb-page-left.flipping-in {
-    animation: flipInLeft 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: fbFlipInLeft 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: right center;
+}
+.fb-page.flipping-out-left {
+    animation: fbFlipOutLeft 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: right center;
+}
+.fb-page.flipping-in-left {
+    animation: fbFlipInLeft 0.36s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    transform-origin: left center;
 }
 
-@keyframes flipOut {
-    from { transform: rotateY(0deg); }
-    to   { transform: rotateY(-90deg); }
-}
-@keyframes flipIn {
-    from { transform: rotateY(90deg); }
-    to   { transform: rotateY(0deg); }
-}
-@keyframes flipOutLeft {
-    from { transform: rotateY(0deg); }
-    to   { transform: rotateY(90deg); }
-}
-@keyframes flipInLeft {
-    from { transform: rotateY(-90deg); }
-    to   { transform: rotateY(0deg); }
-}
+@keyframes fbFlipOut     { 0%{transform:rotateY(0deg) scale(1);}  50%{transform:rotateY(-70deg) scale(0.92);} 100%{transform:rotateY(-90deg) scale(0.88);} }
+@keyframes fbFlipIn      { 0%{transform:rotateY(90deg) scale(0.88);} 50%{transform:rotateY(20deg) scale(0.96);} 100%{transform:rotateY(0deg) scale(1);} }
+@keyframes fbFlipOutLeft { 0%{transform:rotateY(0deg) scale(1);}  50%{transform:rotateY(70deg) scale(0.92);}  100%{transform:rotateY(90deg) scale(0.88);} }
+@keyframes fbFlipInLeft  { 0%{transform:rotateY(-90deg) scale(0.88);} 50%{transform:rotateY(-20deg) scale(0.96);} 100%{transform:rotateY(0deg) scale(1);} }
 
-/* Imagen de la página dentro del flipbook */
-.fb-page-img {
-    width: 100%;
-    height: 100%;
-    min-height: 530px;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-    user-select: none;
-}
-
-/* Placeholder de página sin imagen */
+/* Placeholder cuando no hay página */
 .fb-page-placeholder {
     width: 100%;
-    min-height: 530px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    gap: 8px;
+    background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%);
     color: #94a3b8;
-    padding: 30px;
 }
 .fb-page-placeholder .fp-name {
     font-family: 'Anton', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: #0B1F3A;
     letter-spacing: 2px;
     line-height: 1;
@@ -631,130 +679,276 @@
     background: #D71920;
     color: #fff;
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 800;
-    padding: 2px 8px;
-    letter-spacing: 1px;
+    padding: 2px 7px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
 }
-.fb-page-placeholder .fp-label {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 8px;
-    text-align: center;
-}
 
-/* Sombra central del libro (lomo) */
-.fb-spine {
-    width: 12px;
-    background: linear-gradient(to right, rgba(0,0,0,0.18), rgba(0,0,0,0.04), rgba(0,0,0,0.18));
-    flex-shrink: 0;
-    align-self: stretch;
-    z-index: 2;
-}
-
-/* Barra de controles del flipbook */
+/* ======================== CONTROLES ======================== */
 .fb-controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     flex-wrap: wrap;
 }
 .fb-ctrl-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: #cbd5e0;
-    padding: 8px 18px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #94a3b8;
+    padding: 7px 16px;
     border-radius: 4px;
     font-family: 'Montserrat', sans-serif;
     font-weight: 800;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s;
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    text-decoration: none;
 }
 .fb-ctrl-btn:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.16);
     color: #fff;
-    border-color: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.28);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .fb-ctrl-btn:disabled {
-    opacity: 0.35;
+    opacity: 0.28;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
 }
 .fb-ctrl-btn.danger {
-    background: rgba(215,25,32,0.85);
-    border-color: var(--reader-red);
+    background: rgba(215,25,32,0.8);
+    border-color: rgba(215,25,32,0.6);
     color: #fff;
 }
-.fb-ctrl-btn.danger:hover {
-    background: #b8141b;
-}
+.fb-ctrl-btn.danger:hover { background: #c01118; }
 .fb-page-counter {
     font-family: 'Montserrat', sans-serif;
     font-weight: 800;
-    font-size: 0.78rem;
-    color: #94a3b8;
-    padding: 0 6px;
-    min-width: 80px;
+    font-size: 0.75rem;
+    color: #64748b;
+    padding: 0 4px;
+    min-width: 72px;
     text-align: center;
+    user-select: none;
 }
 
-/* Miniaturas del flipbook */
+/* ======================== MINIATURAS ======================== */
 .fb-thumbnails {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     overflow-x: auto;
-    padding: 0 4px 4px;
+    padding: 4px 4px 6px;
     width: 100%;
+    max-width: 900px;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(215,25,32,0.4) transparent;
 }
+.fb-thumbnails::-webkit-scrollbar { height: 3px; }
+.fb-thumbnails::-webkit-scrollbar-thumb { background: rgba(215,25,32,0.4); border-radius: 2px; }
 .fb-thumb {
     flex-shrink: 0;
-    width: 60px;
-    height: 84px;
-    border-radius: 3px;
+    width: 52px;
+    height: 72px;
+    border-radius: 2px;
     overflow: hidden;
-    border: 2px solid transparent;
+    border: 2px solid rgba(255,255,255,0.1);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s;
     background: #1e293b;
+    position: relative;
 }
-.fb-thumb:hover { border-color: rgba(215,25,32,0.5); transform: scale(1.05); }
-.fb-thumb.active { border-color: var(--reader-red); box-shadow: 0 0 12px rgba(215,25,32,0.4); }
+.fb-thumb:hover { border-color: rgba(215,25,32,0.5); transform: scale(1.06) translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.fb-thumb.active { border-color: var(--reader-red); box-shadow: 0 0 16px rgba(215,25,32,0.5); }
+.fb-thumb-frame {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.fb-thumb-frame > div {
+    width: 794px;
+    height: 1123px;
+    transform-origin: top left;
+    transform: scale(0.065);
+    pointer-events: none;
+}
+.fb-thumb-num {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.7);
+    font-family: 'Montserrat',sans-serif;
+    font-size: 0.38rem;
+    font-weight: 800;
+    text-align: center;
+    padding: 1px;
+    letter-spacing: 0.3px;
+}
 .fb-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .fb-thumb-no-img {
     width: 100%; height: 100%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 2px; background: linear-gradient(135deg, #1e3a5f, #0b1f3a); color: rgba(255,255,255,0.4);
+    gap: 2px;
+    background: linear-gradient(135deg, #1e3a5f, #0b1f3a);
+    color: rgba(255,255,255,0.35);
 }
-.fb-thumb-no-img span { font-size: 0.45rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.fb-thumb-no-img span { font-size: 0.38rem; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
 
-/* Responsive */
-@media (max-width: 820px) {
-    .fb-page { width: 46vw; min-height: 65vw; }
-    .fb-page-img { min-height: 65vw; }
-    .fb-page-placeholder { min-height: 65vw; }
-    .fb-wrapper { padding: 16px 8px 28px; }
+/* ======================== ZOOM HINT ======================== */
+.fb-zoom-hint {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    letter-spacing: 0.3px;
 }
-@media (max-width: 500px) {
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 840px) {
+    .fb-page {
+        width: clamp(200px, 44vw, 320px);
+    }
+    .fb-wrapper { padding: 12px 6px 20px; gap: 10px; }
+    .fb-ctrl-btn { padding: 6px 10px; font-size: 0.6rem; }
+    .fb-spine { width: 8px; }
+}
+@media (max-width: 560px) {
+    /* Sólo una página en pantallas pequeñas */
     .fb-book { flex-direction: column; }
+    .fb-page { width: 90vw; aspect-ratio: auto; min-height: 70vw; }
     .fb-spine { width: 100%; height: 6px; }
-    .fb-page { width: 92vw; }
+    .fb-page-left { border-radius: 3px 3px 0 0; border-right: none; border-bottom: 1.5px solid rgba(0,0,0,0.15); }
+    .fb-page-right { border-radius: 0 0 3px 3px; border-left: none; border-top: 1.5px solid rgba(0,0,0,0.15); }
+    .fb-thumbnails { flex-wrap: wrap; }
 }
+
+/* ============================================================
+   PÁGINA DE DIARIO RENDERIZADA (contenido real, no imagen)
+   Renderizada por resources/views/periodico/partials/pagina.blade.php
+   ============================================================ */
+.np-page {
+    width: 100%;
+    min-height: 100%;
+    background: #fff;
+    color: #14181D;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 0.62rem;
+    line-height: 1.38;
+    padding: 14px 15px 10px;
+    text-align: left;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+/* La columna izquierda del libro se refleja (efecto spine) */
+.fb-page-left .np-page { box-shadow: inset -8px 0 14px -10px rgba(0,0,0,0.25); }
+.fb-page-right .np-page { box-shadow: inset 8px 0 14px -10px rgba(0,0,0,0.25); }
+
+/* --- Masthead --- */
+.np-masthead { text-align: center; border-bottom: 2px solid #0B1F3A; padding-bottom: 7px; margin-bottom: 9px; }
+.np-slogan { font-family: 'Montserrat', sans-serif; font-size: 0.44rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: #D71920; }
+.np-logo {
+    font-family: 'Anton', sans-serif; font-size: 2.3rem; line-height: 1;
+    color: #0B1F3A; letter-spacing: 1.5px; margin: 2px 0 1px;
+}
+.np-logo span { color: #D71920; }
+.np-sub { font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 600; letter-spacing: 2.2px; text-transform: uppercase; color: #0B1F3A; }
+.np-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #C8CED6; margin-top: 5px; padding-top: 3px;
+    font-family: 'Montserrat', sans-serif; font-size: 0.44rem; color: #3A4450;
+}
+.np-meta-city { font-weight: 800; color: #0B1F3A; text-transform: uppercase; }
+
+/* --- Folio de páginas interiores --- */
+.np-folio {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1.5px solid #0B1F3A; padding-bottom: 4px; margin-bottom: 9px;
+    font-family: 'Montserrat', sans-serif;
+}
+.np-folio-brand { font-size: 0.72rem; font-weight: 800; color: #0B1F3A; letter-spacing: 0.5px; }
+.np-folio-brand span { color: #D71920; }
+.np-folio-sec { font-size: 0.55rem; font-weight: 800; color: #D71920; text-transform: uppercase; letter-spacing: 1px; }
+.np-folio-num { font-size: 0.42rem; color: #5A6470; }
+
+/* --- Títulos y kickers --- */
+.np-kicker { font-family: 'Montserrat', sans-serif; font-size: 0.44rem; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; color: #D71920; }
+.np-titular-main {
+    font-family: 'Montserrat', sans-serif; font-size: 1.32rem; font-weight: 900;
+    line-height: 1.04; color: #0B1F3A; margin: 2px 0 6px;
+}
+.np-titular { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 900; line-height: 1.1; color: #0B1F3A; margin: 2px 0 4px; }
+.np-titular-sm { font-family: 'Montserrat', sans-serif; font-size: 0.76rem; font-weight: 800; line-height: 1.14; color: #0B1F3A; margin: 2px 0 4px; }
+.np-bajada { font-size: 0.68rem; line-height: 1.32; color: #3A4450; margin-bottom: 5px; }
+.np-destacado { font-family: 'Montserrat', sans-serif; font-size: 0.48rem; font-weight: 800; color: #D71920; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 1px; }
+
+/* --- Figuras --- */
+.np-fig { margin: 0 0 7px; }
+.np-fig img { width: 100%; height: 88px; object-fit: cover; border: 1px solid #C8CED6; display: block; }
+.np-fig figcaption { font-family: 'Montserrat', sans-serif; font-size: 0.42rem; line-height: 1.3; color: #5A6470; border-top: 1px solid #DDE2E8; margin-top: 3px; padding-top: 3px; }
+.np-fig figcaption strong { display: block; color: #0B1F3A; font-size: 0.56rem; margin-bottom: 2px; }
+
+/* --- Columnas --- */
+.np-cols { display: flex; gap: 9px; align-items: flex-start; }
+.np-col { flex: 1; min-width: 0; }
+.np-col + .np-col, .np-cols > .np-col ~ .np-col { border-left: 1px solid #DDE2E8; padding-left: 9px; }
+.np-col p { margin-bottom: 5px; text-align: justify; hyphens: auto; }
+
+/* --- Distribución dos columnas --- */
+.np-two { display: flex; gap: 10px; align-items: flex-start; }
+.np-two-main { flex: 1 1 62%; min-width: 0; }
+.np-two-side { flex: 0 1 36%; min-width: 0; border-left: 1px solid #DDE2E8; padding-left: 10px; }
+
+/* --- Notas laterales --- */
+.np-note { display: flex; gap: 7px; margin-bottom: 8px; }
+.np-note img { width: 54px; height: 40px; object-fit: cover; border: 1px solid #C8CED6; flex-shrink: 0; }
+.np-note-body { min-width: 0; }
+.np-note h4 { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 800; line-height: 1.14; color: #14181D; margin: 2px 0 2px; }
+.np-note p { font-size: 0.52rem; line-height: 1.32; color: #232A32; text-align: justify; }
+.np-tag { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 0.4rem; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: #fff; background: #0B1F3A; padding: 1px 5px; }
+
+/* --- Cajas de servicio --- */
+.np-box { border: 1px solid #C8CED6; background: #FAFBFC; padding: 6px; margin-bottom: 7px; }
+.np-box img { width: 100%; height: 52px; object-fit: cover; margin: 3px 0; }
+.np-box h4 { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 800; line-height: 1.16; color: #14181D; margin: 2px 0; }
+.np-box p { font-size: 0.5rem; line-height: 1.32; color: #232A32; text-align: justify; }
+.np-box-title { font-family: 'Montserrat', sans-serif; font-size: 0.48rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; color: #0B1F3A; border-bottom: 1px solid #0B1F3A; padding-bottom: 2px; margin-bottom: 4px; }
+.np-row { display: flex; justify-content: space-between; font-family: 'Montserrat', sans-serif; font-size: 0.48rem; color: #5A6470; padding: 1px 0; }
+.np-row b { color: #0B1F3A; font-weight: 800; }
+
+/* --- Cita --- */
+.np-quote {
+    border-left: 2.5px solid #D71920; background: #F6F7F9;
+    padding: 6px 8px; margin: 0 0 6px;
+    font-style: italic; font-size: 0.6rem; line-height: 1.36; color: #0B1F3A;
+}
+
+/* --- Reglas, refs, staff --- */
+.np-rule { border-top: 1px solid #C8CED6; margin: 7px 0; }
+.np-rule-strong { border-top: 2px solid #0B1F3A; }
+.np-ref { font-family: 'Montserrat', sans-serif; font-size: 0.42rem; font-weight: 800; color: #D71920; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+.np-staff { display: flex; gap: 12px; font-family: 'Montserrat', sans-serif; font-size: 0.42rem; line-height: 1.5; color: #3A4450; }
+.np-staff > div { flex: 1; }
+.np-staff b { color: #0B1F3A; }
+.np-staff-legal { color: #8A93A0; }
+.np-legal { font-family: 'Montserrat', sans-serif; font-size: 0.38rem; color: #8A93A0; text-align: center; border-top: 1px solid #C8CED6; margin-top: 8px; padding-top: 4px; }
+
+/* Sin paginación forzada: el contenido fluye dentro de la hoja */
+.np-page p, .np-page h1, .np-page h2, .np-page h3, .np-page h4, .np-page figure { page-break-inside: avoid; }
 </style>
 
 <div class="container py-3">
@@ -799,28 +993,14 @@
                     <i class="fas fa-chevron-right"></i>
                 </button>
 
-                @if(!empty($edicionActiva['pdf_url']))
-                    <a href="{{ $edicionActiva['pdf_url'] }}" target="_blank" class="btn btn-sm btn-danger ms-2" title="Descargar PDF Oficial">
-                        <i class="fas fa-download me-1"></i> Descargar PDF
-                    </a>
-                @else
-                    <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}" target="_blank" class="btn btn-sm btn-danger ms-2" title="Descargar PDF / Imprimir">
-                        <i class="fas fa-file-pdf me-1"></i> Descargar / Imprimir
-                    </a>
-                @endif
+                {{-- Descarga de PDF real (server-side DomPDF) --}}
+                <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
+                   class="btn btn-sm btn-danger ms-2"
+                   title="Descargar PDF real"
+                   download>
+                    <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+                </a>
             </div>
-        </div>
-
-        {{-- TABS: Flipbook 3D vs Lector Editorial --}}
-        <div class="reader-mode-tabs" id="readerModeTabs">
-          <button class="reader-mode-tab active" id="tabFlipbook" onclick="switchReaderMode('flipbook')">
-            <i class="fas fa-book"></i>
-            Flipbook 3D
-          </button>
-          <button class="reader-mode-tab" id="tabEditorial" onclick="switchReaderMode('editorial')">
-            <i class="fas fa-newspaper"></i>
-            Lector Editorial
-          </button>
         </div>
 
         {{-- ================================================
@@ -854,6 +1034,25 @@
                 ];
             }
         @endphp
+
+        {{-- ============================================================
+             CONTENIDO REAL DE CADA PÁGINA (renderizado en el servidor)
+             El flipbook 3D clona estas hojas, por lo que se ve el
+             periódico tal como lo compuso el administrador: titulares,
+             columnas, fotos, notas, clima y cotizaciones.
+             ============================================================ --}}
+        <div id="fbPagesStore" aria-hidden="true"
+             style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;left:-9999px;">
+            @foreach ($edicionActiva['paginas'] ?? [] as $pgIdx => $pgData)
+                <div class="fb-page-source" data-fb-index="{{ $pgIdx }}">
+                    @include('periodico.partials.pagina', [
+                        'pg'       => $pgData,
+                        'edicion'  => $edicionActiva,
+                        'masthead' => ($pgData['tipo'] ?? '') === 'portada',
+                    ])
+                </div>
+            @endforeach
+        </div>
 
         <div class="fb-wrapper active" id="flipbookSection">
           {{-- Miniaturas de navegación --}}
@@ -903,26 +1102,25 @@
             <button class="fb-ctrl-btn" id="fbBtnLast" onclick="fbGoToSpread({{ count($fbPages) - 1 }})" title="Última página">
               <i class="fas fa-step-forward"></i>
             </button>
-            @if(!empty($edicionActiva['pdf_url']))
-              <a href="{{ $edicionActiva['pdf_url'] }}" target="_blank" rel="noopener" class="fb-ctrl-btn danger">
-                <i class="fas fa-download"></i> Descargar PDF
-              </a>
-            @else
-              <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}" target="_blank" rel="noopener" class="fb-ctrl-btn danger">
-                <i class="fas fa-file-pdf"></i> Descargar
-              </a>
-            @endif
+            {{-- Descarga de PDF real (server-side DomPDF) --}}
+            <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
+               rel="noopener" class="fb-ctrl-btn danger" download
+               title="Descargar PDF real">
+              <i class="fas fa-file-pdf"></i> Descargar PDF
+            </a>
             <button class="fb-ctrl-btn" onclick="readerToggleFullscreen()" title="Pantalla completa (F)">
               <i class="fas fa-expand" id="fbFsIcon"></i>
             </button>
           </div>
         </div>
 
-        {{-- Datos de páginas para el flipbook JS --}}
-        <script id="fbPagesData" type="application/json">@json($fbPages)</script>
+        {{-- El contenido de las páginas ya se renderiza en #fbPagesStore --}}
 
-        {{-- LECTOR EDITORIAL: visor HTML de páginas (modo alternativo) --}}
-        <div id="editorialSection" style="display:none;">
+        {{-- LECTOR EDITORIAL: visor HTML de páginas.
+             OCULTO PERMANENTEMENTE: el periódico público se muestra en una sola
+             forma, el flipbook 3D. Este bloque se conserva inerte para no romper
+             los scripts que lo referencian, pero nunca es visible ni accesible. --}}
+        <div id="editorialSection" style="display:none !important;" aria-hidden="true">
 
         {{-- RIBBON DE MINIATURAS / PÁGINAS (solo en modo editorial) --}}
         <div class="reader-pages-ribbon">
@@ -1335,25 +1533,20 @@
 {{-- SIN CDN: Flipbook CSS3 propio con JS vanilla --}}
 <script>
 // ============================================================
-// SWITCH DE MODO: Flipbook 3D <-> Lector Editorial
+// MODO ÚNICO DE LECTURA: siempre flipbook 3D
+// El periódico se muestra en una sola forma. Cualquier llamada
+// heredada a switchReaderMode() se ignora y asegura el flipbook.
 // ============================================================
 function switchReaderMode(mode) {
     const flipbookSection = document.getElementById('flipbookSection');
     const editorialSection = document.getElementById('editorialSection');
-    const tabFlipbook = document.getElementById('tabFlipbook');
-    const tabEditorial = document.getElementById('tabEditorial');
 
-    if (mode === 'flipbook') {
-        if (flipbookSection) { flipbookSection.classList.add('active'); flipbookSection.style.display = 'flex'; }
-        if (editorialSection) editorialSection.style.display = 'none';
-        if (tabFlipbook) tabFlipbook.classList.add('active');
-        if (tabEditorial) tabEditorial.classList.remove('active');
-    } else {
-        if (flipbookSection) { flipbookSection.classList.remove('active'); flipbookSection.style.display = 'none'; }
-        if (editorialSection) editorialSection.style.display = 'block';
-        if (tabFlipbook) tabFlipbook.classList.remove('active');
-        if (tabEditorial) tabEditorial.classList.add('active');
-        setTimeout(updateMobileScale, 50);
+    if (flipbookSection) {
+        flipbookSection.classList.add('active');
+        flipbookSection.style.setProperty('display', 'flex', 'important');
+    }
+    if (editorialSection) {
+        editorialSection.style.setProperty('display', 'none', 'important');
     }
 }
 
@@ -1361,36 +1554,98 @@ function switchReaderMode(mode) {
 // FLIPBOOK CSS3: MOTOR DE ANIMACIÓN
 // ============================================================
 (function() {
-    // Cargar datos de páginas desde el JSON embebido
-    var fbDataEl = document.getElementById('fbPagesData');
-    if (!fbDataEl) return;
-    var fbPages = JSON.parse(fbDataEl.textContent || '[]');
-    if (!fbPages.length) return;
+    // Hojas renderizadas en el servidor: el contenido real del periódico
+    var fbStore = document.getElementById('fbPagesStore');
+    var fbSources = fbStore ? Array.prototype.slice.call(fbStore.querySelectorAll('.fb-page-source')) : [];
+    if (!fbSources.length) return;
 
-    var fbCurrentSpread = 0; // índice de la página izquierda actual (siempre par)
+    var fbCurrentSpread = 0; // índice de la página izquierda actual
     var fbAnimating = false;
-    var fbTotal = fbPages.length;
+    var fbTotal = fbSources.length;
 
-    var elLeft   = document.getElementById('fbPageLeft');
-    var elRight  = document.getElementById('fbPageRight');
-    var elCounter= document.getElementById('fbCounter');
-    var elBtnPrev= document.getElementById('fbBtnPrev');
-    var elBtnNext= document.getElementById('fbBtnNext');
+    var elLeft    = document.getElementById('fbPageLeft');
+    var elRight   = document.getElementById('fbPageRight');
+    var elInnerL  = document.getElementById('fbInnerLeft');
+    var elInnerR  = document.getElementById('fbInnerRight');
+    var elCounter = document.getElementById('fbCounter');
+    var elBtnPrev = document.getElementById('fbBtnPrev');
+    var elBtnNext = document.getElementById('fbBtnNext');
     var elBtnFirst= document.getElementById('fbBtnFirst');
-    var elBtnLast= document.getElementById('fbBtnLast');
+    var elBtnLast = document.getElementById('fbBtnLast');
 
-    function makePageContent(page) {
-        if (!page) return '<div class="fb-page-placeholder"><span class="fp-name">LATITUD 18</span><span class="fp-sub">Información Sin Ruido</span></div>';
-        if (page.img) {
-            return '<img class="fb-page-img" src="' + page.img + '" alt="' + (page.nombre || '') + '" loading="lazy">';
-        } else {
-            return '<div class="fb-page-placeholder">'
+    // Calcula el scale para que 794px de contenido quepan en el ancho visible del slot
+    function getPageScale(slot) {
+        if (!slot) return 1;
+        var w = slot.getBoundingClientRect().width || slot.offsetWidth || 440;
+        return Math.min(1, w / 794);
+    }
+
+    // Clona la página real y la monta con scale dentro del inner
+    function mountPage(inner, slot, index) {
+        if (!inner || !slot) return;
+        inner.innerHTML = '';
+        var src = (index !== null && index !== undefined) ? fbSources[index] : null;
+        if (!src) {
+            inner.innerHTML = '<div class="fb-page-placeholder">'
                 + '<span class="fp-name">LATITUD 18</span>'
                 + '<span class="fp-sub">Información Sin Ruido</span>'
-                + '<span class="fp-label"><i class="fas fa-file-alt" style="margin-right:4px;"></i>' + (page.nombre || 'Página') + '</span>'
                 + '</div>';
+            return;
         }
+        var clone = src.cloneNode(true);
+        clone.removeAttribute('data-fb-index');
+        clone.classList.remove('fb-page-source');
+        // Aplicar scale para que el contenido de 794px quepa en el slot
+        var sc = getPageScale(slot);
+        clone.style.width = '794px';
+        clone.style.height = '1123px';
+        clone.style.transformOrigin = 'top left';
+        clone.style.transform = 'scale(' + sc + ')';
+        // Actualizar altura del inner para evitar desbordamiento
+        inner.style.height = Math.round(1123 * sc) + 'px';
+        inner.appendChild(clone);
+        // Forzar carga de imágenes lazy
+        inner.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
+            img.loading = 'eager';
+            if (img.dataset.src) { img.src = img.dataset.src; }
+        });
     }
+
+    // Llena las miniaturas con el contenido escalado (0.065 = 52px / 794px)
+    function fillThumbnails() {
+        fbSources.forEach(function(src, i) {
+            var frame = document.getElementById('fb-thumb-frame-' + i);
+            if (!frame || !src) return;
+            var clone = src.cloneNode(true);
+            clone.removeAttribute('data-fb-index');
+            clone.classList.remove('fb-page-source');
+            clone.style.width = '794px';
+            clone.style.height = '1123px';
+            clone.style.transformOrigin = 'top left';
+            clone.style.transform = 'scale(0.065)';
+            clone.style.pointerEvents = 'none';
+            frame.innerHTML = '';
+            frame.appendChild(clone);
+        });
+    }
+
+    // Reajusta scales al redimensionar ventana
+    function reapplyScales() {
+        if (!elLeft || !elRight) return;
+        var scL = getPageScale(elLeft);
+        var scR = getPageScale(elRight);
+        [elInnerL, elInnerR].forEach(function(inner, i) {
+            var sc = i === 0 ? scL : scR;
+            var slot = i === 0 ? elLeft : elRight;
+            if (!inner) return;
+            var child = inner.firstElementChild;
+            if (child) {
+                child.style.transform = 'scale(' + sc + ')';
+                inner.style.height = Math.round(1123 * sc) + 'px';
+            }
+        });
+    }
+    window.addEventListener('resize', reapplyScales);
 
     function updateThumbs(idx) {
         document.querySelectorAll('.fb-thumb').forEach(function(th, i) {
@@ -1402,19 +1657,17 @@ function switchReaderMode(mode) {
     }
 
     function renderSpread(idx, animate, direction) {
-        // idx = índice de la página izquierda (puede ser 0-based)
-        var leftPage  = fbPages[idx] || null;
-        var rightPage = fbPages[idx + 1] || null;
+        // idx = índice de la página izquierda
+        var hasLeft  = idx < fbTotal;
+        var hasRight = (idx + 1) < fbTotal;
 
         if (!animate) {
-            if (elLeft)  elLeft.innerHTML  = makePageContent(leftPage);
-            if (elRight) elRight.innerHTML = makePageContent(rightPage);
+            mountPage(elInnerL, elLeft, hasLeft  ? idx     : null);
+            mountPage(elInnerR, elRight, hasRight ? idx + 1 : null);
+            if (elLeft)  elLeft.style.display  = hasLeft  ? '' : 'none';
+            if (elRight) elRight.style.display = hasRight ? '' : 'none';
         } else {
             fbAnimating = true;
-            var animOutLeft  = direction === 'next' ? 'flipping-out-left'  : 'flipping-in-left';
-            var animOutRight = direction === 'next' ? 'flipping-out-right' : 'flipping-in-right';
-
-            // Clases de animación CSS3
             if (direction === 'next') {
                 if (elRight) { elRight.classList.add('flipping-out'); }
                 if (elLeft)  { elLeft.classList.add('flipping-out');  }
@@ -1424,8 +1677,17 @@ function switchReaderMode(mode) {
             }
 
             setTimeout(function() {
-                if (elLeft)  { elLeft.innerHTML  = makePageContent(leftPage);  elLeft.className  = 'fb-page fb-page-left';  }
-                if (elRight) { elRight.innerHTML = makePageContent(rightPage); elRight.className = 'fb-page fb-page-right'; }
+                mountPage(elInnerL, elLeft,  hasLeft  ? idx     : null);
+                mountPage(elInnerR, elRight, hasRight ? idx + 1 : null);
+
+                if (elLeft)  {
+                    elLeft.className  = 'fb-page fb-page-left';
+                    elLeft.style.display  = hasLeft ? '' : 'none';
+                }
+                if (elRight) {
+                    elRight.className = 'fb-page fb-page-right';
+                    elRight.style.display = hasRight ? '' : 'none';
+                }
 
                 requestAnimationFrame(function() {
                     if (direction === 'next') {
@@ -1439,14 +1701,17 @@ function switchReaderMode(mode) {
                         if (elLeft)  { elLeft.className  = 'fb-page fb-page-left'; }
                         if (elRight) { elRight.className = 'fb-page fb-page-right'; }
                         fbAnimating = false;
-                    }, 460);
+                    }, 400);
                 });
-            }, 230);
+            }, 200);
         }
 
         // Actualizar contador
-        var rightNum = rightPage ? (idx + 2) : (idx + 1);
-        if (elCounter) elCounter.textContent = (idx + 1) + (rightPage ? ('-' + rightNum) : '') + ' / ' + fbTotal;
+        if (elCounter) {
+            elCounter.textContent = hasRight
+                ? (idx + 1) + '-' + (idx + 2) + ' / ' + fbTotal
+                : (idx + 1) + ' / ' + fbTotal;
+        }
 
         // Actualizar botones
         if (elBtnPrev)  elBtnPrev.disabled  = (idx <= 0);
@@ -1506,17 +1771,9 @@ function switchReaderMode(mode) {
     // Render inicial sin animación
     renderSpread(0, false, 'next');
 
-    // Añadir animaciones @keyframes adicionales al DOM si no están
-    var styleSheet = document.createElement('style');
-    styleSheet.textContent = `
-        .fb-page.flipping-out-left { animation: flipOutLeft 0.23s cubic-bezier(0.4,0,0.2,1) forwards; }
-        .fb-page.flipping-in-left  { animation: flipInLeft  0.23s cubic-bezier(0.4,0,0.2,1) forwards; }
-        @keyframes flipOut     { from { transform: rotateY(0deg);    } to { transform: rotateY(-90deg); } }
-        @keyframes flipIn      { from { transform: rotateY(90deg);   } to { transform: rotateY(0deg);   } }
-        @keyframes flipOutLeft { from { transform: rotateY(0deg);    } to { transform: rotateY(90deg);  } }
-        @keyframes flipInLeft  { from { transform: rotateY(-90deg);  } to { transform: rotateY(0deg);   } }
-    `;
-    document.head.appendChild(styleSheet);
+    // Llenar miniaturas con contenido real escalado (diferido para no bloquear el render)
+    setTimeout(fillThumbnails, 200);
+
 })();
 </script>
 
