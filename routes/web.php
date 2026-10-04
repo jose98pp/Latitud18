@@ -187,6 +187,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/templates', [PeriodicoController::class, 'storeTemplate'])->name('templates.store');
         Route::post('/templates/import', [PeriodicoController::class, 'importTemplate'])->name('templates.import');
         Route::delete('/templates/{id}', [PeriodicoController::class, 'deleteTemplate'])->name('templates.destroy');
+        Route::post('/templates/{id}/create-edition', [PeriodicoController::class, 'createEditionFromTemplate'])->name('templates.createEdition');
     });
 
     // Configuración del Portal & Streaming

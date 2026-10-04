@@ -1697,9 +1697,12 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       <div class="tpl-tabs" id="tplTabs">
         <button class="tpl-tab-btn active" onclick="filterTemplateCards('all', this)"><i class="fas fa-border-all me-1"></i> Todas</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('portadas', this)"><i class="fas fa-newspaper me-1"></i> Portadas</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('interior', this)"><i class="fas fa-columns me-1"></i> Páginas Interiores</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('opinion', this)"><i class="fas fa-feather-alt me-1"></i> Opinión</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Contra Ataque / Deportes</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('politica', this)"><i class="fas fa-landmark me-1"></i> Política</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('economia', this)"><i class="fas fa-chart-line me-1"></i> Economía</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('entrevistas', this)"><i class="fas fa-microphone-alt me-1"></i> Entrevistas</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('fotografia', this)"><i class="fas fa-camera me-1"></i> Fotografía</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Contra Ataque</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('publicidad', this)"><i class="fas fa-bullhorn me-1"></i> Publicidad</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('contraportada', this)"><i class="fas fa-book-open me-1"></i> Contraportada</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('custom', this)" style="border-color:rgba(74,222,128,0.4);"><i class="fas fa-star me-1 text-warning"></i> Mis Plantillas</button>
       </div>
@@ -1846,9 +1849,34 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
           <input type="text" name="precio" class="id-form-input" value="Bs 7,00">
         </div>
         <div class="id-form-row">
-          <label class="id-form-label">Clonar desde edición existente:</label>
+          <label class="id-form-label"><i class="fas fa-layer-group text-danger me-1"></i> Seleccionar Plantilla Base:</label>
+          <select name="plantilla_id" class="id-form-input" style="font-weight:600;">
+            @if(isset($plantillasModels) && $plantillasModels->count() > 0)
+              @foreach($plantillasModels as $pTpl)
+                <option value="{{ $pTpl->id }}" {{ $pTpl->id === 'tpl_portada_clasica' ? 'selected' : '' }}>
+                  {{ $pTpl->nombre }} ({{ ucfirst($pTpl->categoria) }})
+                </option>
+              @endforeach
+            @else
+              <option value="tpl_portada_clasica">Portada clásica (Portadas)</option>
+              <option value="tpl_portada_deportiva">Portada deportiva (Portadas)</option>
+              <option value="tpl_politica">Política (Nacional)</option>
+              <option value="tpl_economia">Economía (Finanzas)</option>
+              <option value="tpl_entrevista">Página de entrevista (Diálogos)</option>
+              <option value="tpl_fotografica">Página fotográfica (Fotorreportaje)</option>
+              <option value="tpl_contraataque">Contra Ataque (Deportes)</option>
+              <option value="tpl_publicidad">Publicidad (Comercial)</option>
+              <option value="tpl_contraportada">Contraportada (Cultura)</option>
+            @endif
+          </select>
+          <small style="color:#94a3b8;font-size:0.68rem;display:block;margin-top:4px;">
+            <i class="fas fa-shield-alt text-success"></i> La plantilla original no se alterará; se creará una copia editable e independiente.
+          </small>
+        </div>
+        <div class="id-form-row">
+          <label class="id-form-label">O clonar desde edición existente:</label>
           <select name="clonar_de" class="id-form-input">
-            <option value="">Plantilla predeterminada</option>
+            <option value="">-- No clonar (Usar la plantilla base elegida) --</option>
             @foreach($ediciones as $ed)
               <option value="{{ $ed['id'] }}">{{ $ed['numero_edicion'] }} ({{ $ed['fecha'] }})</option>
             @endforeach
@@ -1901,16 +1929,21 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     </div>
     <div class="id-modal-body">
       <p style="font-size:0.78rem;color:#cbd5e1;margin-bottom:14px;">
-        Selecciona cómo deseas generar el documento PDF de <strong>{{ $currentEdicion['numero_edicion'] }}</strong>:
+        El PDF de <strong>{{ $currentEdicion['numero_edicion'] }}</strong> se genera en el servidor
+        con todas las páginas compuestas. Es el mismo archivo que descarga el público.
       </p>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="insp-full-btn" onclick="exportPdfDirect('current')" style="padding:12px;font-size:0.85rem;">
-          <i class="fas fa-file-alt text-primary"></i> Descargar / Imprimir Página Actual
-        </button>
-        <button class="insp-full-btn" onclick="exportPdfDirect('all')" style="padding:12px;font-size:0.85rem;">
-          <i class="fas fa-book text-danger"></i> Descargar Edición Completa (Todas las Páginas)
-        </button>
+        <a class="insp-full-btn" href="{{ route('admin.periodico.pdf', $currentEdicion['id']) }}"
+           style="padding:12px;font-size:0.85rem;text-align:center;text-decoration:none;">
+          <i class="fas fa-file-pdf text-danger"></i> Descargar PDF real ({{ count($currentEdicion['paginas'] ?? []) }} páginas)
+        </a>
       </div>
+      @if (!empty($currentEdicion['pdf_url']))
+        <p style="font-size:0.7rem;color:#94a3b8;margin-top:12px;">
+          <i class="fas fa-info-circle"></i>
+          Existe un PDF subido para esta edición, se entregará ese archivo en lugar del generado.
+        </p>
+      @endif
     </div>
     <div class="id-modal-footer">
       <button class="id-btn id-btn-ghost" onclick="closeModal('pdfExportModal')">Cerrar</button>
@@ -2821,10 +2854,15 @@ function renderTemplateCards(templates) {
 
     const categoryIcons = {
         portadas: 'fas fa-newspaper text-danger',
+        politica: 'fas fa-landmark text-primary',
+        economia: 'fas fa-chart-line text-success',
+        entrevistas: 'fas fa-microphone-alt text-info',
+        fotografia: 'fas fa-camera text-info',
+        deportes: 'fas fa-futbol text-danger',
+        publicidad: 'fas fa-bullhorn text-warning',
+        contraportada: 'fas fa-book-open text-secondary',
         interior: 'fas fa-columns text-info',
         opinion: 'fas fa-feather-alt text-warning',
-        deportes: 'fas fa-futbol text-danger',
-        contraportada: 'fas fa-book-open text-primary',
         especial: 'fas fa-star text-warning',
         general: 'fas fa-th-large text-secondary'
     };
@@ -2847,9 +2885,12 @@ function renderTemplateCards(templates) {
                 <h6>${t.name}</h6>
                 <p>${t.description || 'Maqueta periodística estructurada para InDesign.'}</p>
                 <div style="font-size:0.62rem;color:#64748b;margin-top:4px;">${framesCount} bloques incluidos</div>
-                <div class="tpl-card-actions">
-                    <button class="tpl-btn-apply" onclick="applyTemplateFromCatalog('${t.id}')">
-                        <i class="fas fa-check me-1"></i> Aplicar a Página
+                <div class="tpl-card-actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+                    <button class="tpl-btn-apply" onclick="applyTemplateFromCatalog('${t.id}')" title="Aplica esta maqueta a la página actual abierta" style="flex:1;">
+                        <i class="fas fa-paint-brush me-1"></i> Aplicar
+                    </button>
+                    <button class="tpl-btn-apply" onclick="createEditionFromTemplateCard('${t.id}', '${t.name}')" title="Crea un ejemplar nuevo basado en esta plantilla sin alterarla" style="background:#D71920;border-color:#D71920;color:#fff;flex:1.2;">
+                        <i class="fas fa-plus-circle me-1"></i> Crear Edición
                     </button>
                     ${isCustom ? `
                         <button class="tpl-btn-action" onclick="exportTemplateFile('${t.id}')" title="Exportar como .latitud-template">
@@ -2874,6 +2915,45 @@ function filterTemplateCards(cat, btn) {
 
 function searchTemplates(query) {
     renderTemplateCards(loadedTemplates);
+}
+
+function createEditionFromTemplateCard(tplId, tplName) {
+    const defaultNum = `Edición ${Math.floor(Math.random() * 800) + 120}`;
+    const num = prompt(`Crear nueva edición a partir de "${tplName}":\n\nIngresa el número o título de la edición:`, defaultNum);
+    if (!num) return;
+
+    closeModal('templateModal');
+    showToast('Creando nueva edición a partir de plantilla...', 'info');
+
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    fetch(`/admin/periodico/templates/${tplId}/create-edition`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': token
+        },
+        body: JSON.stringify({
+            numero_edicion: num,
+            fecha: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success && res.redirect_url) {
+            showToast(res.message || 'Edición creada exitosamente', 'success');
+            setTimeout(() => {
+                window.location.href = res.redirect_url;
+            }, 600);
+        } else {
+            showToast(res.message || 'Error al crear edición', 'error');
+        }
+    })
+    .catch(err => {
+        console.error('Error al crear edición:', err);
+        showToast('Error de conexión con el servidor', 'error');
+    });
 }
 
 function applyTemplateFromCatalog(tplId) {
@@ -3501,11 +3581,8 @@ function filterDrawerNews() {
 
 function openPdfExportModal() { openModal('pdfExportModal'); }
 
-function exportPdfDirect(scope) {
-    closeModal('pdfExportModal');
-    showToast('Generando vista de impresión y PDF...', 'success');
-    window.print();
-}
+// La descarga del PDF se hace contra la ruta real (server-side DomPDF).
+// No se usa window.print() para evitar una segunda vía de exportación.
 
 // ── SAVE & PUBLISH BACKEND ─────────────────────────
 function markUnsaved() {
