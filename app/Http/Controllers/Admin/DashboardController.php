@@ -16,9 +16,9 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            // Obtener estadísticas
+            // Obtener estad��sticas
             $stats = $this->newsService->getDashboardStats();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $stats = [
                 'total_published' => 0,
                 'total_draft' => 0,
@@ -38,7 +38,7 @@ class DashboardController extends Controller
             $recentNews = $recentNews->map(function ($noticia) {
                 return $this->newsService->processNewsItem($noticia);
             });
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $recentNews = collect();
         }
         

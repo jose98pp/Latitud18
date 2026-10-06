@@ -42,13 +42,12 @@ class ContentSanitizationService
         // Remove unwanted characters first
         $content = $this->removeUnwantedCharacters($content);
         
-        // Decode HTML entities that might have been double-encoded
-        $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        
         // Clean up whitespace and normalize line breaks
         $content = $this->normalizeWhitespace($content);
         
-        // Sanitize HTML while preserving rich text formatting
+        // Sanitize HTML while preserving rich text formatting.
+        // NO usar html_entity_decode aqui: convierte &amp; en &, lo que rompe
+        // el HTML guardado y hace que el navegador muestre entidades crudas.
         $content = $this->purifier->purify($content);
         
         return $content;
@@ -56,6 +55,10 @@ class ContentSanitizationService
     
     /**
      * Remove unwanted characters and clean up text
+     *
+     * Solo se eliminan caracteres invisibles/control. Los simbolos visibles
+     * (comillas tipograficas, rayas, elipsis, signos de puntuacion) se respetan
+     * porque son validos en espanol y el usuario los escribe a proposito.
      */
     public function removeUnwantedCharacters(?string $content): string
     {
@@ -66,33 +69,13 @@ class ContentSanitizationService
         // Remove zero-width characters and other invisible characters
         $content = preg_replace('/[\x{200B}-\x{200D}\x{FEFF}]/u', '', $content);
         
-        // Remove or replace problematic characters that can cause display issues
-        $unwantedChars = [
-            // Remove BOM (Byte Order Mark)
-            "\xEF\xBB\xBF" => '',
-            // Replace smart quotes with regular quotes
-            "\u{201C}" => '"', // Left double quotation mark
-            "\u{201D}" => '"', // Right double quotation mark
-            "\u{2018}" => "'", // Left single quotation mark
-            "\u{2019}" => "'", // Right single quotation mark
-            // Replace em and en dashes with regular hyphens
-            "\u{2014}" => '-', // Em dash
-            "\u{2013}" => '-', // En dash
-            // Remove or replace other problematic characters
-            "\u{2026}" => '...', // Horizontal ellipsis
-            // Remove null bytes and control characters (except tabs, newlines, carriage returns)
-            '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/' => '',
-        ];
+        $content = str_replace("\xEF\xBB\xBF", '', $content); // BOM
         
-        foreach ($unwantedChars as $search => $replace) {
-            if (strpos($search, '/') === 0) {
-                // It's a regex pattern
-                $content = preg_replace($search, $replace, $content);
-            } else {
-                // It's a literal string
-                $content = str_replace($search, $replace, $content);
-            }
-        }
+        // Remove null bytes and control characters (except tabs, newlines, carriage returns)
+        $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $content);
+        
+        // Normalize line breaks
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
         
         // Fix encoding issues - ensure proper UTF-8
         if (!mb_check_encoding($content, 'UTF-8')) {

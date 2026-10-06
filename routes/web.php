@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\OpinionController;
 use App\Http\Controllers\Admin\PeriodicoController;
+use App\Http\Controllers\Admin\PeriodicoPlantillaEdicionController;
 use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\ComentarioController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
@@ -180,6 +181,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/upload-image', [PeriodicoController::class, 'uploadImage'])->name('uploadImage');
         Route::delete('/{id}', [PeriodicoController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/pdf', [PeriodicoController::class, 'generatePdf'])->name('pdf');
+        Route::get('/noticias/search', [PeriodicoController::class, 'searchNoticias'])->name('noticias.search');
         Route::get('/noticias/{categoryId}', [PeriodicoController::class, 'getNoticiasByCategory'])->name('noticias');
         
         // Rutas de Plantillas InDesign
@@ -188,6 +190,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/templates/import', [PeriodicoController::class, 'importTemplate'])->name('templates.import');
         Route::delete('/templates/{id}', [PeriodicoController::class, 'deleteTemplate'])->name('templates.destroy');
         Route::post('/templates/{id}/create-edition', [PeriodicoController::class, 'createEditionFromTemplate'])->name('templates.createEdition');
+
+        // Nuevas rutas - Plantillas avanzadas y búsqueda de noticias
+        Route::post('/templates/{id}/apply/{paginaId}', [PeriodicoController::class, 'applyTemplate'])->name('templates.apply');
+        Route::post('/templates/{id}/duplicate', [PeriodicoController::class, 'duplicateTemplate'])->name('templates.duplicate');
+        Route::get('/templates/{id}/export', [PeriodicoController::class, 'exportTemplate'])->name('templates.export');
+
+        // Rutas de Plantilla de Edición Completa (12 páginas)
+        Route::get('/plantilla-edicion', [PeriodicoPlantillaEdicionController::class, 'index'])->name('plantillaEdicion.index');
+        Route::post('/plantilla-edicion', [PeriodicoPlantillaEdicionController::class, 'store'])->name('plantillaEdicion.store');
+        Route::post('/plantilla-edicion/{id}/crear-edicion', [PeriodicoPlantillaEdicionController::class, 'crearEdicion'])->name('plantillaEdicion.crearEdicion');
     });
 
     // Configuración del Portal & Streaming

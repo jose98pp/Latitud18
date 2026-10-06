@@ -12,31 +12,49 @@
     $tipo    = $pg['tipo'] ?? 'portada';
     $esMast  = $masthead ?? ($tipo === 'portada');
     $pagRef  = fn($v) => !empty($v) ? '<div class="np-ref">' . $v . '</div>' : '';
+    $pgW     = (float) ($pg['ancho'] ?? 720);
+    $pgH     = (float) ($pg['alto'] ?? 1040);
+
+    // El HTML de cada frame lo compone el admin y se guarda crudo, por eso al
+    // pintarlo en la vista pública se filtra: sin <script>/<iframe>, sin manejadores
+    // on* y sin esquemas javascript:/data: en URLs. Evita XSS almacenado.
+    $npSafe = function (?string $html): string {
+        $html = (string) $html;
+        if ($html === '') { return ''; }
+        $html = preg_replace('#<(script|iframe|object|embed|link|meta|base|form)\b[^>]*>.*?</\1>#is', '', $html);
+        $html = preg_replace('#<(script|iframe|object|embed|link|meta|base|form)\b[^>]*/?>#i', '', $html);
+        $html = preg_replace('#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html);
+        $html = preg_replace('#\s(href|src|xlink:href|action|formaction)\s*=\s*("|\')\s*(javascript|vbscript|data)\s*:#i', ' $1=$2#', $html);
+        $html = str_replace(['<!--', '-->'], '', $html);
+        return $html;
+    };
 @endphp
 
-<article class="np-page np-t-{{ $tipo }}">
+<article class="np-page np-t-{{ $tipo }}{{ !empty($pg['frames']) ? ' np-has-frames' : '' }}">
 
-    {{-- ============ MASTHEAD (portada) ============ --}}
-    @if ($esMast)
-        <header class="np-masthead">
-            <div class="np-slogan">{{ $edicion['slogan'] ?? 'El periódico digital de Latitud 18' }}</div>
-            <h1 class="np-logo">LATITUD <span>18</span></h1>
-            <div class="np-sub">{{ $edicion['subtitulo'] ?? 'Información Sin Ruido' }}</div>
-            <div class="np-meta">
-                <span>{{ $edicion['numero_edicion'] ?? '' }}</span>
-                <span class="np-meta-city">{{ $edicion['ciudad'] ?? 'Santa Cruz' }}</span>
-                <span>{{ $edicion['fecha'] ?? '' }}</span>
-                <span>{{ $edicion['precio'] ?? '' }}</span>
-            </div>
-        </header>
+    @if (!empty($pg['frames']))
+        @include('periodico.partials.frames')
     @else
-        <header class="np-folio">
-            <span class="np-folio-brand">LATITUD <span>18</span></span>
-            <span class="np-folio-sec">{{ $pg['seccion_titulo'] ?? $pg['nombre'] ?? 'Edición' }}</span>
-            <span class="np-folio-num">{{ $edicion['numero_edicion'] ?? '' }} · PÁG. {{ $pg['numero'] ?? '' }}</span>
-        </header>
-    @endif
-
+        {{-- ============ MASTHEAD (portada) ============ --}}
+        @if ($esMast)
+            <header class="np-masthead">
+                <div class="np-slogan">{{ $edicion['slogan'] ?? 'El periódico digital de Latitud 18' }}</div>
+                <h1 class="np-logo">LATITUD <span>18</span></h1>
+                <div class="np-sub">{{ $edicion['subtitulo'] ?? 'Información Sin Ruido' }}</div>
+                <div class="np-meta">
+                    <span>{{ $edicion['numero_edicion'] ?? '' }}</span>
+                    <span class="np-meta-city">{{ $edicion['ciudad'] ?? 'Santa Cruz' }}</span>
+                    <span>{{ $edicion['fecha'] ?? '' }}</span>
+                    <span>{{ $edicion['precio'] ?? '' }}</span>
+                </div>
+            </header>
+        @else
+            <header class="np-folio">
+                <span class="np-folio-brand">LATITUD <span>18</span></span>
+                <span class="np-folio-sec">{{ $pg['seccion_titulo'] ?? $pg['nombre'] ?? 'Edición' }}</span>
+                <span class="np-folio-num">{{ $edicion['numero_edicion'] ?? '' }} · PÁG. {{ $pg['numero'] ?? '' }}</span>
+            </header>
+        @endif
     {{-- ============ PORTADA ============ --}}
     @if ($tipo === 'portada')
 
@@ -315,10 +333,10 @@
                 @endforeach
             </aside>
         </div>
-    @endif
-
-    <footer class="np-legal">
-        {{ $edicion['titulo'] ?? 'Latitud 18' }} · {{ $edicion['numero_edicion'] ?? '' }} ·
-        {{ $edicion['fecha'] ?? '' }} · {{ $edicion['ciudad'] ?? 'Santa Cruz de la Sierra' }}, Bolivia
-    </footer>
+    @endif {{-- fin @if de $tipo --}}
+        <footer class="np-legal">
+            {{ $edicion['titulo'] ?? 'Latitud 18' }} · {{ $edicion['numero_edicion'] ?? '' }} ·
+            {{ $edicion['fecha'] ?? '' }} · {{ $edicion['ciudad'] ?? 'Santa Cruz de la Sierra' }}, Bolivia
+        </footer>
+    @endif {{-- fin @else de frames --}}
 </article>

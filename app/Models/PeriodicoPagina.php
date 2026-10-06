@@ -59,9 +59,11 @@ class PeriodicoPagina extends Model
         $z = (int)($f['z'] ?? ($defaultZ + 1));
         $content = $f['content'] ?? null;
 
-        // Extraer propiedades restantes no estándar
-        $propiedades = $f;
-        unset($propiedades['id'], $propiedades['type'], $propiedades['x'], $propiedades['y'], $propiedades['w'], $propiedades['h'], $propiedades['z'], $propiedades['content']);
+        // Extraer propiedades (soporta tanto array anidado 'propiedades' como claves directas)
+        $propiedades = isset($f['propiedades']) && is_array($f['propiedades']) ? $f['propiedades'] : [];
+        $extra = $f;
+        unset($extra['id'], $extra['type'], $extra['x'], $extra['y'], $extra['w'], $extra['h'], $extra['z'], $extra['content'], $extra['propiedades']);
+        $propiedades = array_merge($extra, $propiedades);
 
         return $this->elementos()->create([
             'frame_id' => $frameId,

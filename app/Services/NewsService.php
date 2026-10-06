@@ -119,26 +119,32 @@ class NewsService
                 });
 
             // 9. Banners Publicitarios Activos
-            $banners = \App\Models\Banner::where('active', true)
-                ->orderBy('position', 'asc')
-                ->get()
-                ->groupBy('location');
+            $banners = $this->getActiveBanners();
 
             // 10. Edición Activa del Periódico Digital (para Kiosko en Portada)
             $edicionPeriodico = null;
             try {
-                $periodicosPath = storage_path('app/periodicos.json');
-                if (file_exists($periodicosPath)) {
-                    $ediciones = json_decode(file_get_contents($periodicosPath), true) ?: [];
-                    foreach ($ediciones as $ed) {
-                        if (!empty($ed['activa']) && !empty($ed['publicada'])) {
-                            $edicionPeriodico = $ed;
-                            break;
-                        }
-                    }
-                    if (!$edicionPeriodico) {
+                $edicionModel = \App\Models\PeriodicoEdicion::with(['paginas.elementos'])
+                    ->where('activa', true)
+                    ->where('publicada', true)
+                    ->first();
+
+                if (!$edicionModel) {
+                    $edicionModel = \App\Models\PeriodicoEdicion::with(['paginas.elementos'])
+                        ->where('publicada', true)
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                }
+
+                if ($edicionModel) {
+                    $edicionPeriodico = $edicionModel->toEditorArray();
+                } else {
+                    // Fallback a storage/app/periodicos.json si existe
+                    $periodicosPath = storage_path('app/periodicos.json');
+                    if (file_exists($periodicosPath)) {
+                        $ediciones = json_decode(file_get_contents($periodicosPath), true) ?: [];
                         foreach ($ediciones as $ed) {
-                            if (!empty($ed['publicada'])) {
+                            if (!empty($ed['activa']) && !empty($ed['publicada'])) {
                                 $edicionPeriodico = $ed;
                                 break;
                             }
@@ -227,7 +233,27 @@ class NewsService
             return Category::all();
         });
 
-        return compact('categoria', 'noticiasCategoria', 'noticias', 'categorias');
+        return array_merge(compact('categoria', 'noticiasCategoria', 'noticias', 'categorias'), [
+            'banners' => $this->getActiveBanners(),
+        ]);
+    }
+
+    /**
+     * Banners publicitarios activos agrupados por location.
+     * Cacheado breve porque se consulta en portada, categoria y detalle.
+     */
+    public function getActiveBanners()
+    {
+        return Cache::remember('active_banners_by_location', 300, function () {
+            try {
+                return \App\Models\Banner::where('active', true)
+                    ->orderBy('position', 'asc')
+                    ->get()
+                    ->groupBy('location');
+            } catch (\Throwable $e) {
+                return collect();
+            }
+        });
     }
 
     /**
@@ -251,7 +277,9 @@ class NewsService
             return Category::all();
         });
 
-        return compact('noticia', 'noticias', 'categorias', 'imagenUrl');
+        return array_merge(compact('noticia', 'noticias', 'categorias', 'imagenUrl'), [
+            'banners' => $this->getActiveBanners(),
+        ]);
     }
 
     /**

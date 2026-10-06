@@ -64,20 +64,30 @@
             background: #05080E;
             border-bottom: 1px solid rgba(255,255,255,0.08);
             padding: 6px 0;
-            overflow-x: auto;
+            /* Alto fijo + scrollbar oculto: si el alto dependiera de si aparece
+               la barra horizontal, cada recarga/Reflow movía la tira y todo lo
+               de abajo, y eso se veía como un parpadeo. */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
             white-space: nowrap;
-            scrollbar-width: thin;
-            scrollbar-color: var(--ca-volt) #05080E;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .ca-live-ticker-wrap::-webkit-scrollbar { height: 4px; }
-        .ca-live-ticker-wrap::-webkit-scrollbar-thumb { background: var(--ca-volt); border-radius: 4px; }
+        .ca-live-ticker-wrap::-webkit-scrollbar { height: 0; display: none; }
 
         .ca-ticker-container {
             display: inline-flex;
             align-items: center;
             gap: 12px;
             padding: 0 16px;
+            /* El contenido puede rebasar: se desplaza, pero sin provocar reflow */
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .ca-ticker-container::-webkit-scrollbar { height: 0; display: none; }
 
         .ca-match-chip {
             background: rgba(255,255,255,0.04);
@@ -113,6 +123,11 @@
         @keyframes pulseLive {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.75; transform: scale(0.96); }
+        }
+        /* Respeta a quien pidio menos movimiento: el pulso se para */
+        @media (prefers-reduced-motion: reduce) {
+            .ca-badge-live { animation: none !important; }
+            .ca-live-dot-pulse, .ca-match-chip { transition: none !important; }
         }
 
         .ca-badge-ft {
@@ -207,6 +222,78 @@
             letter-spacing: 2px;
             color: var(--ca-text-muted);
             text-transform: uppercase;
+        }
+
+        /* --- CONTRA [balón] ATAQUE ---
+           El balón se sitúa bajo la "A" con la que arrancan las dos palabras,
+           de modo que parece que sostiene el arranque de "ATAQUE". */
+        .ca-brand-lockup {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 0;
+            line-height: 0.9;
+        }
+        .ca-brand-lockup .word { white-space: nowrap; }
+        .ca-brand-lockup .word-volt {
+            color: var(--ca-volt);
+            text-shadow: 0 0 10px var(--ca-volt-glow);
+        }
+        /* Ancla del balón: relativo, para poder superponerse a la A */
+        .ca-ball-anchor {
+            position: relative;
+            display: inline-block;
+            width: 0;
+            height: 1em;
+            vertical-align: baseline;
+        }
+        .ca-ball {
+            position: absolute;
+            /* Centrado bajo la A inicial de ATAQUE */
+            left: 0.02em;
+            bottom: -0.34em;
+            width: 0.62em;
+            height: 0.62em;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,.65));
+            /* Si el archivo no existe, se oculta para no dejar un icono roto */
+        }
+        .ca-ball-missing { display: none; }
+        /* Balón dibujado en CSS, por si aún no se sube la foto del Mundial */
+        .ca-ball-fallback {
+            position: absolute;
+            left: 0.02em;
+            bottom: -0.34em;
+            width: 0.62em;
+            height: 0.62em;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 34% 30%, #fff 0 18%, #d8dde3 55%, #8d959e 100%);
+            border: 1px solid rgba(0,0,0,.5);
+            box-shadow: 0 2px 5px rgba(0,0,0,.6);
+            z-index: 1;
+        }
+        .ca-ball-fallback::before,
+        .ca-ball-fallback::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #12161c;
+        }
+        .ca-ball-fallback::before {
+            /* pentágono central */
+            inset: 26% 26%;
+            clip-path: polygon(50% 0%, 93% 25%, 79% 78%, 21% 78%, 7% 25%);
+        }
+        .ca-ball-fallback::after {
+            /* gajos alrededor */
+            inset: -10%;
+            background: none;
+            border: 1.5px solid rgba(18,22,28,.85);
+            clip-path: none;
+            opacity: .55;
+            transform: scale(.55);
         }
 
         /* ══════════════════════════════════════════════════════
@@ -369,7 +456,10 @@
             <div style="font-family:var(--ca-font-display); font-weight:900; color:var(--ca-volt); font-size:0.8rem; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
                 <i class="fas fa-bolt"></i> MINUTO A MINUTO:
             </div>
-            @foreach($partidosVivo ?? [] as $partido)
+            {{-- @empty dentro de @foreach no compila limpio en esta version de
+                 Blade, asi que el "sin partidos" se resuelve con @if/@else. --}}
+            @if(!empty($partidosVivo) && is_array($partidosVivo))
+                @foreach($partidosVivo as $partido)
                 <div class="ca-match-chip">
                     @if($partido['estado'] === 'EN VIVO')
                         <span class="ca-badge-live"><i class="fas fa-circle" style="font-size:6px;"></i> VIVO {{ $partido['minuto'] }}</span>
@@ -382,11 +472,18 @@
                     <strong style="color:#fff;">{{ $partido['local_code'] ?? ($partido['local'] ?? 'LOC') }}</strong>
                     <span style="font-weight:900; color:var(--ca-volt);">{{ $partido['goles_local'] }} - {{ $partido['goles_visitante'] }}</span>
                     <strong style="color:#fff;">{{ $partido['visitante_code'] ?? ($partido['visitante'] ?? 'VIS') }}</strong>
-                    <span style="color:#64748B; font-size:0.7rem;">({{ $partido['estadio'] ?? '' }})</span>
-                </div>
-            @endforeach
-        </div>
-    </div>
+<span style="color:#64748B; font-size:0.7rem;">({{ $partido['estadio'] ?? '' }})</span>
+                  </div>
+                @endforeach
+              {{-- Sin partidos la tira mantiene la misma altura: si se quedara
+                   vacía, el encabezado saltaría hacia arriba en cada recarga. --}}
+              @else
+                  <div class="ca-match-chip" style="border-style:dashed;">
+                      <span style="color:#64748B; font-size:0.72rem; font-weight:600;">SIN PARTIDOS PROGRAMADOS</span>
+                  </div>
+              @endif
+          </div>
+      </div>
 
     <!-- 2. MAIN SPORTS HEADER -->
     <header class="ca-header">
@@ -401,9 +498,33 @@
 
                 <!-- Brand Logo & Name -->
                 <a href="{{ route('contraataque.index') }}" class="ca-brand-logo-wrap text-decoration-none">
-                    <img src="{{ asset('images/contraataque-logo.jpg') }}" alt="Contra Ataque Deportes" class="ca-logo-img">
+                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ asset('images/contraataque-logo.jpg') }}" alt="Contra Ataque Deportes" class="ca-logo-img">
                     <div class="ca-brand-title">
-                        <div>CONTRA <span class="volt">ATAQUE</span></div>
+                        {{-- CONTRA [balón del último Mundial] ATAQUE.
+                             El balón va bajo la "A" que une ambas palabras.
+                             Rutas candidatas; si ninguna existe se muestra el
+                             balón dibujado en CSS para no dejar nada roto. --}}
+                        @php
+                            $ballCandidates = [
+                                'images/balon-mundial-2026.png',
+                                'images/balon-mundial.png',
+                                'images/balon.png',
+                            ];
+                            $ballPath = null;
+                            foreach ($ballCandidates as $cand) {
+                                if (file_exists(public_path($cand))) { $ballPath = $cand; break; }
+                            }
+                        @endphp
+                        <div class="ca-brand-lockup" aria-label="Contra Ataque">
+                            <span class="word">CONTRA</span>
+                            <span class="ca-ball-anchor" aria-hidden="true">
+                                <span class="ca-ball-fallback"></span>
+                                @if($ballPath)
+                                    <img class="ca-ball" src="{{ asset($ballPath) }}" alt="">
+                                @endif
+                            </span>
+                            <span class="word word-volt">ATAQUE</span>
+                        </div>
                         <span class="ca-brand-motto">PASIÓN • FÚTBOL • POLIDEPORTIVO</span>
                     </div>
                 </a>
@@ -411,9 +532,9 @@
                 <!-- Social & Search -->
                 <div class="d-none d-md-flex align-items-center gap-3">
                     <div class="d-flex gap-2">
-                        <a href="https://facebook.com" target="_blank" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://youtube.com" target="_blank" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-youtube"></i></a>
-                        <a href="https://tiktok.com" target="_blank" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-youtube"></i></a>
+                        <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary" style="border-radius:50%; width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; color:#fff;"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
             </div>
@@ -447,7 +568,9 @@
 
     <!-- 3. MAIN CONTENT CONTAINER -->
     <main class="py-4">
+        <x-ad-slot location="portada_top" :max-width="970" label="Publicidad" :banners="$banners ?? null" />
         @yield('content')
+        <x-ad-slot location="footer" :max-width="970" label="Publicidad" :banners="$banners ?? null" />
     </main>
 
     <!-- 4. SPORTS FOOTER -->
@@ -456,7 +579,7 @@
             <div class="row g-4 mb-4">
                 <div class="col-lg-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <img src="{{ asset('images/contraataque-logo.jpg') }}" alt="Contra Ataque" style="height:48px; border-radius:6px;">
+                        <img loading="eager" decoding="async" src="{{ asset('images/contraataque-logo.jpg') }}" alt="Contra Ataque" style="height:48px; border-radius:6px;">
                         <div>
                             <h4 class="h5 mb-0 fw-bold text-white" style="font-family:var(--ca-font-display);">CONTRA <span style="color:var(--ca-volt);">ATAQUE</span></h4>
                             <small class="text-muted">El portal deportivo líder de Latitud 18</small>

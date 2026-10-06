@@ -36,31 +36,28 @@ class PeriodicoPublicController extends Controller
             ]);
         }
 
-        // 2. Obtener edición activa
+        // 2. Obtener edición activa (solo publicadas)
         $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])
-            ->where('activa', true)
             ->where('publicada', true)
+            ->where('estado', 'publicado')
+            ->where('activa', true)
             ->first();
 
         // Si no hay activa pero hay publicadas, tomar la última publicada
         if (!$edicionModel) {
             $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])
                 ->where('publicada', true)
-                ->orderBy('created_at', 'desc')
-                ->first();
-        }
-
-        // Si ninguna está publicada, tomar la última existente
-        if (!$edicionModel) {
-            $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])
+                ->where('estado', 'publicado')
                 ->orderBy('created_at', 'desc')
                 ->first();
         }
 
         $edicionActiva = $edicionModel ? $edicionModel->toEditorArray() : null;
 
-        // 3. Listado de ediciones disponibles para el selector público
+        // 3. Listado de ediciones disponibles para el selector público (solo publicadas)
         $ediciones = PeriodicoEdicion::with(['paginas.elementos'])
+            ->where('publicada', true)
+            ->where('estado', 'publicado')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($e) => $e->toEditorArray())
@@ -82,7 +79,10 @@ class PeriodicoPublicController extends Controller
      */
     public function show($id)
     {
-        $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])->find($id);
+        $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])
+            ->where('publicada', true)
+            ->where('estado', 'publicado')
+            ->find($id);
 
         if (!$edicionModel) {
             return redirect()->route('periodico.public.index')->with('error', 'Edición no encontrada.');
@@ -91,6 +91,8 @@ class PeriodicoPublicController extends Controller
         $edicionActiva = $edicionModel->toEditorArray();
 
         $ediciones = PeriodicoEdicion::with(['paginas.elementos'])
+            ->where('publicada', true)
+            ->where('estado', 'publicado')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn($e) => $e->toEditorArray())
@@ -107,7 +109,10 @@ class PeriodicoPublicController extends Controller
      */
     public function pdf($id)
     {
-        $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])->find($id);
+        $edicionModel = PeriodicoEdicion::with(['paginas.elementos'])
+            ->where('publicada', true)
+            ->where('estado', 'publicado')
+            ->find($id);
 
         if (!$edicionModel) {
             return redirect()->route('periodico.public.index')->with('error', 'Edición no encontrada.');
@@ -116,13 +121,15 @@ class PeriodicoPublicController extends Controller
         try {
             return $this->pdfService->descarga($edicionModel->toEditorArray());
         } catch (\Throwable $e) {
-            \Log::error('PeriodicoPublicController@pdf: ' . $e->getMessage(), [
-                'edicion' => $id,
-                'trace'   => $e->getTraceAsString(),
+            \Log::error('PDF generation failed', [
+                'edicion_id' => $id,
+                'exception'  => get_class($e),
+                'message'    => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
             ]);
 
             return redirect()->route('periodico.public.index')
-                ->with('error', 'No se pudo generar el PDF en este momento. Intente nuevamente.');
+                ->with('error', 'Error al generar el PDF. Intente nuevamente.');
         }
     }
 }

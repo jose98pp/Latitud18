@@ -11,13 +11,17 @@ use App\Models\PeriodicoEdicion;
 use App\Models\PeriodicoPagina;
 use App\Models\PeriodicoElemento;
 use App\Services\PeriodicoPdfService;
+use App\Services\Contracts\PlantillaServiceInterface;
+use App\Services\Contracts\EstadoEditorialServiceInterface;
 use Illuminate\Support\Str;
 
 class PeriodicoController extends Controller
 {
-    public function __construct(private PeriodicoPdfService $pdfService)
-    {
-    }
+    public function __construct(
+        private PeriodicoPdfService $pdfService,
+        private PlantillaServiceInterface $plantillaService,
+        private EstadoEditorialServiceInterface $estadoEditorialService
+    ) {}
 
     /**
      * Muestra el editor visual de periódico digital
@@ -266,6 +270,27 @@ class PeriodicoController extends Controller
 
         $data = $request->json()->all() ?: $request->all();
 
+        // Validar módulos publicitarios ocupados (Req 3.6):
+        // Si status === 'ocupado', debe tener advertiser_image_url no vacío
+        if (!empty($data['paginas']) && is_array($data['paginas'])) {
+            foreach ($data['paginas'] as $pag) {
+                if (!empty($pag['frames']) && is_array($pag['frames'])) {
+                    foreach ($pag['frames'] as $f) {
+                        $type = $f['type'] ?? $f['tipo'] ?? null;
+                        $status = $f['status'] ?? $f['propiedades']['status'] ?? null;
+                        $img = $f['advertiser_image_url'] ?? $f['propiedades']['advertiser_image_url'] ?? null;
+                        if ($type === 'ad' && $status === 'ocupado' && empty($img)) {
+                            $frameId = $f['id'] ?? 'ad';
+                            return response()->json([
+                                'success' => false,
+                                'message' => "El marco publicitario {$frameId} está marcado como ocupado pero no tiene una imagen publicitaria asignada."
+                            ], 422);
+                        }
+                    }
+                }
+            }
+        }
+
         $edicion->syncFromEditorData($data);
 
         $edicionArray = $edicion->toEditorArray();
@@ -296,15 +321,24 @@ class PeriodicoController extends Controller
             return redirect()->route('admin.periodico.index')->with('error', 'Edición no encontrada.');
         }
 
-        // Desactivar cualquier otra edición activa
-        PeriodicoEdicion::where('id', '!=', $id)->update(['activa' => false]);
+        $publicar = $request->has('publicada') ? (bool)$request->input('publicada') : true;
 
-        $edicion->update([
-            'publicada' => true,
-            'activa' => true,
-            'estado' => 'publicado',
-            'fecha_publicacion' => now(),
-        ]);
+        if ($publicar) {
+            // Desactivar cualquier otra edición activa
+            PeriodicoEdicion::where('id', '!=', $id)->update(['activa' => false]);
+            $edicion->update([
+                'publicada' => true,
+                'activa' => true,
+                'estado' => 'publicado',
+                'fecha_publicacion' => now(),
+            ]);
+        } else {
+            $edicion->update([
+                'publicada' => false,
+                'activa' => false,
+                'estado' => 'borrador',
+            ]);
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -334,25 +368,24 @@ class PeriodicoController extends Controller
             return response()->json(['success' => false, 'message' => 'Edición no encontrada.'], 404);
         }
 
-        $edicion->estado = $validated['estado'];
-        $edicion->fecha_programada = !empty($validated['fecha_programada']) ? $validated['fecha_programada'] : null;
-
-        if ($validated['estado'] === 'publicado') {
-            PeriodicoEdicion::where('id', '!=', $id)->update(['activa' => false]);
-            $edicion->publicada = true;
-            $edicion->activa = true;
-            $edicion->fecha_publicacion = now();
-        } elseif ($validated['estado'] === 'programado') {
-            $edicion->publicada = false;
-            $edicion->activa = false;
+        try {
+            $extra = [];
+            if (!empty($validated['fecha_programada'])) {
+                $extra['fecha_programada'] = $validated['fecha_programada'];
+            }
+            $this->estadoEditorialService->transicionar($edicion, $validated['estado'], $extra);
+        } catch (\DomainException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
 
-        $edicion->save();
+        $edicion->refresh();
 
         return response()->json([
             'success' => true,
             'message' => 'Estado editorial actualizado a: ' . ucfirst($validated['estado']),
-            'estado' => $validated['estado'],
+            'estado' => $edicion->estado,
             'fecha_programada' => $edicion->fecha_programada ? $edicion->fecha_programada->toISOString() : null,
             'edicion' => $edicion->toEditorArray()
         ]);
@@ -455,9 +488,14 @@ class PeriodicoController extends Controller
         try {
             return $this->pdfService->descarga($edicion->toEditorArray());
         } catch (\Throwable $e) {
-            \Log::error('Error al generar PDF: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            \Log::error('PDF generation failed', [
+                'edicion_id' => $id,
+                'exception'  => get_class($e),
+                'message'    => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
             return redirect()->route('admin.periodico.index', ['edicion_id' => $id])
-                ->with('error', 'No se pudo generar el PDF: ' . $e->getMessage());
+                ->with('error', 'Error al generar el PDF. Intente nuevamente.');
         }
     }
 
@@ -618,16 +656,157 @@ class PeriodicoController extends Controller
     /**
      * Elimina una plantilla personalizada de la base de datos
      */
-    public function deleteTemplate($id)
+    public function deleteTemplate(Request $request, $id)
     {
         $tpl = PeriodicoPlantilla::find($id);
-        if ($tpl) {
-            $tpl->delete();
+        if (!$tpl) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Plantilla no encontrada.'
+            ], 404);
         }
+
+        // Si es plantilla factory (is_custom = false), requiere confirmación explícita (Req 10.6)
+        if (!$tpl->is_custom && !$request->boolean('confirm')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Se requiere confirmación explícita para eliminar una plantilla factory.'
+            ], 422);
+        }
+
+        $tpl->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Plantilla eliminada de la biblioteca.'
+        ]);
+    }
+
+    /**
+     * Aplica una plantilla a una página específica de la edición.
+     * Si la plantilla no existe, usa fallback 'portada-default'.
+     *
+     * @see Requirements 1.2, 1.7
+     */
+    public function applyTemplate(Request $request, $id, $paginaId)
+    {
+        $plantilla = PeriodicoPlantilla::find($id);
+
+        // Fallback a portada-default si ID no existe (Req 1.7)
+        if (!$plantilla) {
+            $plantilla = PeriodicoPlantilla::where('slug', 'portada-default')->first();
+        }
+
+        if (!$plantilla) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró ninguna plantilla disponible.'
+            ], 404);
+        }
+
+        $pagina = PeriodicoPagina::find($paginaId);
+        if (!$pagina) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Página no encontrada.'
+            ], 404);
+        }
+
+        $this->plantillaService->aplicarAPagina($plantilla, $pagina);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Plantilla "' . $plantilla->nombre . '" aplicada exitosamente.',
+            'pagina'  => $pagina->fresh('elementos')->toEditorPageArray(),
+        ]);
+    }
+
+    /**
+     * Duplica una plantilla existente como plantilla custom.
+     *
+     * @see Requirements 10.2
+     */
+    public function duplicateTemplate(Request $request, $id)
+    {
+        $plantilla = PeriodicoPlantilla::findOrFail($id);
+        $copia = $this->plantillaService->duplicar($plantilla);
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Plantilla duplicada como "' . $copia->nombre . '".',
+            'template' => [
+                'id'            => $copia->id,
+                'name'          => $copia->nombre,
+                'category'      => $copia->categoria,
+                'description'   => $copia->descripcion,
+                'preview_color' => $copia->preview_color,
+                'frames'        => $copia->frames,
+                'is_custom'     => true,
+                'created_at'    => $copia->created_at->toISOString(),
+            ],
+        ]);
+    }
+
+    /**
+     * Exporta una plantilla como archivo JSON descargable .latitud-template.
+     *
+     * @see Requirements 10.3
+     */
+    public function exportTemplate(Request $request, $id)
+    {
+        $plantilla = PeriodicoPlantilla::findOrFail($id);
+        $data = $this->plantillaService->exportar($plantilla);
+
+        $filename = Str::slug($plantilla->nombre) . '.latitud-template';
+
+        return response()->json($data)
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    /**
+     * Búsqueda de noticias publicadas para el panel de asignación del editor.
+     *
+     * @see Requirements 4.7
+     */
+    public function searchNoticias(Request $request)
+    {
+        $validated = $request->validate([
+            'q'           => 'required|string|min:1|max:100',
+            'category_id' => 'nullable|integer',
+            'page'        => 'nullable|integer|min:1',
+        ]);
+
+        $query = Noticia::where('publicada', true)
+            ->with('category')
+            ->where(function ($q) use ($validated) {
+                $q->where('titulo', 'LIKE', '%' . $validated['q'] . '%')
+                  ->orWhere('contenido', 'LIKE', '%' . $validated['q'] . '%');
+            });
+
+        if (!empty($validated['category_id'])) {
+            $query->where('category_id', $validated['category_id']);
+        }
+
+        $paginated = $query->orderBy('created_at', 'desc')->paginate(50);
+
+        return response()->json([
+            'success'      => true,
+            'noticias'     => $paginated->map(function ($noticia) {
+                return [
+                    'id'              => $noticia->id,
+                    'titulo'          => $noticia->titulo,
+                    'subtitulo'       => $noticia->subtitulo ?? '',
+                    'categoria'       => $noticia->category->name ?? 'General',
+                    'categoria_color' => $noticia->category->color ?? '#D71920',
+                    'fecha'           => $noticia->created_at->format('d/m/Y'),
+                    'imagen'          => $noticia->imagen ? asset('storage/' . $noticia->imagen) : null,
+                    'contenido_limpio'=> Str::limit(strip_tags($noticia->contenido), 450),
+                    'autor'           => $noticia->autor ?? ($noticia->user->name ?? 'Redacción'),
+                ];
+            }),
+            'total'        => $paginated->total(),
+            'per_page'     => $paginated->perPage(),
+            'current_page' => $paginated->currentPage(),
         ]);
     }
 

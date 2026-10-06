@@ -357,6 +357,9 @@ const RichTextEditor = ({ initialContent = '', onChange, onAutoSave }) => {
     };
 
     const handleKeyDown = (e) => {
+        // No interferir con la escritura de simbolos (Alt+numeros, teclado de terceros, IME)
+        if (e.isComposing || e.keyCode === 229) return;
+
         // Atajos de teclado
         if (e.ctrlKey || e.metaKey) {
             switch (e.key.toLowerCase()) {

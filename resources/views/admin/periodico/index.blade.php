@@ -47,6 +47,38 @@
 
 <style>
 /* ══════════════════════════════════════════════════
+   CORPORATE FONTS LOCAL DEFINITION (@font-face)
+══════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+.np-frame[data-font="Bebas Neue"], [data-font="Bebas Neue"] {
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif !important;
+}
+
+/* ══════════════════════════════════════════════════
    INDESIGN-STYLE EDITORIAL SUITE — ROOT VARIABLES
 ══════════════════════════════════════════════════ */
 :root {
@@ -1121,6 +1153,106 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
   background: var(--id-accent2);
   color: #fff;
 }
+
+/* ══════════════════════════════════════════════════
+   DIGITAL TEMPLATE & UI EXTENSIONS
+══════════════════════════════════════════════════ */
+.frame-linked-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #0284c7;
+  color: #fff;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  z-index: 25;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+.frame-category-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  z-index: 20;
+  pointer-events: none;
+}
+.ad-format-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #1e40af;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-family: 'Montserrat', sans-serif;
+  z-index: 25;
+  letter-spacing: 0.5px;
+}
+.ad-disponible-box {
+  width: 100%;
+  height: 100%;
+  background: #E8F0FE;
+  border: 1px dashed #3b82f6;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ad-watermark-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e40af;
+  letter-spacing: 2px;
+}
+.corp-palette-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #475569;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.1s, border-color 0.1s;
+}
+.corp-palette-btn:hover {
+  transform: scale(1.15);
+  border-color: #fff;
+}
+.field-error-msg {
+  color: #f87171;
+  font-size: 0.65rem;
+  margin-top: 2px;
+  display: none;
+}
+.field-error-msg.visible {
+  display: block;
+}
+.slot-card {
+  background: #1e2024;
+  border: 1px solid #334155;
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.slot-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
 </style>
 
 <div class="id-app" id="idApp">
@@ -1175,57 +1307,59 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 
     {{-- Plantillas --}}
     <button class="id-btn id-btn-ghost" onclick="openModal('templateModal')" style="color:#38bdf8;">
-      <i class="fas fa-th-large"></i> Plantillas InDesign
+      <i class="fas fa-th-large"></i> Plantillas
     </button>
 
     {{-- Noticias Web --}}
     <button class="id-btn id-btn-ghost" onclick="toggleNewsDrawer()">
-      <i class="fas fa-newspaper" style="color:var(--id-accent);"></i> Insertar Noticias ({{ count($noticiasPublicadas) }})
+      <i class="fas fa-newspaper" style="color:var(--id-accent);"></i> Noticias ({{ count($noticiasPublicadas) }})
+    </button>
+
+    {{-- Publicidad Cross-page --}}
+    <button class="id-btn id-btn-ghost" onclick="openPublicidadModal()" style="color:#f59e0b;" title="Inventario publicitario en todas las páginas">
+      <i class="fas fa-bullhorn"></i> Publicidad
+    </button>
+
+    {{-- Plantilla 12 Páginas --}}
+    <button class="id-btn id-btn-ghost" onclick="openPlantillaEdicionModal()" style="color:#c084fc;" title="Configurar plantilla completa de 12 slots">
+      <i class="fas fa-book"></i> Plantilla 12 Págs
+    </button>
+
+    {{-- Previsualización Fullscreen --}}
+    <button class="id-btn id-btn-ghost" onclick="openPreviewModal()" style="color:#10b981;" title="Previsualizar edición completa sin interactores (720x1040)">
+      <i class="fas fa-desktop"></i> Previsualizar
     </button>
 
     {{-- Exportar PDF --}}
     <button class="id-btn id-btn-ghost" onclick="openPdfExportModal()">
-      <i class="fas fa-file-pdf text-danger"></i> Exportar PDF
+      <i class="fas fa-file-pdf text-danger"></i> PDF
     </button>
 
     {{-- Vista Previa en Lector Público --}}
     <a href="{{ route('periodico.public.show', $currentEdicion['id']) }}" target="_blank" class="id-btn id-btn-ghost">
-      <i class="fas fa-eye"></i> Ver Lector
+      <i class="fas fa-eye"></i> Lector
     </a>
 
     <div class="id-menubar-sep"></div>
 
-    {{-- Flujo Editorial (5 Estados) --}}
-    <div class="id-dropdown" style="position:relative;display:inline-block;">
+    {{-- Flujo Editorial Contextual (Máquina de Estados) --}}
+    <div class="id-dropdown" style="position:relative;display:inline-block;" id="estadoToolbarContainer">
       <button class="id-btn id-btn-ghost" id="editorialDropdownBtn" onclick="toggleStateDropdown(event)" style="border:1px solid rgba(255,255,255,0.2);padding:4px 10px;" title="Cambiar estado editorial de la edición">
         <span id="topBarStateBadge" class="badge {{ $badgeInfo['class'] }}" style="font-size:0.65rem;padding:3px 6px;{{ $badgeInfo['style'] ?? '' }}">
-          <i class="{{ $badgeInfo['icon'] }} me-1"></i> <span id="topBarStateText">{{ $badgeInfo['text'] }}</span>
+          <i class="{{ $badgeInfo['icon'] }} me-1" id="topBarStateIcon"></i> <span id="topBarStateText">{{ $badgeInfo['text'] }}</span>
         </span>
-        <span style="margin-left:4px;font-weight:700;">Flujo</span>
+        <span style="margin-left:4px;font-weight:700;">Estado</span>
         <i class="fas fa-chevron-down" style="font-size:0.55rem;margin-left:4px;"></i>
       </button>
-      <div class="id-dropdown-menu" id="editorialDropdownMenu">
-        <div class="id-dropdown-header">Flujo de Trabajo (5 Estados)</div>
-        <button class="id-dropdown-item" onclick="updateEditorialState('borrador')">
-          <i class="fas fa-circle text-secondary"></i> <span>1. Borrador</span>
-        </button>
-        <button class="id-dropdown-item" onclick="updateEditorialState('revision')">
-          <i class="fas fa-eye text-warning"></i> <span>2. En Revisión</span>
-        </button>
-        <button class="id-dropdown-item" onclick="updateEditorialState('aprobado')">
-          <i class="fas fa-check text-info"></i> <span>3. Aprobado</span>
-        </button>
-        <button class="id-dropdown-item" onclick="openModal('scheduleModal')">
-          <i class="fas fa-clock" style="color:#a855f7;"></i> <span>4. Programar Publicación...</span>
-        </button>
-        <div style="height:1px;background:var(--id-border);margin:4px 0;"></div>
-        <button class="id-dropdown-item" onclick="updateEditorialState('publicado')">
-          <i class="fas fa-globe text-success"></i> <span>5. Publicar Ahora</span>
-        </button>
+      <div class="id-dropdown-menu" id="editorialDropdownMenu" style="min-width:200px;">
+        <div class="id-dropdown-header">Transiciones Permitidas</div>
+        <div id="allowedTransitionsContainer">
+          {{-- Rendered dynamically according to ESTADO_TRANSICIONES --}}
+        </div>
       </div>
     </div>
 
-    {{-- Publicar / Despublicar --}}
+    {{-- Publicar / Despublicar directo (para aprobados / programados) --}}
     <button class="id-btn {{ !empty($currentEdicion['publicada']) ? 'id-btn-success' : 'id-btn-danger' }}" id="publishBtn" onclick="togglePublishEdition()">
       <i class="fas {{ !empty($currentEdicion['publicada']) ? 'fa-check-circle' : 'fa-globe' }}"></i>
       <span id="publishBtnLabel">{{ !empty($currentEdicion['publicada']) ? 'Publicado' : 'Publicar Edición' }}</span>
@@ -1406,33 +1540,96 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       </div>
     </div>
 
-    {{-- Masthead Inspector --}}
+    {{-- Masthead / Header Inspector --}}
     <div class="inspector-section" id="inspMasthead" style="display:none;">
       <div class="inspector-section-header">
         <span><i class="fas fa-heading" style="color:var(--id-accent);margin-right:5px;"></i> Cabecera del Periódico</span>
       </div>
       <div class="inspector-body">
         <div>
-          <label class="id-form-label">Nombre del Diario</label>
-          <input type="text" class="inspector-input" id="inspMastheadName" onchange="applyMastheadProps()" style="width:100%;">
+          <label class="id-form-label">Nombre del Diario / Sección (máx 100)</label>
+          <input type="text" class="inspector-input" id="inspMastheadName" maxlength="100" onchange="applyMastheadProps()" style="width:100%;">
         </div>
-        <div>
-          <label class="id-form-label">Subtítulo / Distintivo</label>
-          <input type="text" class="inspector-input" id="inspMastheadBadge" onchange="applyMastheadProps()" style="width:100%;">
+        <div style="margin-top:4px;">
+          <label class="id-form-label">Número de Edición (1–99999)</label>
+          <input type="number" class="inspector-input" id="inspMastheadNum" min="1" max="99999" onchange="applyMastheadProps()" style="width:100%;">
         </div>
-        <div>
-          <label class="id-form-label">Lema / Slogan</label>
-          <input type="text" class="inspector-input" id="inspMastheadMotto" onchange="applyMastheadProps()" style="width:100%;">
+        <div style="margin-top:4px;">
+          <label class="id-form-label">Fecha de Emisión</label>
+          <input type="text" class="inspector-input" id="inspMastheadDate" onchange="applyMastheadProps()" style="width:100%;">
         </div>
-        <div class="inspector-row">
+        <div style="margin-top:4px;">
+          <label class="id-form-label">Ciudad / Lugar (máx 100)</label>
+          <input type="text" class="inspector-input" id="inspMastheadCity" maxlength="100" onchange="applyMastheadProps()" style="width:100%;">
+        </div>
+        <div class="inspector-row" style="margin-top:4px;">
           <div style="flex:1;">
-            <label class="id-form-label">Oreja Izq (Patrocinio)</label>
+            <label class="id-form-label">Oreja Izquierda</label>
             <input type="text" class="inspector-input" id="inspMastheadLeftEar" onchange="applyMastheadProps()" style="width:100%;">
           </div>
           <div style="flex:1;">
-            <label class="id-form-label">Oreja Der (Dólar / Cotiz)</label>
+            <label class="id-form-label">Oreja Derecha</label>
             <input type="text" class="inspector-input" id="inspMastheadRightEar" onchange="applyMastheadProps()" style="width:100%;">
           </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- Article Dedicated Inspector --}}
+    <div class="inspector-section" id="inspArticle" style="display:none;">
+      <div class="inspector-section-header">
+        <span><i class="fas fa-newspaper" style="color:#4ade80;margin-right:5px;"></i> Contenido de Artículo</span>
+      </div>
+      <div class="inspector-body">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label class="id-form-label">Titular Principal *</label>
+            <span id="titularCharCount" style="font-size:0.65rem;color:#94a3b8;">0/200</span>
+          </div>
+          <input type="text" class="inspector-input" id="inspArticleTitular" maxlength="250" oninput="handleArticleTitularInput(this)" style="width:100%;font-weight:700;">
+          <div id="inspArticleTitularError" class="field-error-msg">El titular no puede estar vacío ni superar los 200 caracteres.</div>
+        </div>
+        <div style="margin-top:6px;">
+          <label class="id-form-label">Subtítulo / Bajada (máx 200)</label>
+          <input type="text" class="inspector-input" id="inspArticleSubtitulo" maxlength="200" oninput="applyArticleProps()" style="width:100%;">
+        </div>
+        <div style="margin-top:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label class="id-form-label">Cuerpo de Texto</label>
+            <span id="cuerpoCharCount" style="font-size:0.65rem;color:#94a3b8;">0/1000</span>
+          </div>
+          <textarea class="inspector-input" id="inspArticleCuerpo" maxlength="1000" rows="4" oninput="applyArticleProps()" style="width:100%;font-size:0.75rem;resize:vertical;"></textarea>
+        </div>
+        <div class="inspector-row" style="margin-top:6px;">
+          <div style="flex:1;">
+            <label class="id-form-label">Autor (máx 100)</label>
+            <input type="text" class="inspector-input" id="inspArticleAutor" maxlength="100" oninput="applyArticleProps()" style="width:100%;">
+          </div>
+          <div style="flex:1;">
+            <label class="id-form-label">Sección (máx 100)</label>
+            <input type="text" class="inspector-input" id="inspArticleCatLabel" maxlength="100" oninput="applyArticleProps()" style="width:100%;">
+          </div>
+        </div>
+        <div class="inspector-row" style="margin-top:6px;align-items:center;">
+          <span class="inspector-label" style="min-width:70px;">Color Sección</span>
+          <input type="color" class="inspector-input" id="inspArticleCatColor" value="#D71920" onchange="applyArticleProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:4px;margin-left:auto;">
+            <span class="corp-palette-btn" style="background:#0B1F3A;" onclick="setArticleColor('#0B1F3A')" title="Azul Corporativo"></span>
+            <span class="corp-palette-btn" style="background:#D71920;" onclick="setArticleColor('#D71920')" title="Rojo Corporativo"></span>
+            <span class="corp-palette-btn" style="background:#000000;" onclick="setArticleColor('#000000')" title="Negro"></span>
+            <span class="corp-palette-btn" style="background:#FFFFFF;" onclick="setArticleColor('#FFFFFF')" title="Blanco"></span>
+          </div>
+        </div>
+
+        {{-- Linked News Status Box --}}
+        <div id="inspArticleLinkedBox" style="display:none;margin-top:10px;padding:8px;background:rgba(2,132,199,0.12);border:1px solid #0284c7;border-radius:4px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.72rem;color:#38bdf8;font-weight:700;"><i class="fas fa-link me-1"></i> Noticia Vinculada</span>
+            <button type="button" class="id-btn id-btn-ghost" onclick="unlinkArticleNews()" style="font-size:0.65rem;color:#f87171;padding:2px 6px;border:1px solid rgba(248,113,113,0.3);">
+              Desvincular
+            </button>
+          </div>
+          <div id="inspArticleLinkedTitle" style="font-size:0.68rem;color:#cbd5e1;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
         </div>
       </div>
     </div>
@@ -1440,18 +1637,18 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     {{-- Text & Headline Inspector --}}
     <div class="inspector-section" id="inspText" style="display:none;">
       <div class="inspector-section-header">
-        <span><i class="fas fa-font" style="margin-right:5px;"></i> Tipografía & Texto</span>
+        <span><i class="fas fa-font" style="margin-right:5px;"></i> Tipografía & Formato</span>
       </div>
       <div class="inspector-body">
         <div class="inspector-row">
           <span class="inspector-label" style="min-width:48px;">Fuente</span>
           <select class="inspector-select" id="inspFontFamily" onchange="applyTextProps()">
+            <option value="'Montserrat',sans-serif">Montserrat (Corporativa)</option>
+            <option value="'Bebas Neue',sans-serif">Bebas Neue (Titulares)</option>
             <option value="'Source Sans 3',sans-serif">Source Sans 3</option>
             <option value="'Playfair Display',serif">Playfair Display</option>
             <option value="'Anton',sans-serif">Anton</option>
             <option value="'Oswald',sans-serif">Oswald</option>
-            <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
-            <option value="'Montserrat',sans-serif">Montserrat</option>
             <option value="'Merriweather',serif">Merriweather</option>
           </select>
         </div>
@@ -1480,6 +1677,13 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
           <input type="color" class="inspector-input" id="inspTextBg" value="#ffffff" onchange="applyTextProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
           <button class="id-ctrl-btn" onclick="clearTextBg()" title="Sin fondo" style="font-size:0.65rem;">Transp.</button>
         </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+          <span style="font-size:0.65rem;color:#94a3b8;">Colores:</span>
+          <span class="corp-palette-btn" style="background:#0B1F3A;" onclick="applyQuickTextColor('#0B1F3A')" title="Azul Corporativo"></span>
+          <span class="corp-palette-btn" style="background:#D71920;" onclick="applyQuickTextColor('#D71920')" title="Rojo Corporativo"></span>
+          <span class="corp-palette-btn" style="background:#000000;" onclick="applyQuickTextColor('#000000')" title="Negro"></span>
+          <span class="corp-palette-btn" style="background:#FFFFFF;" onclick="applyQuickTextColor('#FFFFFF')" title="Blanco"></span>
+        </div>
       </div>
     </div>
 
@@ -1489,7 +1693,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         <span><i class="fas fa-image" style="margin-right:5px;"></i> Imagen & Fotonoticia</span>
       </div>
       <div class="inspector-body">
-        <button class="insp-full-btn" onclick="openImagePicker()">
+        <button class="insp-full-btn" id="btnUploadImageInsp" onclick="openImagePicker()">
           <i class="fas fa-cloud-upload-alt"></i> Subir / Cambiar Imagen...
         </button>
         <div style="margin-top:4px;">
@@ -1537,22 +1741,48 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       </div>
       <div class="inspector-body">
         <div>
-          <label class="id-form-label">Cintillo Superior</label>
-          <input type="text" class="inspector-input" id="inspAdBadge" onchange="applyAdProps()" style="width:100%;">
+          <label class="id-form-label">Formato Oficial (14 Formatos)</label>
+          <select class="inspector-select" id="inspAdFormat" onchange="changeSelectedAdFormat(this.value)" style="width:100%;">
+            <option value="A1">A1 — Banner Superior (932x227 px / 24.7x6.0 cm)</option>
+            <option value="A2">A2 — Banner Interior (932x227 px / 24.7x6.0 cm)</option>
+            <option value="B1">B1 — Media Página Vertical (499x983 px / 13.2x26.0 cm)</option>
+            <option value="B2">B2 — Media Página Vertical (499x983 px / 13.2x26.0 cm)</option>
+            <option value="C1">C1 — Media Página Horizontal (1006x484 px / 26.6x12.8 cm)</option>
+            <option value="C2">C2 — Media Página Horizontal (1006x484 px / 26.6x12.8 cm)</option>
+            <option value="D1">D1 — 1/4 Página Vertical (242x492 px / 6.4x13.0 cm)</option>
+            <option value="D2">D2 — 1/4 Página Vertical (242x492 px / 6.4x13.0 cm)</option>
+            <option value="E1">E1 — 1/4 Página Horizontal (499x235 px / 13.2x6.2 cm)</option>
+            <option value="E2">E2 — 1/4 Página Horizontal (499x235 px / 13.2x6.2 cm)</option>
+            <option value="E3">E3 — 1/4 Página Horizontal (499x235 px / 13.2x6.2 cm)</option>
+            <option value="E4">E4 — 1/4 Página Horizontal (499x235 px / 13.2x6.2 cm)</option>
+            <option value="F1">F1 — Pie de Página (1006x182 px / 26.6x4.8 cm)</option>
+            <option value="F2">F2 — Pie de Página (1006x182 px / 26.6x4.8 cm)</option>
+          </select>
         </div>
-        <div style="margin-top:4px;">
-          <label class="id-form-label">Título del Patrocinador</label>
-          <input type="text" class="inspector-input" id="inspAdTitle" onchange="applyAdProps()" style="width:100%;">
+        <div style="margin-top:6px;">
+          <label class="id-form-label">Estado del Espacio</label>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="id-btn" id="btnAdStatusDisponible" onclick="setAdStatus('disponible')" style="flex:1;background:#1e40af;color:#fff;font-size:0.7rem;padding:4px;">
+              Disponible
+            </button>
+            <button type="button" class="id-btn id-btn-ghost" id="btnAdStatusOcupado" onclick="setAdStatus('ocupado')" style="flex:1;font-size:0.7rem;padding:4px;">
+              Ocupado
+            </button>
+          </div>
         </div>
-        <div style="margin-top:4px;">
-          <label class="id-form-label">Eslogan o Mensaje</label>
-          <input type="text" class="inspector-input" id="inspAdSubtitle" onchange="applyAdProps()" style="width:100%;">
+        <div style="margin-top:6px;">
+          <label class="id-form-label">Nombre del Anunciante</label>
+          <input type="text" class="inspector-input" id="inspAdAdvertiserName" placeholder="Ej: Banco Mercantil Santa Cruz" oninput="applyAdAdvertiserName(this.value)" style="width:100%;">
         </div>
-        <div class="inspector-row" style="margin-top:6px;">
-          <span class="inspector-label" style="min-width:44px;">Fondo</span>
-          <input type="color" class="inspector-input" id="inspAdBg" value="#f0fdf4" onchange="applyAdProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
-          <span class="inspector-label" style="min-width:44px;">Borde</span>
-          <input type="color" class="inspector-input" id="inspAdBorder" value="#86efac" onchange="applyAdProps()" style="width:36px;padding:1px 2px;cursor:pointer;">
+        <div style="margin-top:6px;">
+          <label class="id-form-label">Imagen Publicitaria (JPG, PNG ≤ 10MB)</label>
+          <input type="file" id="adImageFileInput" accept="image/jpeg,image/png,image/jpg" style="display:none;" onchange="uploadAdImageFile(this)">
+          <button type="button" class="insp-full-btn" id="btnUploadAdImage" onclick="document.getElementById('adImageFileInput').click()">
+            <i class="fas fa-upload"></i> <span id="adImageUploadBtnLabel">Subir Imagen Anunciante</span>
+          </button>
+          <div id="adImageThumbPreview" style="margin-top:6px;display:none;text-align:center;">
+            <img id="adImageThumbImg" src="" style="max-width:100%;max-height:80px;border-radius:3px;border:1px solid #475569;">
+          </div>
         </div>
       </div>
     </div>
@@ -1628,32 +1858,43 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
       @endforeach
     </select>
-    <input class="drawer-search" type="text" id="drawerSearch" placeholder="Buscar noticia..." oninput="filterDrawerNews()">
+    <input class="drawer-search" type="text" id="drawerSearch" placeholder="Buscar noticia..." oninput="handleNewsSearchInput(this.value)">
   </div>
   <div class="drawer-news-list" id="drawerNewsList">
     @foreach($noticiasPublicadas as $noticia)
-      <div class="drawer-news-card" data-category="{{ $noticia->category_id }}" data-title="{{ strtolower($noticia->titulo) }}">
+      @php
+        $newsData = [
+          "id" => $noticia->id,
+          "titulo" => $noticia->titulo,
+          "bajada" => \Illuminate\Support\Str::limit(strip_tags($noticia->contenido), 200),
+          "contenido" => strip_tags($noticia->contenido),
+          "categoria" => $noticia->category->name ?? "General",
+          "categoria_color" => $noticia->category->color ?? "#D71920",
+          "imagen" => $noticia->getImageUrl(),
+          "autor" => $noticia->autor ?? "REDACCIÓN"
+        ];
+      @endphp
+      <div class="drawer-news-card" data-category="{{ $noticia->category_id }}" data-title="{{ strtolower($noticia->titulo) }}" onclick='onDrawerNewsCardClick(@json($newsData))' style="cursor:pointer;" title="Haz clic para asignar directamente al marco seleccionado o usa los botones inferiores">
         <div class="dnc-header">
           @if($noticia->imagen)
-            @php $noticiaImgUrl = $noticia->getImageUrl(); @endphp
-            <img class="dnc-thumb" src="{{ $noticiaImgUrl }}" alt="" onerror="this.onerror=null;this.src='{{ asset('images/default-news.svg') }}'">
+            <img class="dnc-thumb" src="{{ $newsData['imagen'] }}" alt="" onerror="this.onerror=null;this.src='{{ asset('images/default-news.svg') }}'">
           @else
             <div class="dnc-no-thumb"><i class="fas fa-image"></i></div>
           @endif
           <div class="dnc-info">
-            <span class="dnc-cat">{{ $noticia->category->name ?? 'General' }}</span>
+            <span class="dnc-cat">{{ $newsData['categoria'] }}</span>
             <div class="dnc-title">{{ $noticia->titulo }}</div>
           </div>
         </div>
-        <div class="dnc-actions">
+        <div class="dnc-actions" onclick="event.stopPropagation()">
           <span style="font-size:0.58rem;color:var(--id-text-muted);margin-right:2px;">Insertar:</span>
-          <button class="dnc-btn primary" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "article")'>
+          <button class="dnc-btn primary" onclick='insertNewsBlock(@json($newsData), "article")'>
             <i class="fas fa-newspaper"></i> Artículo Completo
           </button>
-          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "headline")'>
+          <button class="dnc-btn" onclick='insertNewsBlock(@json($newsData), "headline")'>
             <i class="fas fa-heading"></i> Solo Titular
           </button>
-          <button class="dnc-btn" onclick='insertNewsBlock({{ json_encode(["id"=>$noticia->id,"titulo"=>$noticia->titulo,"bajada"=>\Illuminate\Support\Str::limit(strip_tags($noticia->contenido),200),"contenido"=>strip_tags($noticia->contenido),"categoria"=>$noticia->category->name??"General","imagen"=>$noticia->getImageUrl(),"autor"=>$noticia->autor??"REDACCIÓN"]) }}, "photo_caption")'>
+          <button class="dnc-btn" onclick='insertNewsBlock(@json($newsData), "photo_caption")'>
             <i class="fas fa-camera"></i> Fotonoticia
           </button>
         </div>
@@ -1957,10 +2198,126 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
   <span id="idToastMsg">Guardado</span>
 </div>
 
-{{-- Fullscreen Exit Indicator --}}
-<div id="fullscreen-overlay-indicator" onclick="toggleFullscreenEditor()" title="Salir de pantalla completa (Esc)">
-  <i class="fas fa-compress"></i>
-  <span>Salir de Pantalla Completa</span>
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: PREVISUALIZACIÓN FULL-SCREEN (TASK 15)
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="previewModal" style="padding:0;background:rgba(10,12,16,0.96);z-index:99999;">
+  <div style="width:100vw;height:100vh;display:flex;flex-direction:column;background:#121315;color:#fff;">
+    {{-- Header --}}
+    <div style="height:52px;background:#18191c;border-bottom:1px solid #2d3035;display:flex;align-items:center;justify-content:space-between;padding:0 20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-weight:900;color:#D71920;letter-spacing:1px;font-family:'Montserrat',sans-serif;font-size:1.1rem;">LATITUD 18</span>
+        <span style="color:#94a3b8;font-size:0.8rem;">Previsualización de Edición — {{ $currentEdicion['numero_edicion'] ?? '' }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="id-btn id-btn-ghost" onclick="previewPrevPage()" style="padding:4px 10px;"><i class="fas fa-chevron-left me-1"></i> Anterior</button>
+        <span style="font-size:0.8rem;color:#cbd5e1;">Página</span>
+        <input type="number" id="previewPageInput" min="1" max="12" value="1" onchange="previewGoToPage(this.value)" style="width:50px;background:#2b2d33;border:1px solid #475569;color:#fff;text-align:center;border-radius:4px;padding:3px;">
+        <span style="font-size:0.8rem;color:#94a3b8;" id="previewTotalPages">de 12</span>
+        <button type="button" class="id-btn id-btn-ghost" onclick="previewNextPage()" style="padding:4px 10px;">Siguiente <i class="fas fa-chevron-right ms-1"></i></button>
+        <div style="width:1px;height:24px;background:#2d3035;margin:0 6px;"></div>
+        <button type="button" class="id-btn" onclick="previewEditCurrentPage()" style="background:#0284c7;color:#fff;border:none;padding:5px 12px;font-size:0.75rem;">
+          <i class="fas fa-edit me-1"></i> Editar esta Página
+        </button>
+        <button type="button" class="id-modal-close" onclick="closeModal('previewModal')" style="margin-left:8px;font-size:1.2rem;"><i class="fas fa-times"></i></button>
+      </div>
+    </div>
+    {{-- Canvas Stage --}}
+    <div style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:24px;background:#0b0f19;" id="previewCanvasContainer">
+      <div id="previewSheetWrapper" style="width:720px;height:1040px;background:#fff;box-shadow:0 15px 45px rgba(0,0,0,0.6);position:relative;overflow:hidden;transform-origin:center top;">
+        {{-- Dynamically rendered non-interactive page elements --}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: INVENTARIO DE PUBLICIDAD CROSS-PAGE (TASK 12)
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="publicidadModal">
+  <div class="id-modal" style="max-width:960px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="id-modal-header">
+      <div class="id-modal-title"><i class="fas fa-bullhorn text-warning"></i> Inventario de Publicidad (Cross-Page)</div>
+      <button class="id-modal-close" onclick="closeModal('publicidadModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="id-modal-body" style="overflow-y:auto;flex:1;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <p style="font-size:0.75rem;color:#94a3b8;margin:0;">
+          Inventario consolidado de los 14 formatos de módulos publicitarios en todas las páginas de la edición.
+        </p>
+        <button type="button" class="id-btn id-btn-ghost" onclick="renderPublicidadInventory()" style="font-size:0.7rem;padding:3px 8px;">
+          <i class="fas fa-sync-alt me-1"></i> Actualizar
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover" style="font-size:0.75rem;margin:0;vertical-align:middle;">
+          <thead>
+            <tr style="border-bottom:1px solid #334155;color:#cbd5e1;">
+              <th>Formato</th>
+              <th>Página</th>
+              <th>Dimensiones</th>
+              <th>Estado</th>
+              <th>Anunciante</th>
+              <th>Imagen</th>
+              <th style="text-align:right;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="publicidadTableBody">
+            {{-- Dynamic rows --}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <button class="id-btn id-btn-ghost" onclick="closeModal('publicidadModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
+     MODAL: PLANTILLAS DE EDICIÓN (12 PÁGINAS) (TASK 13)
+═══════════════════════════════════════════════════════ --}}
+<div class="id-modal-overlay" id="plantillaEdicionModal">
+  <div class="id-modal" style="max-width:1050px;max-height:88vh;display:flex;flex-direction:column;">
+    <div class="id-modal-header">
+      <div class="id-modal-title"><i class="fas fa-book text-info"></i> Plantilla de Edición Completa (12 Slots)</div>
+      <button class="id-modal-close" onclick="closeModal('plantillaEdicionModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="id-modal-body" style="overflow-y:auto;flex:1;">
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:320px;">
+          <h6 style="color:#fff;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-th-list me-1 text-danger"></i> Asignación de Secciones por Slot</h6>
+          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:12px;">Cada slot representa una página física del periódico semanal con su sección correspondiente.</p>
+          <div id="editionSlotsGrid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;">
+            {{-- 12 slots dynamically injected --}}
+          </div>
+          <div style="margin-top:14px;background:#1e2024;padding:12px;border-radius:6px;border:1px solid #334155;">
+            <div class="id-form-row">
+              <label class="id-form-label">Nombre de esta Plantilla de Edición *</label>
+              <input type="text" id="editionTemplateName" class="id-form-input" placeholder="Ej: Esquema Semanal Estándar" required>
+            </div>
+            <div class="id-form-row" style="margin-bottom:8px;">
+              <label class="id-form-label">Descripción</label>
+              <input type="text" id="editionTemplateDesc" class="id-form-input" placeholder="Ej: Distribución clásica de 12 páginas con 2 páginas de Política y Economía">
+            </div>
+            <button type="button" class="id-btn id-btn-primary" onclick="submitSaveEditionTemplate()" style="width:100%;">
+              <i class="fas fa-save me-1"></i> Guardar Plantilla de Edición
+            </button>
+          </div>
+        </div>
+        <div style="width:360px;border-left:1px solid #2d3035;padding-left:16px;">
+          <h6 style="color:#fff;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-layer-group me-1 text-warning"></i> Plantillas Guardadas</h6>
+          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:10px;">Crea una edición completa de 12 páginas de forma transaccional.</p>
+          <div id="savedEditionTemplatesList" style="display:flex;flex-direction:column;gap:8px;max-height:480px;overflow-y:auto;">
+            {{-- Dynamic list of saved edition templates --}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <button class="id-btn id-btn-ghost" onclick="closeModal('plantillaEdicionModal')">Cerrar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1993,6 +2350,53 @@ const PAPER_FORMATS = {
   compact:   { w: 680, h: 960,  name: 'Compacto A4' }
 };
 
+// Catálogo oficial de formatos publicitarios LATITUD 18 (Req 3.1)
+const AD_FORMATS = {
+  'A1': { label: 'Banner Superior', w: 932, h: 227, w_cm: 24.7, h_cm: 6.0 },
+  'A2': { label: 'Banner Interior', w: 932, h: 227, w_cm: 24.7, h_cm: 6.0 },
+  'B1': { label: 'Media Página Vertical', w: 499, h: 983, w_cm: 13.2, h_cm: 26.0 },
+  'B2': { label: 'Media Página Vertical', w: 499, h: 983, w_cm: 13.2, h_cm: 26.0 },
+  'C1': { label: 'Media Página Horizontal', w: 1006, h: 484, w_cm: 26.6, h_cm: 12.8 },
+  'C2': { label: 'Media Página Horizontal', w: 1006, h: 484, w_cm: 26.6, h_cm: 12.8 },
+  'D1': { label: '1/4 Página Vertical', w: 242, h: 492, w_cm: 6.4, h_cm: 13.0 },
+  'D2': { label: '1/4 Página Vertical', w: 242, h: 492, w_cm: 6.4, h_cm: 13.0 },
+  'E1': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
+  'E2': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
+  'E3': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
+  'E4': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
+  'F1': { label: 'Pie de Página', w: 1006, h: 182, w_cm: 26.6, h_cm: 4.8 },
+  'F2': { label: 'Pie de Página', w: 1006, h: 182, w_cm: 26.6, h_cm: 4.8 }
+};
+
+// Grafo inmutable de transiciones de estado editorial (Req 8.1)
+const ESTADO_TRANSICIONES = {
+  'borrador':   ['revision'],
+  'revision':   ['aprobado', 'borrador'],
+  'aprobado':   ['programado', 'revision'],
+  'programado': ['publicado', 'aprobado'],
+  'publicado':  []
+};
+
+// Mapa oficial de 12 slots para plantillas de edición completa (Req 5.1)
+const EDITION_SLOTS = [
+  { slot: 1, seccion: 'Portada' },
+  { slot: 2, seccion: 'Editorial/Opinión' },
+  { slot: 3, seccion: 'Política (A)' },
+  { slot: 4, seccion: 'Política (B)' },
+  { slot: 5, seccion: 'Santa Cruz (A)' },
+  { slot: 6, seccion: 'Santa Cruz (B)' },
+  { slot: 7, seccion: 'País (A)' },
+  { slot: 8, seccion: 'País (B)' },
+  { slot: 9, seccion: 'Economía (A)' },
+  { slot: 10, seccion: 'Economía (B)' },
+  { slot: 11, seccion: 'Seguridad/Judicial' },
+  { slot: 12, seccion: 'Mundo/Deportes/Cultura' }
+];
+
+let previewActivePage = 0;
+let newsSearchDebounceTimer = null;
+let savedEditionTemplates = [];
+
 // Initialize pages frames
 (currentEdicion.paginas || []).forEach((p, i) => {
     if (!p.frames) p.frames = [];
@@ -2007,7 +2411,21 @@ document.addEventListener('DOMContentLoaded', () => {
     updateZoomDisplay();
     loadTemplatesCatalog();
     updateTopBarBadges(currentEdicion.estado || (currentEdicion.publicada ? 'publicado' : 'borrador'), currentEdicion.fecha_programada);
+    renderAllowedTransitions();
+    checkFontsLoaded();
 });
+
+function checkFontsLoaded() {
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+            ['Montserrat', 'Bebas Neue'].forEach(f => {
+                if (!document.fonts.check(`16px "${f}"`)) {
+                    console.warn(`[Tipografía] Advertencia no bloqueante: La fuente corporativa "${f}" no cargó en el navegador.`);
+                }
+            });
+        }).catch(err => console.warn('Error verificando fuentes:', err));
+    }
+}
 
 // ── FORMAT SWITCHER ─────────────────────────────────
 function changePaperFormat(formatKey) {
@@ -2162,9 +2580,15 @@ function createSpecialElement(type) {
         fData.content = '<p style="font-family:\'Oswald\',sans-serif;font-size:32px;font-weight:700;line-height:1.1;color:#0f172a;margin:0;">Titular de impacto periodístico para la edición</p>';
     } else if (type === 'article') {
         fData.w = 680;
-        fData.h = 180;
-        fData.columns = 4;
-        fData.content = '<p style="font-family:\'Source Sans 3\',sans-serif;font-size:11.5px;line-height:1.45;color:#1e293b;text-align:justify;">Texto del artículo periodístico. Haz doble clic para editar o insertar noticias desde la base de datos con el panel lateral. El texto fluye armónicamente en 4 columnas con justificación editorial.</p>';
+        fData.h = 220;
+        fData.columns = 3;
+        fData.font_family = 'Montserrat';
+        fData.titular = 'Titular de Artículo Periodístico';
+        fData.subtitulo = 'Subtítulo descriptivo o bajada de la noticia en la edición.';
+        fData.cuerpo = 'Texto del artículo periodístico. Haz doble clic para editar o asigna una noticia real desde el panel lateral. El texto fluye armónicamente con tipografía corporativa Montserrat y justificación editorial.';
+        fData.autor = 'Redacción Central';
+        fData.categoria_label = 'General';
+        fData.categoria_color = '#D71920';
     } else if (type === 'image') {
         fData.w = 400;
         fData.h = 240;
@@ -2188,13 +2612,13 @@ function createSpecialElement(type) {
         fData.url = 'https://latitud18.com/periodico';
         fData.label = 'Escanea para edición digital';
     } else if (type === 'ad') {
-        fData.w = 400;
-        fData.h = 160;
-        fData.badge = 'ESPACIO PUBLICITARIO';
-        fData.title = 'TU MARCA O EMPRESA AQUÍ';
-        fData.subtitle = 'Anuncia en la edición impresa y digital • Contacto comercial';
-        fData.bg = '#f0fdf4';
-        fData.border = '#86efac';
+        const defaultFormat = 'A1';
+        const fmt = AD_FORMATS[defaultFormat];
+        fData.format_code = defaultFormat;
+        fData.w = fmt ? fmt.w : 400;
+        fData.h = fmt ? fmt.h : 160;
+        fData.status = 'disponible';
+        fData.lockResize = true;
     }
 
     if (!currentEdicion.paginas[activePageIndex].frames) {
@@ -2220,6 +2644,9 @@ function buildFrameElement(fData, pIdx) {
         el.classList.add('locked');
         el.dataset.locked = 'true';
     }
+    if (fData.lockResize || fData.type === 'ad') {
+        el.dataset.lockResize = 'true';
+    }
 
     el.style.left = (fData.x || 20) + 'px';
     el.style.top = (fData.y || 20) + 'px';
@@ -2230,50 +2657,76 @@ function buildFrameElement(fData, pIdx) {
 
     // Render inner content by type
     if (fData.type === 'masthead') {
+        el.dataset.font = 'Bebas Neue';
         el.innerHTML = `
-            <div class="frame-masthead-inner" style="border-bottom:3px solid #0284c7;padding-bottom:4px;">
+            <div class="frame-masthead-inner" style="border-bottom:3px solid #0284c7;padding-bottom:4px;font-family:'Bebas Neue',sans-serif;">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                    <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:700;width:140px;line-height:1.2;">
+                    <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:700;width:140px;line-height:1.2;font-family:'Montserrat',sans-serif;">
                         ${fData.leftEar || 'CRE 100%'}
                     </div>
                     <div style="text-align:center;flex:1;">
-                        <span style="font-family:'Anton',sans-serif;font-size:46px;color:#0284c7;line-height:1;letter-spacing:1px;">${fData.newspaperName || 'LA ESTRELLA'}</span>
-                        <span style="background:#D71920;color:#fff;font-family:'Anton',sans-serif;font-size:18px;padding:2px 8px;border-radius:2px;margin-left:4px;vertical-align:middle;">${fData.subBadge || 'del Oriente'}</span>
-                        <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;">${fData.motto || 'EL PRIMER PERIÓDICO DE SANTA CRUZ'}</div>
+                        <span style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#0284c7;line-height:1;letter-spacing:1.5px;">${fData.nombre_seccion || fData.newspaperName || 'LATITUD 18'}</span>
+                        <span style="background:#D71920;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;padding:2px 8px;border-radius:2px;margin-left:4px;vertical-align:middle;">${fData.subBadge || 'DIARIO DIGITAL'}</span>
+                        <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;font-family:'Montserrat',sans-serif;">${fData.motto || 'INFORMACIÓN SIN RUIDO • SANTA CRUZ DE LA SIERRA'}</div>
                     </div>
-                    <div style="background:#0284c7;color:#fff;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;">
+                    <div style="background:#0284c7;color:#fff;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;font-family:'Montserrat',sans-serif;">
                         ${fData.rightEar || 'DÓLAR: Bs 12,58'}
                     </div>
                 </div>
-                <div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:3px;margin-top:4px;font-size:9px;color:#64748b;font-weight:600;">
-                    <span>${fData.editionDate || 'Santa Cruz de la Sierra'}</span>
-                    <span><strong>${fData.editionNumber || 'N° 11.986'}</strong></span>
-                    <span>${fData.price || 'Bs 7,00'}</span>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:3px;margin-top:4px;font-size:9px;color:#64748b;font-weight:600;font-family:'Montserrat',sans-serif;">
+                    <span>${fData.fecha || fData.editionDate || (currentEdicion.fecha || 'Santa Cruz de la Sierra')}</span>
+                    <span><strong>${fData.numero_edicion ? 'Edición ' + fData.numero_edicion : (currentEdicion.numero_edicion || '')}</strong></span>
+                    <span>${fData.ciudad || (currentEdicion.ciudad || 'Santa Cruz')}</span>
                 </div>
             </div>
         `;
     } else if (fData.type === 'headline') {
         el.innerHTML = `
             <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
-                ${fData.kicker ? `<span style="font-size:11px;font-weight:800;color:#D71920;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">${fData.kicker}</span>` : ''}
-                <div class="frame-text-inner" contenteditable="true" style="padding:0;font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;line-height:1.1;">
-                    ${fData.content || 'Titular de Noticia'}
+                ${fData.kicker ? `<span style="font-size:11px;font-weight:800;color:#D71920;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;font-family:'Montserrat',sans-serif;">${fData.kicker}</span>` : ''}
+                <div class="frame-text-inner" contenteditable="true" style="padding:0;font-family:'Bebas Neue',Impact,sans-serif;font-size:32px;letter-spacing:0.5px;line-height:1.05;">
+                    ${fData.content || 'TITULAR DE IMPACTO PERIODÍSTICO'}
                 </div>
+            </div>
+        `;
+    } else if (fData.type === 'article') {
+        const isLinked = !!(fData.noticia_id || fData.propiedades?.noticia_id);
+        const catColor = fData.categoria_color || fData.propiedades?.categoria_color || '#D71920';
+        const cols = fData.columns || 3;
+        const titular = fData.titular || fData.content_title || 'Titular del Artículo';
+        const subtitulo = fData.subtitulo || '';
+        const cuerpo = fData.cuerpo || fData.content || 'Texto del artículo periodístico...';
+        const autor = fData.autor || '';
+
+        el.dataset.font = 'Montserrat';
+        el.innerHTML = `
+            <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Montserrat',sans-serif;${isLinked ? 'padding-top:8px;' : ''}">
+                ${isLinked ? `<div class="frame-category-bar" style="background:${catColor};"></div><div class="frame-linked-badge" title="Vinculado a noticia"><i class="fas fa-link"></i></div>` : ''}
+                <div class="article-headline-block" style="margin-bottom:4px;">
+                    <div class="frame-text-inner" contenteditable="true" style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;line-height:1.15;color:#0f172a;margin:0;">
+                        ${titular}
+                    </div>
+                    ${subtitulo ? `<div style="font-size:10.5px;font-weight:600;color:#64748b;font-style:italic;margin-top:2px;">${subtitulo}</div>` : ''}
+                </div>
+                <div class="frame-text-inner" contenteditable="true" style="flex:1;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.4;color:#1e293b;column-count:${cols > 1 ? cols : ''};column-gap:12px;text-align:justify;overflow:hidden;">
+                    ${cuerpo}
+                </div>
+                ${autor ? `<div style="font-size:9px;font-weight:700;color:${catColor};text-transform:uppercase;margin-top:4px;">Por: ${autor}</div>` : ''}
             </div>
         `;
     } else if (fData.type === 'image') {
         el.innerHTML = `
-            <div style="width:100%;height:100%;display:flex;flex-direction:column;">
-                <div style="flex:1;position:relative;overflow:hidden;">
+            <div style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;">
+                <div style="flex:1;position:relative;overflow:hidden;" class="image-stage-wrap">
                     <img src="${fData.src || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80'}" class="frame-img-inner">
                 </div>
-                ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;">${fData.caption}</div>` : ''}
+                ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;font-family:'Montserrat',sans-serif;">${fData.caption}</div>` : ''}
             </div>
         `;
     } else if (fData.type === 'quote') {
-        el.innerHTML = `<div class="frame-quote-inner" contenteditable="true">${fData.content || '"Cita destacada periodística..."'}</div>`;
+        el.innerHTML = `<div class="frame-quote-inner" contenteditable="true" style="font-family:'Montserrat',sans-serif;">${fData.content || '"Cita destacada periodística..."'}</div>`;
     } else if (fData.type === 'box') {
-        el.innerHTML = `<div class="frame-box-inner" contenteditable="true">${fData.content || 'Caja de contenido'}</div>`;
+        el.innerHTML = `<div class="frame-box-inner" contenteditable="true" style="font-family:'Montserrat',sans-serif;">${fData.content || 'Caja de contenido'}</div>`;
     } else if (fData.type === 'divider') {
         el.innerHTML = `<div class="frame-divider-inner"><div style="width:100%;height:2px;background:${fData.color || '#cbd5e1'};"></div></div>`;
     } else if (fData.type === 'qr') {
@@ -2281,23 +2734,40 @@ function buildFrameElement(fData, pIdx) {
         el.innerHTML = `
             <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid #e2e8f0;padding:6px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.08);border-radius:3px;box-sizing:border-box;">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrUrl}" alt="QR" style="width:calc(100% - 8px);max-height:calc(100% - 22px);object-fit:contain;">
-                <div style="font-size:9px;font-weight:700;color:#334155;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;">
+                <div style="font-size:9px;font-weight:700;color:#334155;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;font-family:'Montserrat',sans-serif;">
                     ${fData.label || 'Escanea para leer online'}
                 </div>
             </div>
         `;
     } else if (fData.type === 'ad') {
-        el.innerHTML = `
-            <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:${fData.bg || '#f0fdf4'};border:2px dashed ${fData.border || '#86efac'};padding:10px;text-align:center;box-sizing:border-box;border-radius:4px;overflow:hidden;">
-                <span style="font-size:8.5px;font-weight:800;color:#64748b;letter-spacing:1px;text-transform:uppercase;display:block;">${fData.badge || 'ESPACIO PUBLICITARIO'}</span>
-                <div style="font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:#0f172a;margin:3px 0;">${fData.title || 'TU MARCA O EMPRESA AQUÍ'}</div>
-                <div style="font-size:10px;color:#475569;">${fData.subtitle || 'Anuncia en la edición impresa y digital'}</div>
-            </div>
-        `;
+        const formatCode = fData.format_code || fData.propiedades?.format_code || 'A1';
+        const status = fData.status || fData.propiedades?.status || 'disponible';
+        const adImg = fData.advertiser_image_url || fData.propiedades?.advertiser_image_url || null;
+        const adName = fData.advertiser_name || fData.propiedades?.advertiser_name || '';
+
+        el.dataset.formatCode = formatCode;
+        el.dataset.adStatus = status;
+
+        if (status === 'ocupado' && adImg) {
+            el.innerHTML = `
+                <div style="width:100%;height:100%;position:relative;overflow:hidden;">
+                    <span class="ad-format-badge">${formatCode}</span>
+                    <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:fill;display:block;">
+                </div>
+            `;
+        } else {
+            el.innerHTML = `
+                <div class="ad-disponible-box" style="position:relative;">
+                    <span class="ad-format-badge">${formatCode}</span>
+                    <span class="ad-watermark-text">DISPONIBLE</span>
+                    <div style="font-size:9px;color:#3b82f6;margin-top:2px;font-family:'Montserrat',sans-serif;">${AD_FORMATS[formatCode]?.label || 'Espacio Publicitario'}</div>
+                </div>
+            `;
+        }
     } else {
         // Default text frame
         const cols = fData.columns || 1;
-        el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="column-count:${cols > 1 ? cols : ''};column-gap:14px;">${fData.content || 'Texto periodístico...'}</div>`;
+        el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="column-count:${cols > 1 ? cols : ''};column-gap:14px;font-family:'Montserrat',sans-serif;">${fData.content || 'Texto periodístico...'}</div>`;
     }
 
     // Handles or Lock badge
@@ -2355,12 +2825,12 @@ function initInteract() {
             edges: { left: '.w, .nw, .sw', right: '.e, .ne, .se', bottom: '.s, .se, .sw', top: '.n, .nw, .ne' },
             listeners: {
                 start(event) {
-                    if (event.target.dataset.locked === 'true') return;
+                    if (event.target.dataset.locked === 'true' || event.target.dataset.lockResize === 'true' || event.target.dataset.type === 'ad') return;
                     recordHistory();
                 },
                 move(event) {
                     const target = event.target;
-                    if (target.dataset.locked === 'true') return;
+                    if (target.dataset.locked === 'true' || target.dataset.lockResize === 'true' || target.dataset.type === 'ad') return;
 
                     let w = Math.max(40, event.rect.width);
                     let h = Math.max(20, event.rect.height);
@@ -2420,11 +2890,19 @@ function populateInspector(el) {
     document.getElementById('inspH').value = Math.round(parseFloat(el.style.height) || 0);
     document.getElementById('inspZ').value = parseInt(el.style.zIndex) || 10;
 
-    document.getElementById('inspMasthead').style.display = type === 'masthead' ? '' : 'none';
-    document.getElementById('inspText').style.display = (type === 'article' || type === 'headline' || type === 'text') ? '' : 'none';
-    document.getElementById('inspImage').style.display = type === 'image' ? '' : 'none';
-    document.getElementById('inspQr').style.display = type === 'qr' ? '' : 'none';
-    document.getElementById('inspAd').style.display = type === 'ad' ? '' : 'none';
+    const inspMasthead = document.getElementById('inspMasthead');
+    const inspArticle  = document.getElementById('inspArticle');
+    const inspText     = document.getElementById('inspText');
+    const inspImage    = document.getElementById('inspImage');
+    const inspQr       = document.getElementById('inspQr');
+    const inspAd       = document.getElementById('inspAd');
+
+    if (inspMasthead) inspMasthead.style.display = type === 'masthead' ? '' : 'none';
+    if (inspArticle)  inspArticle.style.display  = type === 'article' ? '' : 'none';
+    if (inspText)     inspText.style.display     = (type === 'article' || type === 'headline' || type === 'text') ? '' : 'none';
+    if (inspImage)    inspImage.style.display    = type === 'image' ? '' : 'none';
+    if (inspQr)       inspQr.style.display       = type === 'qr' ? '' : 'none';
+    if (inspAd)       inspAd.style.display       = type === 'ad' ? '' : 'none';
     document.getElementById('inspActions').style.display = '';
 
     // Lock button status
@@ -2440,15 +2918,81 @@ function populateInspector(el) {
         document.getElementById('inspMastheadMotto').value = fData.motto || '';
         document.getElementById('inspMastheadLeftEar').value = fData.leftEar || '';
         document.getElementById('inspMastheadRightEar').value = fData.rightEar || '';
+    } else if (type === 'article') {
+        const titularInput = document.getElementById('inspArticleTitular');
+        const titularVal = fData.titular || fData.content_title || '';
+        if (titularInput) {
+            titularInput.value = titularVal;
+            const countEl = document.getElementById('titularCharCount');
+            if (countEl) countEl.textContent = `${titularVal.length}/200`;
+            const errEl = document.getElementById('inspArticleTitularError');
+            const isValid = titularVal.trim().length > 0 && titularVal.length <= 200;
+            if (errEl) errEl.style.display = isValid ? 'none' : 'block';
+            titularInput.classList.toggle('is-invalid', !isValid);
+        }
+
+        const subtituloInput = document.getElementById('inspArticleSubtitulo');
+        if (subtituloInput) subtituloInput.value = fData.subtitulo || '';
+
+        const cuerpoInput = document.getElementById('inspArticleCuerpo');
+        const cuerpoVal = fData.cuerpo || fData.content || '';
+        if (cuerpoInput) {
+            cuerpoInput.value = cuerpoVal;
+            const cuerpoCount = document.getElementById('cuerpoCharCount');
+            if (cuerpoCount) cuerpoCount.textContent = `${cuerpoVal.length}/1000`;
+        }
+
+        const autorInput = document.getElementById('inspArticleAutor');
+        if (autorInput) autorInput.value = fData.autor || '';
+
+        const catLabelInput = document.getElementById('inspArticleCatLabel');
+        if (catLabelInput) catLabelInput.value = fData.categoria_label || '';
+
+        const catColorInput = document.getElementById('inspArticleCatColor');
+        if (catColorInput) catColorInput.value = fData.categoria_color || '#D71920';
+
+        const isLinked = !!(fData.noticia_id || fData.propiedades?.noticia_id);
+        const linkedBox = document.getElementById('inspArticleLinkedBox');
+        const linkedTitle = document.getElementById('inspArticleLinkedTitle');
+        if (linkedBox) {
+            linkedBox.style.display = isLinked ? 'block' : 'none';
+            if (linkedTitle && isLinked) {
+                linkedTitle.textContent = titularVal || `Noticia #${fData.noticia_id || fData.propiedades?.noticia_id}`;
+            }
+        }
     } else if (type === 'qr') {
         document.getElementById('inspQrUrl').value = fData.url || 'https://latitud18.com/periodico';
         document.getElementById('inspQrLabel').value = fData.label || 'Escanea para edición digital';
     } else if (type === 'ad') {
-        document.getElementById('inspAdBadge').value = fData.badge || 'ESPACIO PUBLICITARIO';
-        document.getElementById('inspAdTitle').value = fData.title || '';
-        document.getElementById('inspAdSubtitle').value = fData.subtitle || '';
-        document.getElementById('inspAdBg').value = fData.bg || '#f0fdf4';
-        document.getElementById('inspAdBorder').value = fData.border || '#86efac';
+        const fmtCode = fData.format_code || fData.propiedades?.format_code || 'A1';
+        const status = fData.status || fData.propiedades?.status || 'disponible';
+        const advName = fData.advertiser_name || fData.propiedades?.advertiser_name || '';
+        const advImg = fData.advertiser_image_url || fData.propiedades?.advertiser_image_url || null;
+
+        const selFormat = document.getElementById('inspAdFormat');
+        if (selFormat) selFormat.value = fmtCode;
+
+        const btnDisp = document.getElementById('btnAdStatusDisponible');
+        const btnOcup = document.getElementById('btnAdStatusOcupado');
+        if (btnDisp && btnOcup) {
+            btnDisp.className = status === 'disponible' ? 'id-btn id-btn-primary' : 'id-btn id-btn-ghost';
+            btnOcup.className = status === 'ocupado' ? 'id-btn id-btn-success' : 'id-btn id-btn-ghost';
+        }
+
+        const advNameInput = document.getElementById('inspAdAdvertiserName');
+        if (advNameInput) advNameInput.value = advName;
+
+        const thumbPreview = document.getElementById('adImageThumbPreview');
+        const thumbImg = document.getElementById('adImageThumbImg');
+        if (thumbPreview && thumbImg) {
+            if (advImg) {
+                thumbPreview.style.display = 'block';
+                thumbImg.src = advImg;
+            } else {
+                thumbPreview.style.display = 'none';
+                thumbImg.src = '';
+            }
+        }
     }
 }
 
@@ -2608,13 +3152,55 @@ function applyImageUrlToFrame() {
 function uploadImageForFrame(input) {
     const file = input.files[0];
     if (!file) return;
+
+    // Validación Req 2.2, 2.3 (JPEG/PNG/WEBP <= 10MB)
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type) || file.size > 10 * 1024 * 1024) {
+        showToast('Error: El archivo debe ser imagen JPEG, PNG o WEBP y no superar los 10 MB.', 'error');
+        input.value = '';
+        return;
+    }
+
+    const uploadBtn = document.getElementById('btnUploadImageInsp');
+    if (uploadBtn) uploadBtn.disabled = true;
+
+    // Spinner en el marco mientras carga (Req 2.9)
+    if (selectedFrame) {
+        const stageWrap = selectedFrame.querySelector('.image-stage-wrap');
+        if (stageWrap) {
+            const spin = document.createElement('div');
+            spin.className = 'upload-spinner-overlay';
+            spin.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;color:#38bdf8;z-index:20;';
+            spin.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x"></i>';
+            stageWrap.appendChild(spin);
+        }
+    }
+
     const fd = new FormData();
     fd.append('image', file);
     fd.append('_token', '{{ csrf_token() }}');
     fetch('{{ route("admin.periodico.uploadImage") }}', { method:'POST', body: fd })
         .then(r => r.json())
         .then(d => {
-            if (d.url) { applyImageSrc(d.url); closeModal('imagePickerModal'); }
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (selectedFrame) {
+                selectedFrame.querySelector('.upload-spinner-overlay')?.remove();
+            }
+            if (d.url) { 
+                applyImageSrc(d.url); 
+                closeModal('imagePickerModal'); 
+                showToast('Imagen cargada con éxito', 'success');
+            } else {
+                showToast(d.message || 'Error al subir imagen', 'error');
+            }
+        })
+        .catch(err => {
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (selectedFrame) {
+                selectedFrame.querySelector('.upload-spinner-overlay')?.remove();
+            }
+            console.error(err);
+            showToast('Error de red al subir la imagen', 'error');
         });
 }
 
@@ -2742,18 +3328,240 @@ function applyQrProps() {
     markUnsaved();
 }
 
-function applyAdProps() {
+// ── ARTICLE INSPECTOR ACTIONS (TASK 10.2, 16.1) ────────
+function handleArticleTitularInput(input) {
+    const val = input.value;
+    const countEl = document.getElementById('titularCharCount');
+    if (countEl) countEl.textContent = `${val.length}/200`;
+
+    const errEl = document.getElementById('inspArticleTitularError');
+    const isValid = val.trim().length > 0 && val.length <= 200;
+    if (errEl) errEl.style.display = isValid ? 'none' : 'block';
+    input.classList.toggle('is-invalid', !isValid);
+
+    // Bloquear/desbloquear botón Guardar (Req 2.7, 2.8)
+    document.querySelectorAll('#mainSaveBtn, .btn-save-periodico').forEach(b => {
+        b.disabled = !isValid;
+        if (!isValid) b.title = 'Corrige el titular del artículo (1-200 caracteres) para poder guardar';
+        else b.title = 'Guardar cambios de la edición (Ctrl+S)';
+    });
+
+    applyArticleProps();
+}
+
+function validateArticleTitular() {
+    const input = document.getElementById('inspArticleTitular');
+    if (!input) return true;
+    const val = input.value.trim();
+    return val.length > 0 && val.length <= 200;
+}
+
+function applyArticleProps() {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'article') return;
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    const titularVal   = document.getElementById('inspArticleTitular')?.value || '';
+    const subtituloVal = document.getElementById('inspArticleSubtitulo')?.value || '';
+    const cuerpoVal    = document.getElementById('inspArticleCuerpo')?.value || '';
+    const autorVal     = document.getElementById('inspArticleAutor')?.value || '';
+    const catLabelVal  = document.getElementById('inspArticleCatLabel')?.value || '';
+    const catColorVal  = document.getElementById('inspArticleCatColor')?.value || '#D71920';
+
+    f.titular          = titularVal;
+    f.subtitulo        = subtituloVal;
+    f.cuerpo           = cuerpoVal;
+    f.autor            = autorVal;
+    f.categoria_label  = catLabelVal;
+    f.categoria_color  = catColorVal;
+
+    if (!f.propiedades) f.propiedades = {};
+    f.propiedades.categoria_color = catColorVal;
+    f.propiedades.categoria_label = catLabelVal;
+
+    const cuerpoCount = document.getElementById('cuerpoCharCount');
+    if (cuerpoCount) cuerpoCount.textContent = `${cuerpoVal.length}/1000`;
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+    markUnsaved();
+}
+
+function setArticleColor(color) {
+    const input = document.getElementById('inspArticleCatColor');
+    if (input) input.value = color;
+    applyArticleProps();
+}
+
+function unlinkArticleNews() {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'article') return;
+    recordHistory();
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    // Desvincula reteniendo titular, subtítulo, cuerpo, autor, categoría (Req 4.6)
+    delete f.noticia_id;
+    if (f.propiedades) delete f.propiedades.noticia_id;
+
+    const linkedBox = document.getElementById('inspArticleLinkedBox');
+    if (linkedBox) linkedBox.style.display = 'none';
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+    markUnsaved();
+    showToast('Noticia desvinculada (contenido retenido)', 'success');
+}
+
+// ── AD INSPECTOR ACTIONS (TASK 11.1, 16.2) ──────────
+function changeSelectedAdFormat(formatCode) {
     if (!selectedFrame || selectedFrame.dataset.type !== 'ad') return;
     recordHistory();
     const page = currentEdicion.paginas[activePageIndex];
     const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
     if (!f) return;
 
-    f.badge = document.getElementById('inspAdBadge').value;
-    f.title = document.getElementById('inspAdTitle').value;
-    f.subtitle = document.getElementById('inspAdSubtitle').value;
-    f.bg = document.getElementById('inspAdBg').value;
-    f.border = document.getElementById('inspAdBorder').value;
+    const fmt = AD_FORMATS[formatCode] || AD_FORMATS['A1'];
+    f.format_code = formatCode;
+    f.w = fmt.w;
+    f.h = fmt.h;
+    f.lockResize = true;
+    if (!f.propiedades) f.propiedades = {};
+    f.propiedades.format_code = formatCode;
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+    updateInspectorGeometry(newEl);
+    markUnsaved();
+    showToast(`Formato ${formatCode} aplicado (${fmt.w}x${fmt.h}px)`, 'success');
+}
+
+function setAdStatus(status) {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'ad') return;
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    if (status === 'ocupado') {
+        const img = f.advertiser_image_url || f.propiedades?.advertiser_image_url;
+        if (!img) {
+            showToast('Para marcar como ocupado se requiere subir una imagen publicitaria primero.', 'error');
+            return;
+        }
+    }
+
+    recordHistory();
+    f.status = status;
+    if (!f.propiedades) f.propiedades = {};
+    f.propiedades.status = status;
+
+    const btnDisp = document.getElementById('btnAdStatusDisponible');
+    const btnOcup = document.getElementById('btnAdStatusOcupado');
+    if (btnDisp && btnOcup) {
+        btnDisp.className = status === 'disponible' ? 'id-btn id-btn-primary' : 'id-btn id-btn-ghost';
+        btnOcup.className = status === 'ocupado' ? 'id-btn id-btn-success' : 'id-btn id-btn-ghost';
+    }
+
+    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+    const newEl = buildFrameElement(f, activePageIndex);
+    sheet.replaceChild(newEl, selectedFrame);
+    selectFrame(newEl);
+    markUnsaved();
+    showToast(`Módulo publicitario marcado como ${status}`, 'success');
+}
+
+function applyAdAdvertiserName(name) {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'ad') return;
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
+
+    f.advertiser_name = name;
+    if (!f.propiedades) f.propiedades = {};
+    f.propiedades.advertiser_name = name;
+    markUnsaved();
+}
+
+function uploadAdImageFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Validación Req 3.3 (JPEG/PNG/WEBP <= 10MB)
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type) || file.size > 10 * 1024 * 1024) {
+        showToast('Error: El archivo debe ser imagen JPEG, PNG o WEBP y no superar los 10 MB.', 'error');
+        input.value = '';
+        return;
+    }
+
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame?.dataset.frameId);
+    if (!f) return;
+
+    const uploadBtn = document.getElementById('btnUploadAdImage');
+    const btnLabel = document.getElementById('adImageUploadBtnLabel');
+    if (uploadBtn) uploadBtn.disabled = true;
+    if (btnLabel) btnLabel.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+
+    // Spinner en el marco
+    if (selectedFrame) {
+        selectedFrame.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1e293b;color:#38bdf8;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+    }
+
+    const fd = new FormData();
+    fd.append('image', file);
+    fd.append('_token', '{{ csrf_token() }}');
+
+    fetch('{{ route("admin.periodico.uploadImage") }}', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (btnLabel) btnLabel.textContent = 'Subir Imagen Anunciante';
+            if (d.url) {
+                f.advertiser_image_url = d.url;
+                f.status = 'ocupado';
+                if (!f.propiedades) f.propiedades = {};
+                f.propiedades.advertiser_image_url = d.url;
+                f.propiedades.status = 'ocupado';
+
+                const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+                const newEl = buildFrameElement(f, activePageIndex);
+                sheet.replaceChild(newEl, selectedFrame);
+                selectFrame(newEl);
+                populateInspector(newEl);
+                markUnsaved();
+                showToast('Imagen publicitaria subida con éxito', 'success');
+            } else {
+                showToast(d.message || 'Error al subir imagen publicitaria', 'error');
+                if (selectedFrame) {
+                    const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+                    const newEl = buildFrameElement(f, activePageIndex);
+                    sheet.replaceChild(newEl, selectedFrame);
+                    selectFrame(newEl);
+                }
+            }
+        })
+        .catch(err => {
+            if (uploadBtn) uploadBtn.disabled = false;
+            if (btnLabel) btnLabel.textContent = 'Subir Imagen Anunciante';
+            console.error(err);
+            showToast('Error al procesar subida de imagen publicitaria', 'error');
+        });
+}
+
+function applyAdProps() {
+    if (!selectedFrame || selectedFrame.dataset.type !== 'ad') return;
+    recordHistory();
+    const page = currentEdicion.paginas[activePageIndex];
+    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (!f) return;
 
     const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
     const newEl = buildFrameElement(f, activePageIndex);
@@ -2892,10 +3700,13 @@ function renderTemplateCards(templates) {
                     <button class="tpl-btn-apply" onclick="createEditionFromTemplateCard('${t.id}', '${t.name}')" title="Crea un ejemplar nuevo basado en esta plantilla sin alterarla" style="background:#D71920;border-color:#D71920;color:#fff;flex:1.2;">
                         <i class="fas fa-plus-circle me-1"></i> Crear Edición
                     </button>
+                    <button class="tpl-btn-action" onclick="duplicateTemplateAction('${t.id}')" title="Duplicar plantilla (crea una copia independiente)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="tpl-btn-action" onclick="exportTemplateFile('${t.id}')" title="Exportar como .latitud-template">
+                        <i class="fas fa-download"></i>
+                    </button>
                     ${isCustom ? `
-                        <button class="tpl-btn-action" onclick="exportTemplateFile('${t.id}')" title="Exportar como .latitud-template">
-                            <i class="fas fa-download"></i>
-                        </button>
                         <button class="tpl-btn-action danger" onclick="deleteCustomTemplate('${t.id}')" title="Eliminar plantilla">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -2915,6 +3726,31 @@ function filterTemplateCards(cat, btn) {
 
 function searchTemplates(query) {
     renderTemplateCards(loadedTemplates);
+}
+
+function duplicateTemplateAction(tplId) {
+    showToast('Duplicando plantilla...', 'info');
+    fetch(`/admin/periodico/templates/${tplId}/duplicate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message || 'Plantilla duplicada exitosamente', 'success');
+            loadTemplatesCatalog();
+        } else {
+            showToast(data.message || 'Error al duplicar plantilla', 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error de conexión al duplicar plantilla', 'error');
+    });
 }
 
 function createEditionFromTemplateCard(tplId, tplName) {
@@ -2972,6 +3808,14 @@ function applyTemplateFromCatalog(tplId) {
         }
         showToast('Plantilla no encontrada', 'error');
         return;
+    }
+
+    // Confirmación nativa si la página ya tiene frames (Req 1.4)
+    const existingFrames = currentEdicion.paginas[activePageIndex]?.frames || [];
+    if (existingFrames.length > 0) {
+        if (!confirm(`La página ${activePageIndex + 1} ya contiene ${existingFrames.length} elementos. ¿Estás seguro de que deseas reemplazarlos por la plantilla "${tpl.name}"?`)) {
+            return;
+        }
     }
 
     closeModal('templateModal');
@@ -3203,6 +4047,137 @@ function createCustomFrame(fData) {
 }
 
 // ── INSERT NEWS FROM DATABASE ──────────────────────
+// ── REMOTE NEWS SEARCH & ASSIGNMENT (TASK 10.1, 10.2) ──
+function handleNewsSearchInput(query) {
+    clearTimeout(newsSearchDebounceTimer);
+    newsSearchDebounceTimer = setTimeout(() => {
+        performRemoteNewsSearch(query);
+    }, 300);
+}
+
+function performRemoteNewsSearch(query) {
+    const cat = document.getElementById('drawerCatFilter')?.value;
+    const term = (query || '').trim();
+
+    if (!term) {
+        filterDrawerNews();
+        return;
+    }
+
+    const catParam = (cat && cat !== 'all') ? `&category_id=${cat}` : '';
+    fetch(`/admin/periodico/noticias/search?q=${encodeURIComponent(term)}${catParam}`, {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const list = document.getElementById('drawerNewsList');
+        if (!list) return;
+
+        const noticias = data.noticias?.data || data.noticias || [];
+        if (noticias.length === 0) {
+            list.innerHTML = `
+                <div style="text-align:center;padding:24px 12px;color:#94a3b8;">
+                    <i class="fas fa-search" style="font-size:1.8rem;margin-bottom:8px;opacity:0.4;"></i>
+                    <h6 style="color:#cbd5e1;font-size:0.8rem;font-weight:700;">No se encontraron noticias</h6>
+                    <p style="font-size:0.68rem;margin:0;">No hay resultados publicados para "${term}".</p>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = noticias.map(n => {
+            const imgUrl = n.image_url || n.imagen || null;
+            const catName = n.category?.name || 'General';
+            const catColor = n.category?.color || '#D71920';
+            const serialized = JSON.stringify({
+                id: n.id,
+                titulo: n.titulo,
+                bajada: n.bajada || '',
+                contenido: n.contenido ? n.contenido.replace(/<[^>]*>/g, '') : '',
+                categoria: catName,
+                categoria_color: catColor,
+                imagen: imgUrl,
+                autor: n.autor || 'REDACCIÓN'
+            }).replace(/'/g, "&#39;");
+
+            return `
+                <div class="drawer-news-card" data-category="${n.category_id || ''}" data-title="${(n.titulo || '').toLowerCase()}" onclick='onDrawerNewsCardClick(${serialized})' style="cursor:pointer;">
+                    <div class="dnc-header">
+                        ${imgUrl ? `<img class="dnc-thumb" src="${imgUrl}" alt="">` : '<div class="dnc-no-thumb"><i class="fas fa-image"></i></div>'}
+                        <div class="dnc-info">
+                            <span class="dnc-cat" style="color:${catColor};">${catName}</span>
+                            <div class="dnc-title">${n.titulo}</div>
+                        </div>
+                    </div>
+                    <div class="dnc-actions" onclick="event.stopPropagation()">
+                        <span style="font-size:0.58rem;color:var(--id-text-muted);margin-right:2px;">Insertar:</span>
+                        <button class="dnc-btn primary" onclick='insertNewsBlock(${serialized}, "article")'>
+                            <i class="fas fa-newspaper"></i> Artículo
+                        </button>
+                        <button class="dnc-btn" onclick='insertNewsBlock(${serialized}, "headline")'>
+                            <i class="fas fa-heading"></i> Titular
+                        </button>
+                        <button class="dnc-btn" onclick='insertNewsBlock(${serialized}, "photo_caption")'>
+                            <i class="fas fa-camera"></i> Foto
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    })
+    .catch(err => {
+        console.warn('Error en búsqueda remota de noticias, usando filtro local', err);
+        filterDrawerNews();
+    });
+}
+
+function onDrawerNewsCardClick(news) {
+    if (selectedFrame && selectedFrame.dataset.type === 'article') {
+        const page = currentEdicion.paginas[activePageIndex];
+        const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+        if (f) {
+            recordHistory();
+            f.noticia_id = news.id;
+            if (!f.propiedades) f.propiedades = {};
+            f.propiedades.noticia_id = news.id;
+            f.titular = news.titulo;
+            f.subtitulo = news.bajada || '';
+            f.cuerpo = news.contenido || news.bajada || '';
+            f.autor = news.autor || 'Redacción';
+            f.categoria_label = news.categoria || 'General';
+            f.categoria_color = news.categoria_color || '#D71920';
+
+            // Auto-poblar marco de imagen adyacente con confirmación (Req 4.4)
+            if (news.imagen) {
+                const imgFrame = (page.frames || []).find(fr => fr.type === 'image');
+                if (imgFrame) {
+                    if (confirm('La noticia incluye fotografía. ¿Deseas asignarla también al marco de imagen de esta página?')) {
+                        imgFrame.src = news.imagen;
+                        imgFrame.caption = news.titulo;
+                        const imgEl = document.getElementById(`frame-${imgFrame.id}`);
+                        if (imgEl) {
+                            const newImgEl = buildFrameElement(imgFrame, activePageIndex);
+                            imgEl.parentNode.replaceChild(newImgEl, imgEl);
+                        }
+                    }
+                }
+            }
+
+            const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+            const newEl = buildFrameElement(f, activePageIndex);
+            sheet.replaceChild(newEl, selectedFrame);
+            selectFrame(newEl);
+            populateInspector(newEl);
+            markUnsaved();
+            showToast('Noticia vinculada al artículo con éxito (≤300ms)', 'success');
+            toggleNewsDrawer();
+            return;
+        }
+    }
+
+    insertNewsBlock(news, 'article');
+}
+
 function insertNewsBlock(news, mode) {
     toggleNewsDrawer();
     recordHistory();
@@ -3218,11 +4193,15 @@ function insertNewsBlock(news, mode) {
         if (news.imagen) {
             createCustomFrame({ type:'image', x:20, y:185, w:300, h:180, z:7, src: news.imagen, caption: news.titulo });
             createCustomFrame({ type:'article', x:330, y:185, w:370, h:240, z:7, columns:2,
-                content: `<p style="font-size:11.5px;line-height:1.45;text-align:justify;color:#1e293b;">${news.contenido || news.bajada}</p>`
+                titular: news.titulo, subtitulo: news.bajada || '', cuerpo: news.contenido || news.bajada || '',
+                autor: news.autor || 'Redacción', categoria_label: news.categoria || 'General', categoria_color: news.categoria_color || '#D71920',
+                noticia_id: news.id
             });
         } else {
             createCustomFrame({ type:'article', x:20, y:185, w:680, h:200, z:7, columns:3,
-                content: `<p style="font-size:11.5px;line-height:1.45;text-align:justify;color:#1e293b;">${news.contenido || news.bajada}</p>`
+                titular: news.titulo, subtitulo: news.bajada || '', cuerpo: news.contenido || news.bajada || '',
+                autor: news.autor || 'Redacción', categoria_label: news.categoria || 'General', categoria_color: news.categoria_color || '#D71920',
+                noticia_id: news.id
             });
         }
     } else if (mode === 'headline') {
@@ -3238,57 +4217,61 @@ function insertNewsBlock(news, mode) {
     showToast('Noticia insertada en la maqueta', 'success');
 }
 
-// ── ZOOM & VIEWPORT CONTROLS ───────────────────────
-function changeZoom(delta) {
-    zoomLevel = Math.max(0.3, Math.min(2.5, zoomLevel + delta));
-    applyZoom();
-}
-
-function resetZoom() {
-    zoomLevel = 1.0;
-    applyZoom();
-}
-
-function applyZoom() {
-    document.querySelectorAll('.id-paper-sheet').forEach(sheet => {
-        sheet.style.transform = `scale(${zoomLevel})`;
-        sheet.style.transformOrigin = 'top center';
-        sheet.style.marginBottom = `${(zoomLevel - 1) * 1040}px`;
-    });
-    updateZoomDisplay();
-}
-
-function updateZoomDisplay() {
-    document.getElementById('zoomDisplay').textContent = Math.round(zoomLevel * 100) + '%';
-}
-
-function toggleRulers() {
-    rulersVisible = !rulersVisible;
-    document.getElementById('canvasStage').classList.toggle('rulers-visible', rulersVisible);
-    document.getElementById('rulerToggleBtn').classList.toggle('active', rulersVisible);
-}
-
-function toggleGrid() {
-    gridVisible = !gridVisible;
-    document.querySelectorAll('.id-paper-sheet').forEach(s => s.classList.toggle('grid-visible', gridVisible));
-    document.getElementById('gridToggleBtn').classList.toggle('active', gridVisible);
-}
-
-function toggleMargins() {
-    marginsVisible = !marginsVisible;
-    document.querySelectorAll('.paper-margin-guide').forEach(g => g.style.display = marginsVisible ? '' : 'none');
-    document.getElementById('marginToggleBtn').classList.toggle('active', marginsVisible);
-}
-
-// ── EDITORIAL WORKFLOW & PUBLICATION SUITE ─────────
+// ── EDITORIAL WORKFLOW & PUBLICATION SUITE (TASK 14) ─────────
 function toggleStateDropdown(e) {
     e.stopPropagation();
+    renderAllowedTransitions();
     document.getElementById('editorialDropdownMenu')?.classList.toggle('show');
 }
 
 document.addEventListener('click', () => {
     document.getElementById('editorialDropdownMenu')?.classList.remove('show');
 });
+
+function renderAllowedTransitions() {
+    const container = document.getElementById('allowedTransitionsContainer');
+    if (!container) return;
+
+    const curState = currentEdicion.estado || (currentEdicion.publicada ? 'publicado' : 'borrador');
+    const allowed = ESTADO_TRANSICIONES[curState] || [];
+
+    if (allowed.length === 0) {
+        container.innerHTML = `
+            <div style="padding:8px 12px;font-size:0.72rem;color:#94a3b8;font-style:italic;">
+                No hay transiciones posibles desde "${curState}".
+            </div>
+        `;
+        return;
+    }
+
+    const stateMeta = {
+        'borrador':   { label: 'Pasar a Borrador', icon: 'fas fa-circle text-secondary' },
+        'revision':   { label: 'Enviar a Revisión', icon: 'fas fa-eye text-warning' },
+        'aprobado':   { label: 'Aprobar Edición', icon: 'fas fa-check text-info' },
+        'programado': { label: 'Programar Publicación...', icon: 'fas fa-clock', style: 'color:#c084fc;' },
+        'publicado':  { label: 'Publicar Ahora', icon: 'fas fa-check-double text-success' }
+    };
+
+    container.innerHTML = allowed.map(st => {
+        const meta = stateMeta[st] || { label: st, icon: 'fas fa-arrow-right text-white' };
+        return `
+            <button type="button" class="id-dropdown-item" onclick="onTransitionClick('${st}')" style="display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:transparent;border:none;padding:7px 12px;font-size:0.74rem;cursor:pointer;color:#e2e8f0;">
+                <i class="${meta.icon}" style="${meta.style || ''}"></i>
+                <span>${meta.label}</span>
+            </button>
+        `;
+    }).join('');
+}
+
+function onTransitionClick(nuevoEstado) {
+    document.getElementById('editorialDropdownMenu')?.classList.remove('show');
+    if (nuevoEstado === 'programado') {
+        setQuickSchedule(1);
+        openModal('scheduleModal');
+        return;
+    }
+    updateEditorialState(nuevoEstado);
+}
 
 function updateEditorialState(estado, fechaProgramada = null) {
     document.getElementById('editorialDropdownMenu')?.classList.remove('show');
@@ -3305,7 +4288,13 @@ function updateEditorialState(estado, fechaProgramada = null) {
             fecha_programada: fechaProgramada
         })
     })
-    .then(r => r.json())
+    .then(async r => {
+        const data = await r.json();
+        if (r.status === 422 || !r.ok) {
+            throw new Error(data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : 'Transición editorial no permitida'));
+        }
+        return data;
+    })
     .then(data => {
         if (data.success) {
             currentEdicion.estado = estado;
@@ -3314,6 +4303,7 @@ function updateEditorialState(estado, fechaProgramada = null) {
             else if (estado === 'programado') currentEdicion.publicada = false;
 
             updateTopBarBadges(estado, fechaProgramada);
+            renderAllowedTransitions();
             showToast(data.message || `Estado editorial actualizado a: ${estado}`, 'success');
         } else {
             showToast(data.message || 'Error al actualizar estado editorial', 'error');
@@ -3321,7 +4311,7 @@ function updateEditorialState(estado, fechaProgramada = null) {
     })
     .catch(err => {
         console.error(err);
-        showToast('Error de conexión al actualizar estado editorial', 'error');
+        showToast(err.message || 'Error al actualizar estado editorial', 'error');
     });
 }
 
@@ -3382,6 +4372,427 @@ function submitSchedulePublication() {
     }
     closeModal('scheduleModal');
     updateEditorialState('programado', dtVal);
+}
+
+// ── LATITUD 18 ADVANCED MODALS ENGINES (TASKS 12, 13, 15) ────
+
+// 1. PREVISUALIZACIÓN FULL-SCREEN (TASK 15)
+function openPreviewModal() {
+    previewActivePage = activePageIndex;
+    const totalP = (currentEdicion.paginas || []).length;
+    const totalEl = document.getElementById('previewTotalPages');
+    if (totalEl) totalEl.textContent = `de ${totalP}`;
+    const pageInp = document.getElementById('previewPageInput');
+    if (pageInp) {
+        pageInp.max = totalP;
+        pageInp.value = previewActivePage + 1;
+    }
+    previewRenderPage(previewActivePage);
+    openModal('previewModal');
+}
+
+function previewRenderPage(idx) {
+    const totalP = (currentEdicion.paginas || []).length;
+    if (idx < 0 || idx >= totalP) return;
+    previewActivePage = idx;
+
+    const pageInp = document.getElementById('previewPageInput');
+    if (pageInp) pageInp.value = idx + 1;
+
+    const container = document.getElementById('previewSheetWrapper');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const page = currentEdicion.paginas[idx];
+    if (!page) return;
+
+    (page.frames || []).forEach(fData => {
+        const el = document.createElement('div');
+        el.className = 'id-frame preview-frame';
+        el.style.position = 'absolute';
+        el.style.left = (fData.x || 20) + 'px';
+        el.style.top = (fData.y || 20) + 'px';
+        el.style.width = (fData.w || 200) + 'px';
+        el.style.height = (fData.h || 100) + 'px';
+        el.style.zIndex = fData.z || 10;
+        if (fData.opacity !== undefined) el.style.opacity = fData.opacity;
+        el.style.pointerEvents = 'none'; // Desactiva todas las interacciones (Req 6.3)
+
+        if (fData.type === 'masthead') {
+            el.innerHTML = `
+                <div class="frame-masthead-inner" style="border-bottom:3px solid #0284c7;padding-bottom:4px;font-family:'Bebas Neue',sans-serif;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                        <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;font-size:9px;font-weight:700;width:140px;line-height:1.2;font-family:'Montserrat',sans-serif;">
+                            ${fData.leftEar || 'CRE 100%'}
+                        </div>
+                        <div style="text-align:center;flex:1;">
+                            <span style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#0284c7;line-height:1;letter-spacing:1.5px;">${fData.nombre_seccion || fData.newspaperName || 'LATITUD 18'}</span>
+                            <span style="background:#D71920;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;padding:2px 8px;margin-left:4px;vertical-align:middle;">${fData.subBadge || 'DIARIO DIGITAL'}</span>
+                            <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;font-family:'Montserrat',sans-serif;">${fData.motto || 'INFORMACIÓN SIN RUIDO • SANTA CRUZ DE LA SIERRA'}</div>
+                        </div>
+                        <div style="background:#0284c7;color:#fff;padding:4px 8px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;font-family:'Montserrat',sans-serif;">
+                            ${fData.rightEar || 'DÓLAR: Bs 12,58'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (fData.type === 'headline') {
+            el.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+                    ${fData.kicker ? `<span style="font-size:11px;font-weight:800;color:#D71920;text-transform:uppercase;margin-bottom:2px;font-family:'Montserrat',sans-serif;">${fData.kicker}</span>` : ''}
+                    <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:32px;letter-spacing:0.5px;line-height:1.05;">
+                        ${fData.content || 'TITULAR DE IMPACTO PERIODÍSTICO'}
+                    </div>
+                </div>
+            `;
+        } else if (fData.type === 'article') {
+            const isLinked = !!(fData.noticia_id || fData.propiedades?.noticia_id);
+            const catColor = fData.categoria_color || fData.propiedades?.categoria_color || '#D71920';
+            const cols = fData.columns || 3;
+            const titular = fData.titular || fData.content_title || 'Titular del Artículo';
+            const subtitulo = fData.subtitulo || '';
+            const cuerpo = fData.cuerpo || fData.content || 'Texto del artículo...';
+            const autor = fData.autor || '';
+
+            el.innerHTML = `
+                <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Montserrat',sans-serif;${isLinked ? 'padding-top:8px;' : ''}">
+                    ${isLinked ? `<div class="frame-category-bar" style="background:${catColor};height:6px;position:absolute;top:0;left:0;right:0;"></div>` : ''}
+                    <div style="margin-bottom:4px;">
+                        <div style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;line-height:1.15;color:#0f172a;margin:0;">${titular}</div>
+                        ${subtitulo ? `<div style="font-size:10.5px;font-weight:600;color:#64748b;font-style:italic;margin-top:2px;">${subtitulo}</div>` : ''}
+                    </div>
+                    <div style="flex:1;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.4;color:#1e293b;column-count:${cols > 1 ? cols : ''};column-gap:12px;text-align:justify;overflow:hidden;">
+                        ${cuerpo}
+                    </div>
+                    ${autor ? `<div style="font-size:9px;font-weight:700;color:${catColor};text-transform:uppercase;margin-top:4px;">Por: ${autor}</div>` : ''}
+                </div>
+            `;
+        } else if (fData.type === 'image') {
+            el.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;">
+                    <div style="flex:1;position:relative;overflow:hidden;">
+                        <img src="${fData.src || ''}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                    </div>
+                    ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;font-family:'Montserrat',sans-serif;">${fData.caption}</div>` : ''}
+                </div>
+            `;
+        } else if (fData.type === 'ad') {
+            const formatCode = fData.format_code || fData.propiedades?.format_code || 'A1';
+            const status = fData.status || fData.propiedades?.status || 'disponible';
+            const adImg = fData.advertiser_image_url || fData.propiedades?.advertiser_image_url || null;
+            const adName = fData.advertiser_name || fData.propiedades?.advertiser_name || '';
+
+            if (status === 'ocupado' && adImg) {
+                el.innerHTML = `
+                    <div style="width:100%;height:100%;position:relative;overflow:hidden;">
+                        <span class="ad-format-badge">${formatCode}</span>
+                        <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:fill;display:block;">
+                    </div>
+                `;
+            } else {
+                el.innerHTML = `
+                    <div class="ad-disponible-box" style="position:relative;width:100%;height:100%;background:#E8F0FE;border:1px dashed #3b82f6;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                        <span class="ad-format-badge">${formatCode}</span>
+                        <span class="ad-watermark-text" style="font-size:16px;font-weight:900;color:rgba(59,130,246,0.35);letter-spacing:2px;font-family:'Montserrat',sans-serif;">DISPONIBLE</span>
+                    </div>
+                `;
+            }
+        } else if (fData.type === 'quote') {
+            el.innerHTML = `<div style="font-family:'Montserrat',sans-serif;padding:6px;border-left:3px solid #D71920;background:#f8fafc;font-size:13px;line-height:1.35;font-style:italic;">${fData.content || ''}</div>`;
+        } else if (fData.type === 'box') {
+            el.innerHTML = `<div style="font-family:'Montserrat',sans-serif;padding:8px;border:1px solid #cbd5e1;background:#f8fafc;">${fData.content || ''}</div>`;
+        } else if (fData.type === 'divider') {
+            el.innerHTML = `<div style="width:100%;height:2px;background:${fData.color || '#cbd5e1'};"></div>`;
+        } else if (fData.type === 'qr') {
+            const qrUrl = encodeURIComponent(fData.url || 'https://latitud18.com/periodico');
+            el.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid #e2e8f0;padding:6px;text-align:center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrUrl}" alt="QR" style="width:calc(100% - 8px);max-height:calc(100% - 22px);object-fit:contain;">
+                    <div style="font-size:9px;font-weight:700;color:#334155;margin-top:2px;text-transform:uppercase;font-family:'Montserrat',sans-serif;">${fData.label || 'Escanea para leer online'}</div>
+                </div>
+            `;
+        } else {
+            el.innerHTML = `<div style="font-family:'Montserrat',sans-serif;">${fData.content || ''}</div>`;
+        }
+
+        container.appendChild(el);
+    });
+}
+
+function previewPrevPage() {
+    if (previewActivePage > 0) previewRenderPage(previewActivePage - 1);
+}
+
+function previewNextPage() {
+    const totalP = (currentEdicion.paginas || []).length;
+    if (previewActivePage < totalP - 1) previewRenderPage(previewActivePage + 1);
+}
+
+function previewGoToPage(val) {
+    const num = parseInt(val) - 1;
+    const totalP = (currentEdicion.paginas || []).length;
+    if (!isNaN(num) && num >= 0 && num < totalP) {
+        previewRenderPage(num);
+    }
+}
+
+function previewEditCurrentPage() {
+    closeModal('previewModal');
+    switchPage(previewActivePage);
+}
+
+// 2. INVENTARIO DE PUBLICIDAD CROSS-PAGE (TASK 12)
+function openPublicidadModal() {
+    renderPublicidadInventory();
+    openModal('publicidadModal');
+}
+
+function renderPublicidadInventory() {
+    const tbody = document.getElementById('publicidadTableBody');
+    if (!tbody) return;
+
+    let items = [];
+    (currentEdicion.paginas || []).forEach((page, pIdx) => {
+        (page.frames || []).forEach(f => {
+            if (f.type === 'ad') {
+                items.push({ pageIdx: pIdx, pageNum: page.numero || (pIdx + 1), frame: f });
+            }
+        });
+    });
+
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">No hay espacios publicitarios insertados en ninguna página de esta edición.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = items.map(it => {
+        const f = it.frame;
+        const fmtCode = f.format_code || f.propiedades?.format_code || 'A1';
+        const fmt = AD_FORMATS[fmtCode] || {};
+        const status = f.status || f.propiedades?.status || 'disponible';
+        const advName = f.advertiser_name || f.propiedades?.advertiser_name || '—';
+        const advImg = f.advertiser_image_url || f.propiedades?.advertiser_image_url || null;
+
+        return `
+            <tr style="border-bottom:1px solid #1e293b;">
+                <td><span class="badge bg-primary" style="font-size:0.7rem;">${fmtCode}</span> <span style="font-size:0.7rem;color:#cbd5e1;margin-left:4px;">${fmt.label || ''}</span></td>
+                <td>Pág. ${it.pageNum}</td>
+                <td style="color:#94a3b8;font-size:0.68rem;">${fmt.w || f.w}x${fmt.h || f.h} px (${fmt.w_cm || ''}x${fmt.h_cm || ''} cm)</td>
+                <td>
+                    <span class="badge ${status === 'ocupado' ? 'bg-success' : 'bg-warning text-dark'}" style="font-size:0.68rem;">
+                        ${status.toUpperCase()}
+                    </span>
+                </td>
+                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${advName}</td>
+                <td>
+                    ${advImg ? `<img src="${advImg}" style="width:36px;height:24px;object-fit:cover;border-radius:2px;border:1px solid #475569;">` : '<span style="color:#64748b;font-size:0.65rem;">Sin imagen</span>'}
+                </td>
+                <td style="text-align:right;">
+                    ${status === 'disponible' ? `
+                        <button type="button" class="id-btn id-btn-success" onclick="toggleAdInventoryStatus(${it.pageIdx}, '${f.id}', 'ocupado')" style="font-size:0.65rem;padding:2px 8px;">
+                            Marcar Ocupado
+                        </button>
+                    ` : `
+                        <button type="button" class="id-btn id-btn-ghost" onclick="toggleAdInventoryStatus(${it.pageIdx}, '${f.id}', 'disponible')" style="font-size:0.65rem;padding:2px 8px;border:1px solid #475569;">
+                            Marcar Disponible
+                        </button>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function toggleAdInventoryStatus(pageIdx, frameId, newStatus) {
+    const page = currentEdicion.paginas[pageIdx];
+    const f = page?.frames?.find(fr => fr.id == frameId);
+    if (!f) return;
+
+    if (newStatus === 'ocupado') {
+        const img = f.advertiser_image_url || f.propiedades?.advertiser_image_url;
+        if (!img) {
+            showToast('Para marcar como ocupado se requiere subir una imagen publicitaria primero en este marco.', 'error');
+            return;
+        }
+    }
+
+    f.status = newStatus;
+    if (!f.propiedades) f.propiedades = {};
+    f.propiedades.status = newStatus;
+
+    if (pageIdx === activePageIndex) {
+        const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
+        const el = document.getElementById(`frame-${f.id}`);
+        if (sheet && el) {
+            const newEl = buildFrameElement(f, activePageIndex);
+            sheet.replaceChild(newEl, el);
+            if (selectedFrame === el) selectFrame(newEl);
+        }
+    }
+
+    renderPublicidadInventory();
+    markUnsaved();
+    showToast(`Estado publicitario cambiado a ${newStatus}`, 'success');
+}
+
+// 3. PLANTILLA DE EDICIÓN COMPLETA (12 SLOTS) (TASK 13)
+function openPlantillaEdicionModal() {
+    renderEditionSlotsGrid();
+    loadSavedEditionTemplates();
+    openModal('plantillaEdicionModal');
+}
+
+function renderEditionSlotsGrid() {
+    const grid = document.getElementById('editionSlotsGrid');
+    if (!grid) return;
+
+    const tplOptions = (loadedTemplates || []).map(t => `<option value="${t.id}">${t.name} (${t.category})</option>`).join('');
+
+    grid.innerHTML = EDITION_SLOTS.map(s => {
+        return `
+            <div style="background:#18191c;padding:8px;border:1px solid #2d3035;border-radius:4px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-weight:800;color:#38bdf8;font-size:0.75rem;">Slot ${s.slot}</span>
+                    <span style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;">${s.seccion}</span>
+                </div>
+                <select class="id-form-input edition-slot-select" data-slot="${s.slot}" style="font-size:0.72rem;padding:4px;width:100%;">
+                    <option value="">(Página en blanco / Sin plantilla)</option>
+                    ${tplOptions}
+                </select>
+            </div>
+        `;
+    }).join('');
+}
+
+function loadSavedEditionTemplates() {
+    const list = document.getElementById('savedEditionTemplatesList');
+    if (!list) return;
+
+    list.innerHTML = '<div style="color:#94a3b8;font-size:0.72rem;text-align:center;padding:12px;"><i class="fas fa-spinner fa-spin me-1"></i> Cargando plantillas...</div>';
+
+    fetch('/admin/periodico/plantilla-edicion', {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        savedEditionTemplates = data.plantillas || data || [];
+        if (!Array.isArray(savedEditionTemplates) || savedEditionTemplates.length === 0) {
+            list.innerHTML = '<div style="color:#64748b;font-size:0.72rem;text-align:center;padding:16px;">Aún no hay plantillas de edición completa guardadas.</div>';
+            return;
+        }
+
+        list.innerHTML = savedEditionTemplates.map(tpl => {
+            return `
+                <div style="background:#18191c;border:1px solid #2d3035;border-radius:4px;padding:8px;">
+                    <div style="font-weight:700;color:#f8fafc;font-size:0.78rem;">${tpl.nombre}</div>
+                    <div style="font-size:0.68rem;color:#94a3b8;margin-top:2px;">${tpl.descripcion || 'Sin descripción'}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                        <span style="font-size:0.62rem;color:#64748b;">12 Páginas</span>
+                        <button type="button" class="id-btn id-btn-primary" onclick="createEditionFromSavedTemplate(${tpl.id}, '${tpl.nombre}')" style="font-size:0.68rem;padding:3px 8px;">
+                            <i class="fas fa-magic me-1"></i> Crear Edición
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    })
+    .catch(err => {
+        console.error(err);
+        list.innerHTML = '<div style="color:#ef4444;font-size:0.72rem;text-align:center;padding:12px;">Error al cargar plantillas de edición</div>';
+    });
+}
+
+function submitSaveEditionTemplate() {
+    const name = document.getElementById('editionTemplateName')?.value.trim();
+    const desc = document.getElementById('editionTemplateDesc')?.value.trim();
+
+    if (!name) {
+        alert('Por favor introduce un nombre para la plantilla de edición.');
+        return;
+    }
+
+    const mapping = [];
+    document.querySelectorAll('.edition-slot-select').forEach(sel => {
+        const slotNum = parseInt(sel.dataset.slot);
+        const tplId = sel.value || null;
+        mapping.push({ slot: slotNum, plantilla_id: tplId });
+    });
+
+    if (mapping.length !== 12) {
+        alert('La plantilla de edición debe contener exactamente 12 slots.');
+        return;
+    }
+
+    fetch('/admin/periodico/plantilla-edicion', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            nombre: name,
+            descripcion: desc,
+            mapping: mapping
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('editionTemplateName').value = '';
+            document.getElementById('editionTemplateDesc').value = '';
+            showToast('¡Plantilla de edición de 12 páginas guardada exitosamente!', 'success');
+            loadSavedEditionTemplates();
+        } else {
+            showToast(data.message || 'Error al guardar plantilla de edición', 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error de conexión al guardar plantilla', 'error');
+    });
+}
+
+function createEditionFromSavedTemplate(tplId, tplName) {
+    const defaultNum = `Edición ${Math.floor(Math.random() * 800) + 120}`;
+    const num = prompt(`Crear nueva edición completa desde "${tplName}":\n\nNúmero de la edición:`, defaultNum);
+    if (!num) return;
+
+    const fecha = prompt(`Fecha de la edición:`, new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }));
+    if (!fecha) return;
+
+    closeModal('plantillaEdicionModal');
+    showToast('Generando edición completa de 12 páginas...', 'info');
+
+    fetch(`/admin/periodico/plantilla-edicion/${tplId}/crear-edicion`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            numero_edicion: num,
+            fecha: fecha,
+            titulo: `Periódico Digital - ${num}`
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success && res.redirect_url) {
+            showToast(res.message || '¡Edición de 12 páginas creada con éxito!', 'success');
+            setTimeout(() => {
+                window.location.href = res.redirect_url;
+            }, 600);
+        } else {
+            const slotMsg = res.failed_slot ? ` (Falló en Slot ${res.failed_slot})` : '';
+            showToast((res.message || 'Error al crear edición') + slotMsg, 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Error de conexión al crear edición completa', 'error');
+    });
 }
 
 function toggleSnapGrid() {

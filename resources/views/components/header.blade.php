@@ -9,22 +9,22 @@
     </div>
     <div class="topbar-socials">
       @if(setting('social_facebook'))
-        <a href="{{ setting('social_facebook') }}" target="_blank" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-facebook-f"></i></a>
+        <a href="{{ setting('social_facebook') }}" target="_blank" rel="noopener noreferrer" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-facebook-f"></i></a>
       @endif
       @if(setting('social_youtube'))
-        <a href="{{ setting('social_youtube') }}" target="_blank" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-youtube"></i></a>
+        <a href="{{ setting('social_youtube') }}" target="_blank" rel="noopener noreferrer" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-youtube"></i></a>
       @endif
       @if(setting('social_instagram'))
-        <a href="{{ setting('social_instagram') }}" target="_blank" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-instagram"></i></a>
+        <a href="{{ setting('social_instagram') }}" target="_blank" rel="noopener noreferrer" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-instagram"></i></a>
       @endif
       @if(setting('social_twitter'))
-        <a href="{{ setting('social_twitter') }}" target="_blank" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-x-twitter"></i></a>
+        <a href="{{ setting('social_twitter') }}" target="_blank" rel="noopener noreferrer" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-x-twitter"></i></a>
       @endif
       @if(setting('social_tiktok'))
-        <a href="{{ setting('social_tiktok') }}" target="_blank" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-tiktok"></i></a>
+        <a href="{{ setting('social_tiktok') }}" target="_blank" rel="noopener noreferrer" style="color:#94A3B8" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fab fa-tiktok"></i></a>
       @endif
       @if(setting('whatsapp_phone'))
-        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('whatsapp_phone')) }}?text={{ urlencode(setting('whatsapp_message', 'Hola')) }}" target="_blank" style="color:#25D366" title="WhatsApp Denuncias"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('whatsapp_phone')) }}?text={{ urlencode(setting('whatsapp_message', 'Hola')) }}" target="_blank" rel="noopener noreferrer" style="color:#25D366" title="WhatsApp Denuncias"><i class="fab fa-whatsapp"></i></a>
       @endif
     </div>
   </div>

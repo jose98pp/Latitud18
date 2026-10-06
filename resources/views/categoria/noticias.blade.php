@@ -3,7 +3,7 @@
 @section('title', $categoria->name . ' - Latitud18')
 
 @section('content')
-<!-- Header de Categoría -->
+<!-- Header de CategorÃ­a -->
 <style>
   .category-layout-grid {
     display: grid;
@@ -53,15 +53,15 @@
   <div class="container">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:0.78rem;">
       <a href="{{ route('portada') }}" style="color:#94A3B8;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94A3B8'"><i class="fas fa-home" style="margin-right:4px;"></i> Inicio</a>
-      <span style="color:#475569;">›</span>
+      <span style="color:#475569;">â€º</span>
       <span style="color:#fff;font-weight:600;">{{ $categoria->name }}</span>
     </div>
     <h1 class="cat-banner-title" style="font-family:var(--font-title-bebas);font-size:3rem;color:#fff;line-height:1;letter-spacing:1px;">{{ strtoupper($categoria->name) }}</h1>
-    <p style="font-size:0.85rem;color:#94A3B8;margin-top:6px;">{{ $categoria->noticias->count() }} artículos disponibles</p>
+    <p style="font-size:0.85rem;color:#94A3B8;margin-top:6px;">{{ $categoria->noticias->count() }} artÃ­culos disponibles</p>
   </div>
 </section>
 
-<!-- Filtros por Categoría -->
+<!-- Filtros por CategorÃ­a -->
 <section style="background:var(--color-card-bg);border-bottom:1px solid var(--color-border);padding:10px 0;">
   <div class="container">
     <div class="cat-tags-filter-bar" style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -79,7 +79,7 @@
   <div class="container">
     <div class="category-layout-grid">
 
-      <!-- Feed de Artículos -->
+      <!-- Feed de ArtÃ­culos -->
       <div class="category-articles-feed" style="min-width:0;">
         @forelse($noticiasCategoria as $index => $noticia)
           <article class="cat-feed-item-card" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
@@ -116,21 +116,21 @@
             <div style="width:64px;height:64px;background:var(--color-navy-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
               <i class="fas fa-newspaper" style="font-size:1.5rem;color:var(--color-text-muted);"></i>
             </div>
-            <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1.1rem;color:var(--color-navy);margin-bottom:6px;">No hay noticias aún</h3>
-            <p style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:20px;">Estamos trabajando en traer las últimas novedades de esta categoría.</p>
+            <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1.1rem;color:var(--color-navy);margin-bottom:6px;">No hay noticias aÃºn</h3>
+            <p style="font-size:0.88rem;color:var(--color-text-muted);margin-bottom:20px;">Estamos trabajando en traer las Ãºltimas novedades de esta categorÃ­a.</p>
             <a href="{{ route('portada') }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.8rem;text-transform:uppercase;padding:10px 24px;border-radius:2px;text-decoration:none;">
               <i class="fas fa-home"></i> Volver al Inicio
             </a>
           </div>
         @endforelse
 
-        <!-- Paginación -->
+        <!-- PaginaciÃ³n -->
         @if($noticiasCategoria->hasPages())
           <div style="margin-top:24px;background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;padding:16px;">
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
               <span style="font-size:0.78rem;color:var(--color-text-muted);">Mostrando <strong style="color:var(--color-red);">{{ $noticiasCategoria->firstItem() }}</strong> - <strong style="color:var(--color-red);">{{ $noticiasCategoria->lastItem() }}</strong> de <strong style="color:var(--color-text-main);">{{ $noticiasCategoria->total() }}</strong></span>
               <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:0.75rem;color:var(--color-text-muted);">Por página:</span>
+                <span style="font-size:0.75rem;color:var(--color-text-muted);">Por pÃ¡gina:</span>
                 <select onchange="changePerPage(this.value)" style="background:var(--color-navy-subtle);border:1px solid var(--color-border);color:var(--color-text-main);font-family:var(--font-body);font-size:0.78rem;padding:4px 8px;border-radius:2px;outline:none;">
                   <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                   <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
@@ -147,7 +147,7 @@
 
       <!-- Sidebar -->
       <aside>
-        <!-- Widget Categorías -->
+        <!-- Widget CategorÃ­as -->
         <div style="background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;overflow:hidden;margin-bottom:16px;">
           <div style="background:var(--color-navy);color:#fff;padding:12px 14px;font-family:var(--font-title-montserrat);font-weight:900;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px;">
             <i class="fas fa-folder" style="font-size:0.8rem;"></i> Secciones
@@ -162,23 +162,23 @@
           </div>
         </div>
 
-        <!-- Widget Edición Semanal Tabloide (Latitud 18) -->
+        <!-- Widget EdiciÃ³n Semanal Tabloide (Latitud 18) -->
         <div style="background:var(--color-navy);color:#fff;border-radius:2px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow-sm);border-top:3px solid var(--color-red);">
           <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-title-montserrat);font-weight:900;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">
-            <i class="fa-solid fa-newspaper" style="color:var(--color-red);"></i> EDICIÓN DIGITAL TABLOIDE
+            <i class="fa-solid fa-newspaper" style="color:var(--color-red);"></i> EDICIÃ“N DIGITAL TABLOIDE
           </div>
           <p style="font-size:0.8rem;color:#CBD5E1;line-height:1.45;margin-bottom:14px;">
-            Accede al periódico semanal maquetado en estilo tabloide listo para leer y descargar.
+            Accede al periÃ³dico semanal maquetado en estilo tabloide listo para leer y descargar.
           </p>
           <a href="{{ route('periodico.public.index') }}" style="display:flex;align-items:center;justify-content:center;gap:6px;background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;text-transform:uppercase;padding:9px 16px;border-radius:2px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='var(--color-red-dark)'" onmouseout="this.style.background='var(--color-red)'">
-            <i class="fa-solid fa-file-pdf"></i> ABRIR PERIÓDICO DIGITAL
+            <i class="fa-solid fa-file-pdf"></i> ABRIR PERIÃ“DICO DIGITAL
           </a>
         </div>
 
-        <!-- Widget Últimas Noticias -->
+        <!-- Widget Ãšltimas Noticias -->
         <div style="background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="background:var(--color-navy);color:#fff;padding:12px 14px;font-family:var(--font-title-montserrat);font-weight:900;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px;border-bottom:2px solid var(--color-red);">
-            <i class="fa-solid fa-chart-line" style="color:var(--color-red);font-size:0.8rem;"></i> LO MÁS LEÍDO
+            <i class="fa-solid fa-chart-line" style="color:var(--color-red);font-size:0.8rem;"></i> LO MÃS LEÃDO
           </div>
           <div style="padding:10px;">
             @foreach($noticias->take(5) as $index => $otraNoticia)
@@ -198,19 +198,11 @@
   </div>
 </section>
 
-<!-- Banner Publicitario -->
-@if(isset($banners['category_bottom']) && $banners['category_bottom']->count() > 0)
-  <section style="padding:20px 0;">
-    <div class="container" style="text-align:center;">
-      <span style="font-size:0.65rem;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">PUBLICIDAD</span>
-      @foreach($banners['category_bottom'] as $banner)
-        <a href="{{ $banner->link ?? '#' }}" target="_blank" style="display:block;max-width:800px;margin:8px auto 0;">
-          <img src="{{ asset($banner->image_path) }}" alt="{{ $banner->title }}" style="width:100%;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,0.08);" loading="lazy">
-        </a>
-      @endforeach
-    </div>
-  </section>
-@endif
+<!-- Banner Publicitario (arriba) -->
+<x-ad-slot location="category_top" :max-width="970" label="Publicidad" :banners="$banners ?? null" />
+
+<!-- Banner Publicitario (abajo) -->
+<x-ad-slot location="category_bottom" :max-width="800" label="Publicidad" :banners="$banners ?? null" />
 
 <script>
 function changePerPage(perPage) {

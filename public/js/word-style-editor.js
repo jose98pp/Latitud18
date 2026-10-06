@@ -221,6 +221,9 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
 
     // Manejar atajos de teclado
     const handleKeyDown = (e) => {
+        // No interferir con la escritura de simbolos (Alt+numeros, teclado de terceros, IME)
+        if (e.isComposing || e.keyCode === 229) return;
+
         if (e.ctrlKey || e.metaKey) {
             switch (e.key.toLowerCase()) {
                 case 'z':

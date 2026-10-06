@@ -1,4 +1,4 @@
-@extends('layouts.main')
+﻿@extends('layouts.main')
 
 @section('title', $noticia->titulo . ' - Latitud18')
 
@@ -40,7 +40,7 @@
   "dateModified": "{{ $noticia->updated_at ? $noticia->updated_at->toIso8601String() : '' }}",
   "author": {
     "@type": "Organization",
-    "name": "Redacción Latitud18"
+    "name": "RedacciÃ³n Latitud18"
   },
   "publisher": {
     "@type": "NewsMediaOrganization",
@@ -207,28 +207,29 @@
   <div class="container">
     <nav style="display:flex;align-items:center;gap:8px;font-size:0.78rem;flex-wrap:wrap;">
       <a href="{{ route('portada') }}" style="color:var(--color-navy);text-decoration:none;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-navy)'"><i class="fas fa-home" style="margin-right:4px;"></i> Inicio</a>
-      <span style="color:var(--color-text-muted);">›</span>
+      <span style="color:var(--color-text-muted);">â€º</span>
       <a href="{{ route('categoria.noticias', $noticia->category->slug ?? ($noticia->category->id ?? 'general')) }}" style="color:var(--color-navy);text-decoration:none;font-weight:600;transition:color 0.2s;" onmouseover="this.style.color='var(--color-red)'" onmouseout="this.style.color='var(--color-navy)'">{{ $noticia->category->name ?? 'Noticias' }}</a>
-      <span style="color:var(--color-text-muted);">›</span>
+      <span style="color:var(--color-text-muted);">â€º</span>
       <span style="color:var(--color-text-muted);">{{ Str::limit($noticia->titulo, 50) }}</span>
     </nav>
   </div>
 </section>
 
-<!-- Artículo Principal -->
+<!-- ArtÃ­culo Principal -->
 <article style="padding:28px 0 36px;overflow-x:hidden;">
   <div class="container">
+    <x-ad-slot location="show_top" :max-width="970" label="Publicidad" :banners="$banners ?? null" />
     <div class="article-page-grid">
 
       <!-- Columna Principal -->
       <div class="article-main-column" style="background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;padding:36px;min-width:0;">
         
-        <!-- Badge de Categoría + Tiempo de Lectura -->
+        <!-- Badge de CategorÃ­a + Tiempo de Lectura -->
         <div class="article-top-badge-row" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--color-border);">
           <span class="card-cat-tag" style="background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.65rem;text-transform:uppercase;padding:3px 10px;border-radius:2px;">{{ $noticia->category->name ?? 'General' }}</span>
           <span style="font-size:0.75rem;color:var(--color-text-muted);display:flex;align-items:center;gap:4px;"><i class="far fa-clock" style="color:var(--color-red);"></i> {{ ceil(str_word_count(strip_tags($noticia->contenido)) / 200) }} min de lectura</span>
           <span style="flex:1;"></span>
-          <!-- Compartir Rápido -->
+          <!-- Compartir RÃ¡pido -->
           <div style="display:flex;gap:6px;">
             <a href="https://twitter.com/intent/tweet?text={{ urlencode($noticia->titulo) }}&url={{ urlencode($noticia->url) }}" target="_blank" class="btn-share-social-pill" title="Compartir en X" style="width:30px;height:30px;background:var(--color-navy-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#1DA1F2';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'"><i class="fab fa-x-twitter" style="font-size:0.7rem;"></i></a>
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($noticia->url) }}" target="_blank" class="btn-share-social-pill" title="Compartir en Facebook" style="width:30px;height:30px;background:var(--color-navy-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#1877F2';this.style.color='#fff'" onmouseout="this.style.background='var(--color-navy-subtle)';this.style.color='var(--color-text-muted)'"><i class="fab fa-facebook-f" style="font-size:0.7rem;"></i></a>
@@ -237,7 +238,8 @@
           </div>
         </div>
 
-        <!-- Título Principal -->
+        <!-- TÃ­tulo Principal -->
+        <div id="rxStickyAnchor"></div>
         <h1 class="article-page-headline" style="font-family:var(--font-title-bebas);font-size:3.4rem;color:var(--color-navy);line-height:1.05;margin-bottom:20px;letter-spacing:-0.5px;">{{ $noticia->titulo }}</h1>
 
         <!-- Lead / Resumen -->
@@ -250,7 +252,7 @@
           <div class="author-info-flex" style="display:flex;align-items:center;gap:10px;">
             <div style="width:36px;height:36px;background:var(--color-navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.8rem;">L</div>
             <div>
-              <span style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.82rem;color:var(--color-text-main);">Redacción Latitud18</span>
+              <span style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.82rem;color:var(--color-text-main);">RedacciÃ³n Latitud18</span>
               <span style="display:block;font-size:0.7rem;color:var(--color-text-muted);">{{ \Carbon\Carbon::parse($noticia->created_at)->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</span>
             </div>
           </div>
@@ -278,17 +280,27 @@
             </div>
           </div>
 
-          <!-- Ajuste de Tipografía y Utilidades -->
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-size:0.7rem;color:var(--color-text-muted);margin-right:2px;"><i class="fas fa-font"></i> Tamaño:</span>
-            <button class="toolbar-btn" onclick="adjustFontSize(-1)" title="Reducir tamaño de letra" style="padding:4px 10px;">A-</button>
-            <button class="toolbar-btn" onclick="adjustFontSize(0)" title="Tamaño predeterminado" style="padding:4px 10px;">A</button>
-            <button class="toolbar-btn" onclick="adjustFontSize(1)" title="Aumentar tamaño de letra" style="padding:4px 10px;">A+</button>
-            <button class="toolbar-btn" onclick="window.print()" title="Imprimir artículo" style="margin-left:4px;">
+          <!-- Ajuste de TipografÃ­a y Utilidades -->
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:0.7rem;color:var(--color-text-muted);margin-right:2px;"><i class="fas fa-font"></i> TamaÃ±o:</span>
+            <button class="toolbar-btn" data-rx-font="-0.1" title="Reducir tamaÃ±o de letra" style="padding:4px 10px;">A-</button>
+            <button class="toolbar-btn" data-rx-font="0.1" title="Aumentar tamaÃ±o de letra" style="padding:4px 10px;">A+</button>
+            <button class="toolbar-btn" data-rx-type="serif" title="TipografÃ­a serif (periÃ³dico)" style="padding:4px 10px;"><i class="fas fa-text-height"></i> Serif</button>
+            <button class="toolbar-btn" data-rx-type="sans" title="TipografÃ­a sans (pantalla)" style="padding:4px 10px;"><i class="fas fa-font"></i> Sans</button>
+            <button class="toolbar-btn" data-rx-width="1" title="Columna ancha o de lectura" style="padding:4px 10px;"><i class="fas fa-arrows-alt-h"></i> Columna</button>
+            <span style="width:1px;height:20px;background:var(--color-border);margin:0 2px;"></span>
+            <button class="toolbar-btn" data-rx-mode="night" title="Modo lectura sepia" style="padding:4px 10px;"><i class="fas fa-coffee"></i> Sepia</button>
+            <button class="toolbar-btn" data-rx-mode="dark" title="Modo lectura oscura" style="padding:4px 10px;"><i class="fas fa-moon"></i> Oscuro</button>
+            <button class="toolbar-btn" data-rx-mode="" title="Volver al modo normal" style="padding:4px 10px;"><i class="fas fa-sun"></i> Normal</button>
+            <span style="width:1px;height:20px;background:var(--color-border);margin:0 2px;"></span>
+            <button class="toolbar-btn" onclick="window.print()" title="Imprimir artÃ­culo" style="padding:4px 10px;">
               <i class="fas fa-print"></i> Imprimir
             </button>
           </div>
         </div>
+
+        <!-- Experiencia de lectura mejorada (progreso, modo nocturno, key points, TOC, pull quote) -->
+        @include('partials.reading-experience')
 
         <!-- Imagen Principal -->
         @if($noticia->has_valid_image)
@@ -300,28 +312,27 @@
           </figure>
         @endif
 
-        <!-- Contenido del Artículo -->
-        <div id="articleBody" class="article-rich-body" style="font-size:1.15rem;line-height:1.8;color:var(--color-text-main);margin-bottom:32px;transition:font-size 0.2s ease;">
-          <style>.article-rich-body p:first-of-type::first-letter { font-family:var(--font-title-anton);font-size:4rem;float:left;line-height:0.75;margin-right:10px;margin-top:4px;color:var(--color-navy); }</style>
+        <!-- Contenido del ArtÃ­culo -->
+        <div id="articleBody" class="article-rich-body" style="margin-bottom:32px;">
           {!! $noticia->contenidoSanitizado ?? nl2br(e($noticia->contenido)) !!}
         </div>
 
-        <!-- FOTOGALERÍA INTERACTIVA (SI EXISTE) -->
+        <!-- FOTOGALERÃA INTERACTIVA (SI EXISTE) -->
         @if($noticia->galeria && $noticia->galeria->count() > 0)
           <div class="photo-gallery-section" style="margin-bottom:32px;background:var(--color-navy-subtle);border:1px solid var(--color-border);border-left:4px solid var(--color-red);border-radius:4px;padding:20px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
               <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);margin:0;display:flex;align-items:center;gap:8px;">
-                <i class="fas fa-images" style="color:var(--color-red);"></i> Fotogalería del Artículo
+                <i class="fas fa-images" style="color:var(--color-red);"></i> FotogalerÃ­a del ArtÃ­culo
               </h3>
               <span class="badge bg-danger text-white px-2 py-1" style="font-size:0.7rem;font-weight:700;">
-                {{ $noticia->galeria->count() }} {{ $noticia->galeria->count() === 1 ? 'Fotografía' : 'Fotografías' }}
+                {{ $noticia->galeria->count() }} {{ $noticia->galeria->count() === 1 ? 'FotografÃ­a' : 'FotografÃ­as' }}
               </span>
             </div>
 
             <div class="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:12px;">
               @foreach($noticia->galeria as $index => $foto)
                 <div class="gallery-thumb-wrap" onclick="openLightbox({{ $index }})" style="position:relative;aspect-ratio:4/3;border-radius:4px;overflow:hidden;cursor:pointer;background:#000;box-shadow:0 2px 6px rgba(0,0,0,0.1);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                  <img src="{{ $foto->image_url }}" alt="{{ $foto->pie_de_foto ?? 'Fotografía ' . ($index + 1) }}" style="width:100%;height:100%;object-fit:cover;opacity:0.92;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.92'">
+                  <img src="{{ $foto->image_url }}" alt="{{ $foto->pie_de_foto ?? 'FotografÃ­a ' . ($index + 1) }}" style="width:100%;height:100%;object-fit:cover;opacity:0.92;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.92'">
                   <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);display:flex;align-items:flex-end;padding:8px;">
                     <span style="color:#fff;font-size:0.7rem;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,0.8);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
                       {{ $foto->pie_de_foto ?: 'Ver foto ' . ($index + 1) }}
@@ -359,6 +370,30 @@
           </div>
         </div>
 
+        <!-- CONTINUAR LEYENDO -->
+        @if(isset($noticias) && count($noticias) > 0)
+          <div style="background:var(--color-navy-subtle);border:1px solid var(--color-border);border-top:3px solid var(--color-navy);border-radius:3px;padding:18px 20px;margin-bottom:28px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+              <i class="fas fa-book-open" style="color:var(--color-red);"></i>
+              <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-navy);margin:0;">Continuar Leyendo</h3>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+              @foreach($noticias->take(3) as $siguiente)
+                <a href="{{ $siguiente->url }}" style="display:flex;gap:10px;background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:3px;padding:10px;text-decoration:none;transition:all 0.25s;" onmouseover="this.style.borderColor='var(--color-red)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--color-border)';this.style.transform='none'">
+                  <div style="width:70px;min-width:70px;height:52px;border-radius:2px;overflow:hidden;background:#eee;">
+                    <img src="{{ $siguiente->imagenUrl ?? asset('images/default-news.svg') }}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="handleImageError(this)" loading="lazy">
+                  </div>
+                  <div style="min-width:0;">
+                    <span style="font-size:0.6rem;color:var(--color-red);font-family:var(--font-title-montserrat);font-weight:800;text-transform:uppercase;letter-spacing:0.5px;">{{ $siguiente->category->name ?? 'General' }}</span>
+                    <h4 style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.78rem;color:var(--color-text-main);line-height:1.3;margin-top:2px;">{{ Str::limit($siguiente->titulo, 65) }}</h4>
+                    <span style="font-size:0.65rem;color:var(--color-text-muted);display:flex;align-items:center;gap:4px;margin-top:4px;"><i class="far fa-clock"></i> {{ ceil(str_word_count(strip_tags($siguiente->contenido)) / 200) }} min</span>
+                  </div>
+                </a>
+              @endforeach
+            </div>
+          </div>
+        @endif
+
         <!-- REACCIONES DE LOS LECTORES -->
         @php
           $counts = $noticia->reacciones_counts;
@@ -367,7 +402,7 @@
         <div class="reactions-box" style="background:var(--color-navy-subtle);border:1px solid var(--color-border);border-radius:4px;padding:20px;margin-bottom:28px;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);margin:0;display:flex;align-items:center;gap:8px;">
-              <i class="fas fa-heart" style="color:var(--color-red);"></i> ¿Qué opinas de esta noticia?
+              <i class="fas fa-heart" style="color:var(--color-red);"></i> Â¿QuÃ© opinas de esta noticia?
             </h3>
             <span id="reactionsTotalBadge" style="font-size:0.75rem;color:var(--color-text-muted);font-weight:600;">
               {{ $counts['total'] }} reacciones
@@ -376,25 +411,25 @@
 
           <div class="reactions-grid">
             <button type="button" class="reaction-card-btn {{ $userReact === 'me_informa' ? 'selected' : '' }}" data-reaction="me_informa" onclick="submitReaction('me_informa')">
-              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">👍</span>
+              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">ðŸ‘</span>
               <span style="font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;color:var(--color-navy);display:block;">Me informa</span>
               <span class="count-badge" id="count-me_informa" style="font-size:0.72rem;color:var(--color-text-muted);font-weight:700;">{{ $counts['me_informa'] }}</span>
             </button>
 
             <button type="button" class="reaction-card-btn {{ $userReact === 'interesante' ? 'selected' : '' }}" data-reaction="interesante" onclick="submitReaction('interesante')">
-              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">💡</span>
+              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">ðŸ’¡</span>
               <span style="font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;color:var(--color-navy);display:block;">Interesante</span>
               <span class="count-badge" id="count-interesante" style="font-size:0.72rem;color:var(--color-text-muted);font-weight:700;">{{ $counts['interesante'] }}</span>
             </button>
 
             <button type="button" class="reaction-card-btn {{ $userReact === 'me_indigna' ? 'selected' : '' }}" data-reaction="me_indigna" onclick="submitReaction('me_indigna')">
-              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">😠</span>
+              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">ðŸ˜ </span>
               <span style="font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;color:var(--color-navy);display:block;">Me indigna</span>
               <span class="count-badge" id="count-me_indigna" style="font-size:0.72rem;color:var(--color-text-muted);font-weight:700;">{{ $counts['me_indigna'] }}</span>
             </button>
 
             <button type="button" class="reaction-card-btn {{ $userReact === 'recomiendo' ? 'selected' : '' }}" data-reaction="recomiendo" onclick="submitReaction('recomiendo')">
-              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">👏</span>
+              <span style="font-size:1.6rem;display:block;margin-bottom:4px;">ðŸ‘</span>
               <span style="font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;color:var(--color-navy);display:block;">Excelente</span>
               <span class="count-badge" id="count-recomiendo" style="font-size:0.72rem;color:var(--color-text-muted);font-weight:700;">{{ $counts['recomiendo'] }}</span>
             </button>
@@ -403,8 +438,8 @@
 
         <!-- Compartir en Redes -->
         <div style="background:var(--color-navy-subtle);border:1px solid var(--color-border);border-radius:2px;padding:24px;text-align:center;margin-bottom:28px;">
-          <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1rem;color:var(--color-navy);margin-bottom:6px;">¿Te gustó esta noticia?</h3>
-          <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:16px;">Compártela con tus contactos</p>
+          <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1rem;color:var(--color-navy);margin-bottom:6px;">Â¿Te gustÃ³ esta noticia?</h3>
+          <p style="font-size:0.85rem;color:var(--color-text-muted);margin-bottom:16px;">CompÃ¡rtela con tus contactos</p>
           <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
             <a href="https://twitter.com/intent/tweet?text={{ urlencode($noticia->titulo) }}&url={{ urlencode($noticia->url) }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#1DA1F2;color:#fff;font-family:var(--font-title-montserrat);font-weight:700;font-size:0.75rem;padding:8px 16px;border-radius:2px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'"><i class="fab fa-x-twitter"></i> Twitter</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($noticia->url) }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#1877F2;color:#fff;font-family:var(--font-title-montserrat);font-weight:700;font-size:0.75rem;padding:8px 16px;border-radius:2px;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'"><i class="fab fa-facebook-f"></i> Facebook</a>
@@ -412,19 +447,19 @@
           </div>
         </div>
 
-        <!-- TARJETA DE SUSCRIPCIÓN AL BOLETÍN -->
+        <!-- TARJETA DE SUSCRIPCIÃ“N AL BOLETÃN -->
         <div class="article-newsletter-card" style="background:linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 100%);color:#fff;border-radius:4px;padding:24px;margin-bottom:28px;border-left:4px solid var(--color-red);">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
             <div style="width:36px;height:36px;background:var(--color-red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;">
               <i class="fas fa-envelope-open-text"></i>
             </div>
             <div>
-              <h4 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1rem;color:#fff;margin:0;text-transform:uppercase;">Únete al Boletín Latitud 18</h4>
-              <p style="font-size:0.78rem;color:#94A3B8;margin:0;">Recibe análisis exclusivos y noticias destacadas en tu bandeja de entrada.</p>
+              <h4 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1rem;color:#fff;margin:0;text-transform:uppercase;">Ãšnete al BoletÃ­n Latitud 18</h4>
+              <p style="font-size:0.78rem;color:#94A3B8;margin:0;">Recibe anÃ¡lisis exclusivos y noticias destacadas en tu bandeja de entrada.</p>
             </div>
           </div>
           <form onsubmit="handleNewsletterSubmit(event, 'Detalle Noticia')" data-msg-target="article-newsletter-msg" style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
-            <input type="email" required placeholder="Ingresa tu correo electrónico..." style="flex:1;min-width:220px;padding:9px 12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:2px;font-size:0.85rem;outline:none;">
+            <input type="email" required placeholder="Ingresa tu correo electrÃ³nico..." style="flex:1;min-width:220px;padding:9px 12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:2px;font-size:0.85rem;outline:none;">
             <button type="submit" style="background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.75rem;text-transform:uppercase;padding:9px 18px;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='var(--color-red-dark)'" onmouseout="this.style.background='var(--color-red)'">
               Suscribirme
             </button>
@@ -432,7 +467,7 @@
           <div id="article-newsletter-msg" style="display:none;margin-top:10px;font-size:0.8rem;padding:6px 12px;border-radius:2px;"></div>
         </div>
 
-        <!-- SECCIÓN DE COMENTARIOS -->
+        <!-- SECCIÃ“N DE COMENTARIOS -->
         <div id="comentarios-section" style="border-top:2px solid var(--color-navy);padding-top:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
             <h3 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1.1rem;text-transform:uppercase;color:var(--color-navy);margin:0;display:flex;align-items:center;gap:8px;">
@@ -472,7 +507,7 @@
                   @enderror
                 </div>
                 <div>
-                  <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);margin-bottom:4px;">Correo electrónico <span style="font-size:0.7rem;color:var(--color-text-muted);">(Opcional, no será público)</span></label>
+                  <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);margin-bottom:4px;">Correo electrÃ³nico <span style="font-size:0.7rem;color:var(--color-text-muted);">(Opcional, no serÃ¡ pÃºblico)</span></label>
                   <input type="email" name="email" value="{{ old('email') }}" placeholder="tu@correo.com" style="width:100%;padding:8px 12px;font-size:0.85rem;background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;color:var(--color-text-main);outline:none;">
                   @error('email')
                     <span style="color:var(--color-red);font-size:0.72rem;">{{ $message }}</span>
@@ -482,7 +517,7 @@
 
               <div style="margin-bottom:14px;">
                 <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--color-text-secondary);margin-bottom:4px;">Comentario <span style="color:var(--color-red);">*</span></label>
-                <textarea name="contenido" rows="3" required placeholder="Escribe tu opinión respetando las normas de convivencia..." style="width:100%;padding:10px 12px;font-size:0.88rem;font-family:var(--font-body);background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;color:var(--color-text-main);outline:none;resize:vertical;">{{ old('contenido') }}</textarea>
+                <textarea name="contenido" rows="3" required placeholder="Escribe tu opiniÃ³n respetando las normas de convivencia..." style="width:100%;padding:10px 12px;font-size:0.88rem;font-family:var(--font-body);background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;color:var(--color-text-main);outline:none;resize:vertical;">{{ old('contenido') }}</textarea>
                 @error('contenido')
                   <span style="color:var(--color-red);font-size:0.72rem;">{{ $message }}</span>
                 @enderror
@@ -518,7 +553,7 @@
             @empty
               <div style="text-align:center;padding:24px 0;color:var(--color-text-muted);">
                 <i class="far fa-comment-dots" style="font-size:2rem;margin-bottom:8px;display:block;opacity:0.4;"></i>
-                <p style="font-size:0.85rem;margin:0;">Aún no hay comentarios. ¡Sé el primero en compartir tu opinión!</p>
+                <p style="font-size:0.85rem;margin:0;">AÃºn no hay comentarios. Â¡SÃ© el primero en compartir tu opiniÃ³n!</p>
               </div>
             @endforelse
           </div>
@@ -527,6 +562,9 @@
 
       <!-- Sidebar -->
       <aside>
+        <!-- Banner Publicitario Lateral -->
+        <x-ad-slot location="sidebar" :max-width="360" label="Publicidad" :banners="$banners ?? null" />
+
         <!-- Noticias Relacionadas -->
         <div style="background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;overflow:hidden;margin-bottom:16px;">
           <div style="background:var(--color-navy);color:#fff;padding:12px 14px;font-family:var(--font-title-montserrat);font-weight:900;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px;">
@@ -547,11 +585,11 @@
           </div>
         </div>
 
-        <!-- Widget suscripción -->
+        <!-- Widget suscripciÃ³n -->
         <div style="background:var(--color-navy);border-radius:2px;padding:20px;text-align:center;color:#fff;">
           <i class="fas fa-bell" style="font-size:1.5rem;color:var(--color-red);margin-bottom:10px;display:block;"></i>
           <h4 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.82rem;margin-bottom:6px;">NO TE PIERDAS NADA</h4>
-          <p style="font-size:0.75rem;color:#94A3B8;margin-bottom:14px;">Síguenos en nuestras redes sociales</p>
+          <p style="font-size:0.75rem;color:#94A3B8;margin-bottom:14px;">SÃ­guenos en nuestras redes sociales</p>
           <div style="display:flex;justify-content:center;gap:6px;">
             <a href="https://facebook.com/uhtvbolivia" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'"><i class="fab fa-facebook-f" style="font-size:0.75rem;"></i></a>
             <a href="https://x.com/UhtvBol" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'"><i class="fab fa-x-twitter" style="font-size:0.75rem;"></i></a>
@@ -564,26 +602,15 @@
   </div>
 </article>
 
-<!-- Banner Publicitario -->
-@if(isset($banners['show_bottom']) && $banners['show_bottom']->count() > 0)
-  <section style="padding:20px 0;">
-    <div class="container" style="text-align:center;">
-      <span style="font-size:0.65rem;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">PUBLICIDAD</span>
-      @foreach($banners['show_bottom'] as $banner)
-        <a href="{{ $banner->link ?? '#' }}" target="_blank" style="display:block;max-width:800px;margin:8px auto 0;">
-          <img src="{{ asset($banner->image_path) }}" alt="{{ $banner->title }}" style="width:100%;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,0.08);" loading="lazy">
-        </a>
-      @endforeach
-    </div>
-  </section>
-@endif
+<!-- Banner Publicitario (abajo) -->
+<x-ad-slot location="show_bottom" :max-width="800" label="Publicidad" :banners="$banners ?? null" />
 
-<!-- Más Noticias -->
+<!-- MÃ¡s Noticias -->
 <section style="padding:28px 0 36px;background:var(--color-navy-subtle);border-top:1px solid var(--color-border);">
   <div class="container">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--color-navy);">
       <div style="display:flex;align-items:center;gap:10px;">
-        <h2 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);">Más Noticias</h2>
+        <h2 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-navy);">MÃ¡s Noticias</h2>
         <div style="width:32px;height:3px;background:var(--color-red);border-radius:1px;"></div>
       </div>
       <a href="{{ route('portada') }}" style="font-family:var(--font-title-montserrat);font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--color-red);text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">VER PORTADA <i class="fas fa-chevron-right" style="font-size:0.6rem;"></i></a>
@@ -619,21 +646,6 @@ function copyToClipboard(text) {
     });
 }
 
-// --- AJUSTE DE TAMAÑO DE FUENTE ---
-let currentFontSizeStep = 0; // -1: 0.95rem, 0: 1.15rem, 1: 1.35rem, 2: 1.55rem
-const fontSizes = ['0.95rem', '1.15rem', '1.35rem', '1.55rem'];
-function adjustFontSize(delta) {
-    if (delta === 0) {
-        currentFontSizeStep = 1;
-    } else {
-        currentFontSizeStep = Math.max(0, Math.min(fontSizes.length - 1, (currentFontSizeStep || 1) + delta));
-    }
-    const bodyEl = document.getElementById('articleBody');
-    if (bodyEl) {
-        bodyEl.style.fontSize = fontSizes[currentFontSizeStep];
-    }
-}
-
 // --- TEXT TO SPEECH (ESCUCHAR NOTICIA) ---
 let synth = window.speechSynthesis;
 let utterance = null;
@@ -651,7 +663,7 @@ function getArticleCleanText() {
 
 function toggleTextToSpeech() {
     if (!('speechSynthesis' in window)) {
-        alert('Tu navegador no soporta la función de lectura de voz.');
+        alert('Tu navegador no soporta la funciÃ³n de lectura de voz.');
         return;
     }
 
@@ -680,7 +692,7 @@ function toggleTextToSpeech() {
         utterance.lang = 'es-ES';
         utterance.rate = currentSpeed;
 
-        // Selección de voz en español si está disponible
+        // SelecciÃ³n de voz en espaÃ±ol si estÃ¡ disponible
         const voices = synth.getVoices();
         const esVoice = voices.find(v => v.lang.startsWith('es'));
         if (esVoice) utterance.voice = esVoice;
@@ -780,11 +792,11 @@ function submitReaction(tipo) {
         }
     })
     .catch(err => {
-        console.error('Error al registrar la reacción:', err);
+        console.error('Error al registrar la reacciÃ³n:', err);
     });
 }
 
-// --- FOTOGALERÍA LIGHTBOX INTERACTIVA ---
+// --- FOTOGALERÃA LIGHTBOX INTERACTIVA ---
 @if($noticia->galeria && $noticia->galeria->count() > 0)
 const galleryData = @json($noticia->galeria->map(function($foto) {
     return [
@@ -838,7 +850,7 @@ function updateLightboxUI() {
     if (img) img.src = photo.url;
     if (counter) counter.innerText = `${currentLightboxIndex + 1} / ${galleryData.length}`;
     if (caption) {
-        caption.innerText = photo.caption || `Fotografía ${currentLightboxIndex + 1}`;
+        caption.innerText = photo.caption || `FotografÃ­a ${currentLightboxIndex + 1}`;
     }
 }
 
@@ -873,7 +885,7 @@ document.addEventListener('keydown', function(e) {
       <i class="fas fa-chevron-left"></i>
     </button>
 
-    <img id="lightbox-current-img" src="" alt="Fotografía" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+    <img id="lightbox-current-img" src="" alt="FotografÃ­a" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
 
     <button onclick="nextLightbox(event)" style="position:absolute;right:10px;z-index:10;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)'" onmouseout="this.style.background='rgba(0,0,0,0.6)'">
       <i class="fas fa-chevron-right"></i>

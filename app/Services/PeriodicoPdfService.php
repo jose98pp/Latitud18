@@ -23,6 +23,8 @@ class PeriodicoPdfService
      */
     public function descarga(array $edicion)
     {
+        // If pdf_url is set but file doesn't exist on disk, resolveUploadedPdf() returns null
+        // and we fall through to DomPDF rendering — never returning 404 (Req 7.9)
         // 1) PDF subido por el administrador, si existe
         $subido = $this->resolveUploadedPdf($edicion);
         if ($subido) {
@@ -33,6 +35,10 @@ class PeriodicoPdfService
         }
 
         // 2) Composición del PDF en el servidor
+        if (empty($edicion['paginas'])) {
+            throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
+        }
+
         $pdf = Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
             ->setOptions([
                 'isRemoteEnabled'      => true,
@@ -40,10 +46,11 @@ class PeriodicoPdfService
                 'defaultFont'          => 'DejaVu Serif',
             ]);
 
-        return $pdf->download($this->filename($edicion), [
-            'Content-Type' => 'application/pdf',
-            'Cache-Control' => 'public, max-age=600',
-        ]);
+        $response = $pdf->download($this->filename($edicion));
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Cache-Control', 'public, max-age=600');
+
+        return $response;
     }
 
     /**
@@ -51,9 +58,15 @@ class PeriodicoPdfService
      */
     public function contenido(array $edicion): string
     {
+        // If pdf_url is set but file doesn't exist on disk, resolveUploadedPdf() returns null
+        // and we fall through to DomPDF rendering — never returning 404 (Req 7.9)
         $subido = $this->resolveUploadedPdf($edicion);
         if ($subido) {
             return (string) file_get_contents($subido);
+        }
+
+        if (empty($edicion['paginas'])) {
+            throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
         }
 
         return Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
@@ -109,7 +122,7 @@ class PeriodicoPdfService
     public function filename(array $edicion): string
     {
         $id = (string) ($edicion['id'] ?? 'edicion');
-        $base = 'latitud-18-' . preg_replace('/[^a-zA-Z0-9\-_]/', '', $id);
+        $base = 'latitud-18-ed-' . preg_replace('/[^a-zA-Z0-9\-_]/', '', $id);
         return Str::limit($base, 60, '') . '.pdf';
     }
 }

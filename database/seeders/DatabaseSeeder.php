@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SiteSettingSeeder::class,
             EditorialRealDataSeeder::class,
+            PeriodicoPlantillasSeeder::class,
         ]);
     }
 }

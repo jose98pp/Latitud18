@@ -5,6 +5,28 @@
 @section('content')
 <div class="container">
 
+    @php
+        // Aviso de frescura: si lo mas reciente no es de hoy, indicarlo en vez de
+        // dejar que el usuario asuma que la portada esta al dia.
+        $ultimaDeporte = !empty($deportesCatIds)
+            ? \App\Models\Noticia::publicadaActiva()->whereIn('category_id', $deportesCatIds)->max('created_at')
+            : null;
+        $ultimaDeporte = $ultimaDeporte ? \Carbon\Carbon::parse($ultimaDeporte) : null;
+        $diasSinActualizar = $ultimaDeporte ? (int) now()->diffInDays($ultimaDeporte) : null;
+    @endphp
+
+    @if($diasSinActualizar !== null && $diasSinActualizar >= 3)
+        <div class="ca-card p-3 mb-4" style="border-left:3px solid var(--ca-gold);">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-clock-rotate-left" style="color:var(--ca-gold);"></i>
+                <span class="small text-muted">
+La secci&oacute;n deportiva no tiene noticias nuevas desde hace
+                      <strong class="text-white">{{ $diasSinActualizar }} {{ $diasSinActualizar === 1 ? 'día' : 'días' }}</strong>.
+                </span>
+            </div>
+        </div>
+    @endif
+
     <!-- ══════════════════════════════════════════════════════
          BLOQUE 1: NOTICIA HERO (EL GOLPE DE LA FECHA) + LATERAL
     ══════════════════════════════════════════════════════ -->
@@ -30,12 +52,12 @@
                 <!-- Imagen de fondo con overlay degradado oscuro -->
                 <div style="position: absolute; inset: 0; z-index: 1;">
                     <a href="{{ $heroUrl }}">
-                        <img src="{{ $heroImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80' }}" 
+                        <img loading="eager" fetchpriority="high" decoding="async" src="{{ $heroImg ?: '/images/default-news.svg' }}" 
                              alt="{{ $heroTitulo }}" 
                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
                              onmouseover="this.style.transform='scale(1.03)'" 
                              onmouseout="this.style.transform='scale(1)'"
-                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80'">
+                             onerror="this.onerror=null;this.src='/images/default-news.svg'">
                     </a>
                     <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(9,13,22,0.2) 0%, rgba(9,13,22,0.85) 65%, rgba(9,13,22,0.98) 100%); pointer-events: none;"></div>
                 </div>
@@ -141,12 +163,12 @@
                     <div class="ca-card h-100 d-flex flex-column">
                         <div style="height: 170px; overflow: hidden; position: relative;">
                             <a href="{{ $dUrl }}">
-                                <img src="{{ $dImg ?: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80' }}" 
+                                <img loading="lazy" decoding="async" src="{{ $dImg ?: '/images/default-news.svg' }}" 
                                      alt="{{ $dTitulo }}" 
                                      style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
                                      onmouseover="this.style.transform='scale(1.06)'" 
                                      onmouseout="this.style.transform='scale(1)'"
-                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80'">
+                                     onerror="this.onerror=null;this.src='/images/default-news.svg'">
                             </a>
                             <span class="badge position-absolute top-2 start-2" style="background: rgba(0,0,0,0.8); color: var(--ca-volt); font-family: var(--ca-font-display); font-size: 0.68rem; letter-spacing: 0.5px;">
                                 {{ $dCat }}
@@ -211,7 +233,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if(!empty($row['logo']))
-                                                <img src="{{ $row['logo'] }}" alt="{{ $row['club'] }}" style="width: 20px; height: 20px; object-fit: contain;" class="me-2" onerror="this.style.display='none'">
+                                                <img loading="lazy" decoding="async" src="{{ $row['logo'] }}" alt="{{ $row['club'] }}" style="width: 20px; height: 20px; object-fit: contain;" class="me-2" onerror="this.style.display='none'">
                                             @endif
                                             <strong class="text-white">{{ $row['club'] }}</strong>
                                         </div>
@@ -244,10 +266,10 @@
                 </div>
 
                 <div class="d-flex flex-column gap-4">
-                    @foreach($columnistasDeportes ?? [] as $col)
+                    @forelse($columnistasDeportes ?? [] as $col)
                         <div class="p-3 rounded" style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--ca-volt);">
                             <div class="d-flex align-items-center gap-3 mb-2">
-                                <img src="{{ $col['foto'] }}" alt="{{ $col['autor'] }}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ca-volt);">
+                                <img loading="lazy" decoding="async" src="{{ $col['foto'] }}" alt="{{ $col['autor'] }}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ca-volt);">
                                 <div>
                                     <h4 class="h6 mb-0 text-white fw-bold">{{ $col['autor'] }}</h4>
                                     <small class="text-muted" style="font-size: 0.7rem;">{{ $col['cargo'] }}</small>
@@ -258,7 +280,14 @@
                                 {{ $col['extracto'] }}
                             </p>
                         </div>
-                    @endforeach
+                    @empty
+                        <div class="p-3 rounded text-center" style="background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15);">
+                            <i class="fas fa-feather-pointed mb-2" style="color: var(--ca-volt); font-size: 1.5rem; opacity: .6;"></i>
+                            <p class="text-muted small mb-0">
+                                Todav&iacute;a no hay columnas de opini&oacute;n deportiva publicadas.
+                            </p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -279,7 +308,7 @@
                     <div class="ca-card h-100">
                         <div style="height: 190px; position: relative; overflow: hidden;">
                             <a href="{{ route('contraataque.show', $v['id']) }}">
-                                <img src="{{ $v['imagen'] }}" alt="{{ $v['titulo'] }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                <img loading="lazy" decoding="async" src="{{ $v['imagen'] }}" alt="{{ $v['titulo'] }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onerror="this.onerror=null;this.src='/images/default-news.svg'">
                                 <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
                                     <div style="width: 52px; height: 52px; background: var(--ca-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem; box-shadow: 0 0 20px rgba(255,59,48,0.6); transition: transform 0.2s;">
                                         <i class="fas fa-play ms-1"></i>
@@ -295,7 +324,9 @@
                             <h4 class="ca-title-card" style="font-size: 1rem;">
                                 <a href="{{ route('contraataque.show', $v['id']) }}">{{ $v['titulo'] }}</a>
                             </h4>
-                            <small class="text-muted"><i class="fas fa-eye me-1"></i>{{ $v['vistas'] }}</small>
+                            @if(!empty($v['vistas']))
+                                <small class="text-muted"><i class="fas fa-eye me-1"></i>{{ $v['vistas'] }}</small>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -332,12 +363,12 @@
                     <div class="ca-card h-100 p-3 d-flex gap-3">
                         <div style="width: 100px; height: 100px; min-width: 100px; border-radius: 6px; overflow: hidden;">
                             <a href="{{ $mUrl }}">
-                                <img src="{{ $mImg ?: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80' }}" 
+                                <img loading="lazy" decoding="async" src="{{ $mImg ?: '/images/default-news.svg' }}" 
                                      alt="{{ $mTitulo }}" 
                                      style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
                                      onmouseover="this.style.transform='scale(1.05)'"
                                      onmouseout="this.style.transform='scale(1)'"
-                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80'">
+                                     onerror="this.onerror=null;this.src='/images/default-news.svg'">
                             </a>
                         </div>
                         <div class="d-flex flex-column justify-content-between">
@@ -491,11 +522,11 @@ function renderMatchesList(matches, container) {
         }
 
         const localLogo = p.local_logo 
-            ? `<img src="${p.local_logo}" alt="${p.local}" class="ca-team-logo" onerror="this.style.display='none'">` 
+            ? `<img loading="lazy" decoding="async" src="${p.local_logo}" alt="${p.local}" class="ca-team-logo" onerror="this.style.display='none'">` 
             : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.local_color || '#00FF87'}; display: inline-block; flex-shrink: 0;"></span>`;
             
         const visitLogo = p.visitante_logo 
-            ? `<img src="${p.visitante_logo}" alt="${p.visitante}" class="ca-team-logo" onerror="this.style.display='none'">` 
+            ? `<img loading="lazy" decoding="async" src="${p.visitante_logo}" alt="${p.visitante}" class="ca-team-logo" onerror="this.style.display='none'">` 
             : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.visitante_color || '#FFFFFF'}; display: inline-block; flex-shrink: 0;"></span>`;
 
         html += `

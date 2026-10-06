@@ -488,7 +488,10 @@
     flex-direction: column;
     gap: 16px;
     position: relative;
-    overflow: hidden;
+    /* Con el libro más grande puede exceder el alto en ventanas bajas:
+       permitir scroll vertical en vez de recortar la hoja */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .fb-wrapper::before {
     content:'';
@@ -515,12 +518,14 @@
     align-items: stretch;
     position: relative;
     transform-style: preserve-3d;
-    /* Ligera inclinación 3D para sensación de profundidad */
-    transform: rotateX(2deg);
-    transition: transform 0.4s ease;
+    /* El zoom y la inclinación se combinan aquí. El hover solo cambia la
+       variable --fbTilt; si se escribiera la transform completa en :hover,
+       specificity (.fb-book:hover) anularía el scale() del zoom. */
+    transform: scale(var(--fbZoom, 1)) rotateX(var(--fbTilt, 2deg));
+    transition: transform .4s ease;
     filter: drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 10px 30px rgba(0,0,0,0.5));
 }
-.fb-book:hover { transform: rotateX(0deg); }
+.fb-book:hover { --fbTilt: 0deg; }
 
 /* El lomo del libro — sombra de encuadernación */
 .fb-spine {
@@ -547,33 +552,37 @@
         rgba(0,0,0,0.2) 100%);
 }
 
-/* Hoja del libro — proporciones de periódico */
+/* Hoja del libro — proporciones exactas de la edición (720×1040 px) */
 .fb-page {
-    /* Periódico tabloide: aprox 280×390mm → ratio 1:1.393 */
-    width: clamp(280px, 38vw, 440px);
-    /* altura = width × 1.39 */
-    aspect-ratio: 280 / 390;
-    max-height: 82vh;
-    background: #fffef9;
+    /* Proporción exacta 720 / 1040 = 0.6923 */
+    width: min(46vw, calc((100vh - 170px) * (720 / 1040)));
+    min-width: 240px;
+    aspect-ratio: 720 / 1040;
+    max-height: calc(100vh - 170px);
+    background: #ffffff;
     position: relative;
     overflow: hidden;
     transform-style: preserve-3d;
     flex-shrink: 0;
 }
 
-/* Contenedor interno que escala el contenido del editor */
+/* Contenedor interno que escala el contenido del editor al 100% */
 .fb-page-inner {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
-/* El contenido renderizado del periódico se escala para caber */
+/* El contenido renderizado del periódico se escala para llenar la hoja */
 .fb-page-inner > .fb-page-source,
 .fb-page-inner > div {
-    width: 794px; /* ancho del editor */
-    height: 1123px; /* alto del editor */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 720px;
+    height: 1040px;
     transform-origin: top left;
-    /* JS calcula el scale */
 }
 
 /* Sombra interna (curva de página) */
@@ -686,7 +695,413 @@
     text-transform: uppercase;
 }
 
-/* ======================== CONTROLES ======================== */
+/* ====================================================
+   FLIPBUILDER LOOK — replica el visor del ePaper
+   (epaper.la-razon.com: Flip PDF Corporate Edition)
+   Valores tomados de su config.js: toolbar #000/iconos
+   #ECF5FB, lomo saddle 2.4% + sombra 87px, stitch 0.5%,
+   borde derecho 3px, sombras L90/R55 alpha .6, cornerRound 8
+   ==================================================== */
+
+/* ---------- Pantalla de carga (signo FlipBuilder) ---------- */
+#fbLoadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #1F2232;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    transition: opacity .55s ease, visibility .55s ease;
+}
+#fbLoadingScreen.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+#fbLoadingScreen .fls-logo {
+    height: 40px;
+    max-width: 220px;
+    object-fit: contain;
+}
+#fbLoadingScreen .fls-caption {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    color: #DDDDDD;
+    letter-spacing: .5px;
+    text-align: center;
+    padding: 0 20px;
+}
+#fbLoadingScreen .fls-bar {
+    width: 190px;
+    height: 2px;
+    background: rgba(255,255,255,.14);
+    overflow: hidden;
+    border-radius: 2px;
+}
+#fbLoadingScreen .fls-bar span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: #D71920;
+    animation: flsSlide 1.1s ease-in-out infinite;
+}
+@keyframes flsSlide {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+
+/* ---------- Fondo de escenario (bookConfig.backGroundImgURL) ---------- */
+.fb-wrapper {
+    background:
+        radial-gradient(ellipse 120% 90% at 50% -10%, rgba(215,25,32,.10) 0%, transparent 60%),
+        linear-gradient(180deg, #141A28 0%, #0A0F1E 55%, #060911 100%);
+    /* Reservar espacio para la toolbar fija inferior */
+    padding-bottom: 88px !important;
+}
+
+/* ---------- Toolbar inferior fija (toolbarColor #000) ---------- */
+.fb-toolbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 9000;
+    background: #000;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 10px;
+    transition: transform .3s ease, opacity .3s ease;
+    box-shadow: 0 -6px 22px rgba(0,0,0,.45);
+}
+/* toolbarAlwaysShow = "No": se oculta al inactivo y vuelve al mover el ratón */
+.fb-toolbar.fb-tb-hidden {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+}
+.fb-tb-btn {
+    background: transparent;
+    border: 0;
+    color: #ECF5FB;
+    width: 38px; height: 38px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: .95rem;
+    transition: background .18s, color .18s;
+    text-decoration: none;
+}
+.fb-tb-btn:hover { background: rgba(236,245,251,.14); color: #fff; }
+.fb-tb-btn.active { background: var(--reader-red); color: #fff; }
+.fb-tb-btn:disabled { opacity: .3; cursor: not-allowed; }
+.fb-tb-btn.danger:hover { background: var(--reader-red); color: #fff; }
+.fb-tb-sep { width: 1px; height: 22px; background: rgba(255,255,255,.16); margin: 0 6px; }
+.fb-tb-counter {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: .74rem;
+    color: #ECF5FB;
+    padding: 0 10px;
+    min-width: 78px;
+    text-align: center;
+    user-select: none;
+    letter-spacing: .4px;
+}
+.fb-tb-zoomval {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: .68rem;
+    color: #C6C6C6;
+    min-width: 44px;
+    text-align: center;
+    user-select: none;
+}
+/* Caption de nombre de página (pageNumberCaption) */
+.fb-page-caption {
+    position: fixed;
+    left: 50%;
+    bottom: 58px;
+    transform: translateX(-50%);
+    z-index: 8990;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(236,245,251,.75);
+    background: rgba(0,0,0,.62);
+    padding: 5px 16px;
+    border-radius: 20px;
+    pointer-events: none;
+    max-width: 80vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Paneles laterales (TOC / miniaturas / búsqueda) ---------- */
+.fb-panel {
+    position: fixed;
+    top: 0; bottom: 0;
+    width: 320px;
+    max-width: 86vw;
+    background: rgba(12,16,26,.97);
+    border-right: 1px solid rgba(255,255,255,.1);
+    z-index: 9500;
+    transform: translateX(-100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 8px 0 30px rgba(0,0,0,.5);
+}
+.fb-panel.right { left: auto; right: 0; border-right: 0; border-left: 1px solid rgba(255,255,255,.1); transform: translateX(100%); box-shadow: -8px 0 30px rgba(0,0,0,.5); }
+.fb-panel.open { transform: translateX(0); }
+.fb-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    flex-shrink: 0;
+}
+.fb-panel-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: .74rem;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #ECF5FB;
+    margin: 0;
+}
+.fb-panel-close {
+    background: transparent; border: 0; color: #C6C6C6;
+    cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 4px;
+}
+.fb-panel-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+.fb-panel-body { overflow-y: auto; padding: 10px; flex: 1; }
+
+/* TOC (tableofcontent_form) */
+.fb-toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #cfd8e6;
+    font-size: .78rem;
+    font-family: 'Montserrat', sans-serif;
+    transition: background .16s, color .16s;
+}
+.fb-toc-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.fb-toc-item.active { background: var(--reader-red); color: #fff; font-weight: 700; }
+.fb-toc-num {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: .64rem;
+    background: rgba(255,255,255,.12);
+    color: #ECF5FB;
+    border-radius: 3px;
+    padding: 2px 6px;
+    min-width: 26px;
+    text-align: center;
+}
+.fb-toc-item.active .fb-toc-num { background: rgba(0,0,0,.3); color: #fff; }
+
+/* Miniaturas verticales dentro del panel (thumbnailColor #333, alpha 70) */
+.fb-vthumb {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+    padding: 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    border: 2px solid transparent;
+    transition: background .16s, border-color .16s;
+}
+.fb-vthumb:hover { background: rgba(255,255,255,.07); }
+.fb-vthumb.active { border-color: var(--reader-red); background: rgba(215,25,32,.12); }
+.fb-vthumb .vt-frame {
+    width: 54px; height: 75px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #E8E8E8;
+    position: relative;
+}
+.fb-vthumb .vt-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fb-vthumb .vt-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    color: #cfd8e6;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.fb-vthumb.active .vt-label { color: #fff; }
+
+/* Búsqueda (search_form; searchKeywordFontColor #FFB000) */
+.fb-search-box { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.fb-search-field {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 5px;
+    padding: 8px 11px;
+}
+.fb-search-field i { color: #C6C6C6; font-size: .82rem; }
+.fb-search-field input {
+    flex: 1; background: transparent; border: 0; outline: 0;
+    color: #ECF5FB; font-family: 'Montserrat', sans-serif; font-size: .8rem;
+}
+.fb-search-field input::placeholder { color: #8894a8; }
+.fb-search-info {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .66rem;
+    color: #8894a8;
+    margin-top: 8px;
+}
+/* searchHightlightColor #ffff00 */
+.fb-search-hit { background: #ffff00; color: #000; border-radius: 2px; padding: 0 1px; }
+.fb-search-kw { color: #FFB000; font-weight: 800; }
+
+/* Modo selección de texto (SelectTextButtonVisible) */
+.fb-select-mode .fb-page-inner { user-select: text; cursor: text; }
+.fb-select-mode .fb-page-inner * { pointer-events: auto !important; }
+
+/* ---------- Lomo y encuadernación (saddle / stitch) ---------- */
+/* Sustituye el lomo rojo previo por el plano de FlipBuilder */
+.fb-spine {
+    width: 10px;
+    background: linear-gradient(to right,
+        rgba(0,0,0,0.42) 0%,
+        rgba(0,0,0,0.16) 26%,
+        rgba(255,255,255,0.55) 47%,
+        rgba(255,255,255,0.55) 53%,
+        rgba(0,0,0,0.16) 74%,
+        rgba(0,0,0,0.42) 100%
+    );
+}
+/* Anula el tinte rojo que el diseño anterior pintaba sobre el lomo */
+.fb-spine::after { content: none !important; }
+/* .stitch: costura fina + pliegue junto al lomo */
+.fb-spine::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(to bottom,
+        rgba(60,60,40,0.35), rgba(120,120,90,0.15));
+    z-index: 4;
+}
+/* .saddle: sombra suave proyectada sobre la hoja izquierda */
+.fb-page-left::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 87px;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(to left,
+        rgba(0,0,0,0.42) 0%,
+        rgba(0,0,0,0.18) 38%,
+        rgba(0,0,0,0.05) 70%,
+        rgba(0,0,0,0) 100%
+    );
+}
+/* .cover_shadow.flip_x hard_right_border: filo de 3px en el borde externo */
+.fb-page-right::after {
+    content: '';
+    position: absolute;
+    top: 1px; bottom: 0; right: 0;
+    width: 3px;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(to left, rgba(220,220,180,.55), rgba(220,220,180,0));
+}
+/* ShowTopLeftShadow: sombra superior de la hoja izquierda */
+.fb-page-left::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14px;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(to bottom, rgba(0,0,0,.28), rgba(0,0,0,0));
+}
+
+/* ---------- Asimetría de sombras: L=90/0.6  R=55/0.6 ---------- */
+.fb-page-left {
+    border-radius: 8px 0 0 8px;
+    box-shadow:
+        -18px 0 42px rgba(0,0,0,.6),
+        -4px 0 10px rgba(0,0,0,.35),
+        inset 0 14px 18px -12px rgba(0,0,0,.35);
+}
+.fb-page-right {
+    border-radius: 0 8px 8px 0;
+    box-shadow:
+        12px 0 26px rgba(0,0,0,.6),
+        inset 0 14px 18px -12px rgba(0,0,0,.3);
+}
+.fb-book { filter: drop-shadow(0 30px 60px rgba(0,0,0,.6)); }
+
+/* ----------.Page curl (CurlingPageCorner = Yes) ---------- */
+.fb-curl {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 62px; height: 62px;
+    z-index: 8;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath d='M2 24 L24 2 L24 24 Z' fill='rgba(0,0,0,.55)'/%3E%3C/svg%3E") 2 24, pointer;
+    background: linear-gradient(315deg,
+        rgba(0,0,0,.30) 0%, rgba(0,0,0,.10) 26%,
+        rgba(255,255,255,0) 52%);
+    border-bottom-right-radius: 8px;
+    opacity: .55;
+    transition: opacity .2s;
+}
+.fb-curl::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 0 13px 13px;
+    border-color: transparent transparent rgba(0,0,0,.42) transparent;
+}
+.fb-curl:hover { opacity: 1; }
+.fb-page.curl-dragging .fb-curl { opacity: 1; }
+.fb-page.curl-dragging { transition: none; }
+
+/* Modo página única (DoubleSinglePageButtonVisible) */
+.fb-wrapper.fb-single-mode .fb-page-left { display: none; }
+.fb-wrapper.fb-single-mode .fb-spine { display: none; }
+/* al haber una sola hoja, puede ocupar más ancho */
+.fb-wrapper.fb-single-mode .fb-page {
+    width: min(78vw, calc((100vh - 190px) * 0.7179));
+}
+.fb-wrapper.fb-single-mode .fb-page-right { border-radius: 8px; }
+.fb-wrapper.fb-single-mode .fb-page-right::before { display: none; }
+
+/* Zoom */
+.fb-book { transition: transform .25s ease; }
+.fb-stage { overflow: visible; }
+
+@media (max-width: 768px) {
+    .fb-tb-btn { width: 34px; height: 34px; font-size: .85rem; }
+    .fb-tb-sep { margin: 0 3px; }
+    .fb-tb-counter { min-width: 58px; padding: 0 5px; font-size: .68rem; }
+    .fb-page-caption { bottom: 54px; font-size: .6rem; }
+    .fb-panel { width: 88vw; }
+}
 .fb-controls {
     display: flex;
     align-items: center;
@@ -818,22 +1233,29 @@
 }
 
 /* ======================== RESPONSIVE ======================== */
+/* El ancho de la hoja ya se calcula con min(46vw, alto disponible), así que
+   aquí solo se corrige el alto disponible según el espacio que ocupa la UI. */
+@media (max-width: 900px) {
+    /* más espacio vertical porque el header y la toolbar ocupan más */
+    .fb-page { width: min(46vw, calc((100vh - 215px) * 0.7179)); }
+    .fb-wrapper { padding: 12px 6px 20px; gap: 10px; }
+}
 @media (max-width: 840px) {
     .fb-page {
-        width: clamp(200px, 44vw, 320px);
+        width: min(44vw, calc((100vh - 215px) * 0.7179));
+        min-width: 200px;
     }
-    .fb-wrapper { padding: 12px 6px 20px; gap: 10px; }
-    .fb-ctrl-btn { padding: 6px 10px; font-size: 0.6rem; }
+    /* la sombra del lomo (87px) se reduce junto con la hoja */
+    .fb-page-left::after { width: 52px; }
     .fb-spine { width: 8px; }
 }
 @media (max-width: 560px) {
-    /* Sólo una página en pantallas pequeñas */
+    /* Sólo una página en pantallas pequeñas: aquí SÍ es móvil */
     .fb-book { flex-direction: column; }
-    .fb-page { width: 90vw; aspect-ratio: auto; min-height: 70vw; }
+    .fb-page { width: 90vw; aspect-ratio: auto; min-height: 70vw; max-height: none; }
     .fb-spine { width: 100%; height: 6px; }
-    .fb-page-left { border-radius: 3px 3px 0 0; border-right: none; border-bottom: 1.5px solid rgba(0,0,0,0.15); }
-    .fb-page-right { border-radius: 0 0 3px 3px; border-left: none; border-top: 1.5px solid rgba(0,0,0,0.15); }
-    .fb-thumbnails { flex-wrap: wrap; }
+    .fb-page-left { border-radius: 8px 8px 0 0; border-right: none; }
+    .fb-page-right { border-radius: 0 0 8px 8px; border-left: none; }
 }
 
 /* ============================================================
@@ -857,6 +1279,43 @@
 /* La columna izquierda del libro se refleja (efecto spine) */
 .fb-page-left .np-page { box-shadow: inset -8px 0 14px -10px rgba(0,0,0,0.25); }
 .fb-page-right .np-page { box-shadow: inset 8px 0 14px -10px rgba(0,0,0,0.25); }
+
+/* --- Páginas maquetadas con el editor visual (frames absolutos) ---
+   El lienzo se construye a 720x1040 px reales, igual que en el admin, y se
+   escala con transform en el contenedor padre del libro al 100% de la hoja. */
+.np-page.np-has-frames {
+    width: 720px;
+    height: 1040px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
+}
+.np-canvas-wrap {
+    position: relative;
+    width: 720px;
+    height: 1040px;
+    margin: 0;
+    padding: 0;
+}
+.np-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 720px;
+    height: 1040px;
+    transform-origin: top left;
+    transform: none !important;
+    overflow: hidden;
+}
+.np-frame { position: absolute; box-sizing: border-box; overflow: hidden; }
+.np-ftext { font-family: 'Source Sans 3', sans-serif; font-size: 11px; line-height: 1.45; color: #1e293b; }
+.np-ftext p { margin: 0 0 6px; }
+.np-fquote { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.35; color: #334155; }
+.np-fimg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.np-frame-headline .np-ftext { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700; line-height: 1.1; color: #0f172a; }
+.np-frame-image, .np-frame-qr, .np-frame-ad, .np-frame-masthead { overflow: hidden; }
 
 /* --- Masthead --- */
 .np-masthead { text-align: center; border-bottom: 2px solid #0B1F3A; padding-bottom: 7px; margin-bottom: 9px; }
@@ -955,6 +1414,8 @@
     <!-- CONTENEDOR PRINCIPAL DEL LECTOR -->
     <div class="newspaper-reader-container">
         {{-- HEADER DE CONTROLES --}}
+        {{-- CABECERA: solo identidad de la edición y selector.
+             La navegación vive en la toolbar inferior estilo FlipBuilder. --}}
         <div class="reader-control-header">
             <div class="d-flex align-items-center gap-3">
                 <span class="reader-edition-badge">EDICIÓN SEMANAL DIGITAL</span>
@@ -967,9 +1428,8 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <!-- Selector de edición si hay más de una -->
                 @if(count($ediciones) > 1)
-                    <div class="dropdown me-2">
+                    <div class="dropdown">
                         <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-archive me-1"></i> Otras Ediciones
                         </button>
@@ -984,21 +1444,11 @@
                         </ul>
                     </div>
                 @endif
-
-                <button class="btn btn-sm btn-outline-light" onclick="prevPage()" id="btnPrevPage" title="Página Anterior">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <span class="text-white small fw-bold px-2" id="pageIndicator">Pág 1 / {{ count($edicionActiva['paginas'] ?? []) }}</span>
-                <button class="btn btn-sm btn-outline-light" onclick="nextPage()" id="btnNextPage" title="Página Siguiente">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
-                {{-- Descarga de PDF real (server-side DomPDF) --}}
                 <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
-                   class="btn btn-sm btn-danger ms-2"
-                   title="Descargar PDF real"
+                   class="btn btn-sm btn-danger"
+                   title="Descargar PDF"
                    download>
-                    <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+                    <i class="fas fa-file-pdf me-1"></i> PDF
                 </a>
             </div>
         </div>
@@ -1054,64 +1504,156 @@
             @endforeach
         </div>
 
-        <div class="fb-wrapper active" id="flipbookSection">
-          {{-- Miniaturas de navegación --}}
-          <div class="fb-thumbnails" id="fbThumbnails">
-            @foreach($fbPages as $tIdx => $tp)
-              <div class="fb-thumb {{ $tIdx === 0 ? 'active' : '' }}"
-                   onclick="fbGoToSpread({{ $tIdx }})"
-                   title="{{ $tp['nombre'] }}"
-                   id="fb-thumb-{{ $tIdx }}">
-                @if($tp['img'])
-                  <img src="{{ $tp['img'] }}" alt="{{ $tp['nombre'] }}" loading="lazy">
-                @else
-                  <div class="fb-thumb-no-img">
-                    <i class="fas fa-file-alt" style="font-size:1rem;"></i>
-                    <span>Pág {{ $tp['numero'] }}</span>
-                  </div>
-                @endif
-              </div>
-            @endforeach
-          </div>
+        {{-- ══════════════════════════════════════════════════════
+     PANTALLA DE CARGA (loadingBackground #1F2232)
+     ══════════════════════════════════════════════════════ --}}
+    <div id="fbLoadingScreen">
+        <img src="/images/Logo.jpg" alt="" class="fls-logo" onerror="this.style.display='none'">
+        <div class="fls-caption">{{ $edicionActiva['titulo'] ?? 'Latitud 18' }} — {{ $edicionActiva['fecha'] ?? '' }}</div>
+        <div class="fls-bar"><span></span></div>
+    </div>
 
+    {{-- ══════════════════════════════════════════════════════
+         PANELES LATERALES: ÍNDICE, MINIATURAS Y BÚSQUEDA
+         ══════════════════════════════════════════════════════ --}}
+    <div class="fb-panel" id="fbTocPanel">
+        <div class="fb-panel-head">
+            <h3 class="fb-panel-title">Índice de la edición</h3>
+            <button class="fb-panel-close" onclick="fbTogglePanel('fbTocPanel')" aria-label="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="fb-panel-body">
+            @foreach($fbPages as $tIdx => $tp)
+                <div class="fb-toc-item {{ $tIdx === 0 ? 'active' : '' }}" id="fb-toc-{{ $tIdx }}"
+                     onclick="fbGoToSpread({{ $tIdx }}); fbTogglePanel('fbTocPanel');">
+                    <span class="fb-toc-num">{{ $tp['numero'] }}</span>
+                    <span>{{ $tp['nombre'] }}</span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="fb-panel" id="fbThumbPanel">
+        <div class="fb-panel-head">
+            <h3 class="fb-panel-title">Miniaturas</h3>
+            <button class="fb-panel-close" onclick="fbTogglePanel('fbThumbPanel')" aria-label="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="fb-panel-body">
+            @foreach($fbPages as $tIdx => $tp)
+                <div class="fb-vthumb {{ $tIdx === 0 ? 'active' : '' }}" id="fb-vthumb-{{ $tIdx }}"
+                     onclick="fbGoToSpread({{ $tIdx }}); fbTogglePanel('fbThumbPanel');">
+                    <div class="vt-frame" id="fb-thumb-frame-{{ $tIdx }}">
+                        @if($tp['img'])
+                            <img src="{{ $tp['img'] }}" alt="{{ $tp['nombre'] }}" loading="lazy">
+                        @else
+                            <span class="fb-thumb-no-img">
+                                <i class="fas fa-file-alt"></i>
+                            </span>
+                        @endif
+                    </div>
+                    <span class="vt-label">{{ $tp['nombre'] }}</span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="fb-panel right" id="fbSearchPanel">
+        <div class="fb-panel-head">
+            <h3 class="fb-panel-title">Buscar en el periódico</h3>
+            <button class="fb-panel-close" onclick="fbTogglePanel('fbSearchPanel')" aria-label="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="fb-search-box">
+            <div class="fb-search-field">
+                <i class="fas fa-search"></i>
+                <input type="search" id="fbSearchInput" placeholder="Mínimo 3 letras…"
+                       autocomplete="off" oninput="fbSearch(this.value)">
+                <button class="fb-panel-close" onclick="fbClearSearch()" title="Limpiar" aria-label="Limpiar">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            <div class="fb-search-info" id="fbSearchInfo">Escribe al menos 3 caracteres.</div>
+        </div>
+        <div class="fb-panel-body" id="fbSearchResults"></div>
+    </div>
+
+        <div class="fb-wrapper active" id="flipbookSection">
           {{-- Escenario del libro (dos páginas: izquierda + derecha) --}}
           <div class="fb-stage">
             <div class="fb-book" id="fbBook">
               <div class="fb-page fb-page-left" id="fbPageLeft">
-                {{-- contenido generado por JS --}}
+                <div class="fb-page-inner" id="fbInnerLeft"></div>
               </div>
               <div class="fb-spine"></div>
               <div class="fb-page fb-page-right" id="fbPageRight">
-                {{-- contenido generado por JS --}}
+                <div class="fb-page-inner" id="fbInnerRight"></div>
+                {{-- CurlingPageCorner: esquina para pasar la página --}}
+                <div class="fb-curl" id="fbCurl" title="Arrastra para pasar la página"></div>
               </div>
             </div>
           </div>
 
-          {{-- Controles --}}
-          <div class="fb-controls">
-            <button class="fb-ctrl-btn" id="fbBtnFirst" onclick="fbGoToSpread(0)" title="Primera página">
-              <i class="fas fa-step-backward"></i>
-            </button>
-            <button class="fb-ctrl-btn" id="fbBtnPrev" onclick="fbPrevSpread()" title="Páginas anteriores">
-              <i class="fas fa-chevron-left"></i> Anterior
-            </button>
-            <span class="fb-page-counter" id="fbCounter">1 / {{ count($fbPages) }}</span>
-            <button class="fb-ctrl-btn" id="fbBtnNext" onclick="fbNextSpread()" title="Páginas siguientes">
-              Siguiente <i class="fas fa-chevron-right"></i>
-            </button>
-            <button class="fb-ctrl-btn" id="fbBtnLast" onclick="fbGoToSpread({{ count($fbPages) - 1 }})" title="Última página">
-              <i class="fas fa-step-forward"></i>
-            </button>
-            {{-- Descarga de PDF real (server-side DomPDF) --}}
-            <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
-               rel="noopener" class="fb-ctrl-btn danger" download
-               title="Descargar PDF real">
-              <i class="fas fa-file-pdf"></i> Descargar PDF
-            </a>
-            <button class="fb-ctrl-btn" onclick="readerToggleFullscreen()" title="Pantalla completa (F)">
-              <i class="fas fa-expand" id="fbFsIcon"></i>
-            </button>
+          {{-- Toolbar inferior estilo FlipBuilder (toolbarColor #000) --}}
+          <div class="fb-toolbar" id="fbToolbar">
+              <button class="fb-tb-btn" onclick="fbTogglePanel('fbTocPanel')" title="Índice / Tabla de contenido">
+                  <i class="fas fa-list-ul"></i>
+              </button>
+              <button class="fb-tb-btn" onclick="fbTogglePanel('fbThumbPanel')" title="Miniaturas">
+                  <i class="fas fa-th"></i>
+              </button>
+              <button class="fb-tb-btn" onclick="fbTogglePanel('fbSearchPanel')" title="Buscar en el periódico (mín. 3 letras)">
+                  <i class="fas fa-search"></i>
+              </button>
+
+              <span class="fb-tb-sep"></span>
+
+              <button class="fb-tb-btn" id="fbBtnPrevTb" onclick="fbPrevSpread()" title="Anterior">
+                  <i class="fas fa-chevron-left"></i>
+              </button>
+              <span class="fb-tb-counter" id="fbCounterTb">1 / {{ count($fbPages) }}</span>
+              <button class="fb-tb-btn" id="fbBtnNextTb" onclick="fbNextSpread()" title="Siguiente">
+                  <i class="fas fa-chevron-right"></i>
+              </button>
+
+              <span class="fb-tb-sep"></span>
+
+              <button class="fb-tb-btn" onclick="fbZoomOut()" title="Alejar">
+                  <i class="fas fa-search-minus"></i>
+              </button>
+              <span class="fb-tb-zoomval" id="fbZoomLabel">100%</span>
+              <button class="fb-tb-btn" onclick="fbZoomIn()" title="Acercar">
+                  <i class="fas fa-search-plus"></i>
+              </button>
+
+              <span class="fb-tb-sep"></span>
+
+              <button class="fb-tb-btn" id="fbBtnSingle" onclick="fbToggleSingleMode()" title="Vista de página individual">
+                  <i class="fas fa-file-alt"></i>
+              </button>
+              <button class="fb-tb-btn active" id="fbBtnDouble" onclick="fbToggleSingleMode()" title="Vista de doble página">
+                  <i class="fas fa-book-open"></i>
+              </button>
+              <button class="fb-tb-btn" id="fbBtnSelect" onclick="fbToggleSelectMode()" title="Seleccionar texto">
+                  <i class="fas fa-font"></i>
+              </button>
+
+              <span class="fb-tb-sep"></span>
+
+              <a href="{{ route('periodico.public.pdf', $edicionActiva['id']) }}"
+                 rel="noopener" class="fb-tb-btn danger" download
+                 title="Descargar PDF">
+                  <i class="fas fa-file-pdf"></i>
+              </a>
+              <button class="fb-tb-btn" onclick="readerToggleFullscreen()" title="Pantalla completa (F)">
+                  <i class="fas fa-expand" id="fbFsIconTb"></i>
+              </button>
           </div>
+
+          <div class="fb-page-caption" id="fbPageCaption"></div>
         </div>
 
         {{-- El contenido de las páginas ya se renderiza en #fbPagesStore --}}
@@ -1573,16 +2115,29 @@ function switchReaderMode(mode) {
     var elBtnFirst= document.getElementById('fbBtnFirst');
     var elBtnLast = document.getElementById('fbBtnLast');
 
-    // Calcula el scale para que 794px de contenido quepan en el ancho visible del slot
+    // Calcula el scale para que 720px de contenido quepan al 100% en el ancho del slot
     function getPageScale(slot) {
         if (!slot) return 1;
-        var w = slot.getBoundingClientRect().width || slot.offsetWidth || 440;
-        return Math.min(1, w / 794);
+        var w = slot.clientWidth || (slot.getBoundingClientRect ? slot.getBoundingClientRect().width : 0);
+        if (!w || w < 50) {
+            var maxH = Math.max(300, (window.innerHeight || 800) - 170);
+            var expectedW = Math.min((window.innerWidth || 1200) * 0.46, maxH * (720 / 1040));
+            w = expectedW > 100 ? expectedW : 480;
+        }
+        return w / 720;
     }
 
     // Clona la página real y la monta con scale dentro del inner
     function mountPage(inner, slot, index) {
-        if (!inner || !slot) return;
+        if (!slot) return;
+        if (!inner) {
+            inner = slot.querySelector('.fb-page-inner');
+            if (!inner) {
+                inner = document.createElement('div');
+                inner.className = 'fb-page-inner';
+                slot.insertBefore(inner, slot.firstChild);
+            }
+        }
         inner.innerHTML = '';
         var src = (index !== null && index !== undefined) ? fbSources[index] : null;
         if (!src) {
@@ -1595,14 +2150,15 @@ function switchReaderMode(mode) {
         var clone = src.cloneNode(true);
         clone.removeAttribute('data-fb-index');
         clone.classList.remove('fb-page-source');
-        // Aplicar scale para que el contenido de 794px quepa en el slot
+        // Aplicar scale para que el lienzo de 720x1040 llene exactamente el slot
         var sc = getPageScale(slot);
-        clone.style.width = '794px';
-        clone.style.height = '1123px';
+        clone.style.width = '720px';
+        clone.style.height = '1040px';
+        clone.style.position = 'absolute';
+        clone.style.top = '0';
+        clone.style.left = '0';
         clone.style.transformOrigin = 'top left';
         clone.style.transform = 'scale(' + sc + ')';
-        // Actualizar altura del inner para evitar desbordamiento
-        inner.style.height = Math.round(1123 * sc) + 'px';
         inner.appendChild(clone);
         // Forzar carga de imágenes lazy
         inner.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
@@ -1611,41 +2167,72 @@ function switchReaderMode(mode) {
         });
     }
 
-    // Llena las miniaturas con el contenido escalado (0.065 = 52px / 794px)
+    // Llena las miniaturas con el contenido escalado (proporción 720px)
     function fillThumbnails() {
         fbSources.forEach(function(src, i) {
-            var frame = document.getElementById('fb-thumb-frame-' + i);
+            var frame = document.getElementById('fb-thumb-frame-' + i) || document.querySelector('#fb-vthumb-' + i + ' .vt-frame');
             if (!frame || !src) return;
             var clone = src.cloneNode(true);
             clone.removeAttribute('data-fb-index');
             clone.classList.remove('fb-page-source');
-            clone.style.width = '794px';
-            clone.style.height = '1123px';
+            clone.style.width = '720px';
+            clone.style.height = '1040px';
+            clone.style.position = 'absolute';
+            clone.style.top = '0';
+            clone.style.left = '0';
             clone.style.transformOrigin = 'top left';
-            clone.style.transform = 'scale(0.065)';
+            var thumbW = frame.clientWidth || 54;
+            clone.style.transform = 'scale(' + (thumbW / 720) + ')';
             clone.style.pointerEvents = 'none';
             frame.innerHTML = '';
             frame.appendChild(clone);
         });
     }
 
-    // Reajusta scales al redimensionar ventana
+    // Reajusta scales al redimensionar ventana o al terminar el render
     function reapplyScales() {
         if (!elLeft || !elRight) return;
         var scL = getPageScale(elLeft);
         var scR = getPageScale(elRight);
-        [elInnerL, elInnerR].forEach(function(inner, i) {
-            var sc = i === 0 ? scL : scR;
-            var slot = i === 0 ? elLeft : elRight;
-            if (!inner) return;
-            var child = inner.firstElementChild;
-            if (child) {
-                child.style.transform = 'scale(' + sc + ')';
-                inner.style.height = Math.round(1123 * sc) + 'px';
+        var inL = elInnerL || elLeft.querySelector('.fb-page-inner');
+        var inR = elInnerR || elRight.querySelector('.fb-page-inner');
+        [ { inner: inL, sc: scL }, { inner: inR, sc: scR } ].forEach(function(item) {
+            if (!item.inner) return;
+            var child = item.inner.firstElementChild;
+            if (child && !child.classList.contains('fb-page-placeholder')) {
+                child.style.width = '720px';
+                child.style.height = '1040px';
+                child.style.position = 'absolute';
+                child.style.top = '0';
+                child.style.left = '0';
+                child.style.transformOrigin = 'top left';
+                child.style.transform = 'scale(' + item.sc + ')';
             }
         });
     }
     window.addEventListener('resize', reapplyScales);
+    window.addEventListener('load', reapplyScales);
+    document.addEventListener('DOMContentLoaded', reapplyScales);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(reapplyScales);
+    }
+    if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function() { reapplyScales(); });
+        if (elLeft) ro.observe(elLeft);
+        if (elRight) ro.observe(elRight);
+    }
+    setTimeout(reapplyScales, 50);
+    setTimeout(reapplyScales, 150);
+    setTimeout(reapplyScales, 350);
+    setTimeout(reapplyScales, 700);
+
+    /* Asegura que el canvas interno conserve su escala 1:1 dentro del contenedor clonado */
+    function fitCanvases() {
+        document.querySelectorAll('.fb-page-inner .np-canvas').forEach(function (canvas) {
+            canvas.style.transform = 'none';
+        });
+    }
+    window.fbFitCanvases = fitCanvases;
 
     function updateThumbs(idx) {
         document.querySelectorAll('.fb-thumb').forEach(function(th, i) {
@@ -1666,6 +2253,8 @@ function switchReaderMode(mode) {
             mountPage(elInnerR, elRight, hasRight ? idx + 1 : null);
             if (elLeft)  elLeft.style.display  = hasLeft  ? '' : 'none';
             if (elRight) elRight.style.display = hasRight ? '' : 'none';
+            reapplyScales();
+            if (window.fbFitCanvases) window.fbFitCanvases();
         } else {
             fbAnimating = true;
             if (direction === 'next') {
@@ -1679,6 +2268,8 @@ function switchReaderMode(mode) {
             setTimeout(function() {
                 mountPage(elInnerL, elLeft,  hasLeft  ? idx     : null);
                 mountPage(elInnerR, elRight, hasRight ? idx + 1 : null);
+                reapplyScales();
+                if (window.fbFitCanvases) window.fbFitCanvases();
 
                 if (elLeft)  {
                     elLeft.className  = 'fb-page fb-page-left';
@@ -1700,6 +2291,7 @@ function switchReaderMode(mode) {
                     setTimeout(function() {
                         if (elLeft)  { elLeft.className  = 'fb-page fb-page-left'; }
                         if (elRight) { elRight.className = 'fb-page fb-page-right'; }
+                        reapplyScales();
                         fbAnimating = false;
                     }, 400);
                 });
@@ -1721,6 +2313,9 @@ function switchReaderMode(mode) {
 
         updateThumbs(idx);
         fbCurrentSpread = idx;
+
+        // Sincronizar toolbar, caption, índice y miniaturas (FlipBuilder look)
+        if (typeof fbSyncUi === 'function') fbSyncUi(idx);
     }
 
     window.fbGoToSpread = function(pageIdx) {
@@ -1749,8 +2344,27 @@ function switchReaderMode(mode) {
     document.addEventListener('keydown', function(e) {
         var flip = document.getElementById('flipbookSection');
         if (!flip || flip.style.display === 'none') return;
+        // No interferir con la escritura dentro de la búsqueda o el modo selección
+        var tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (document.getElementById('fbBook') &&
+            document.getElementById('fbBook').classList.contains('fb-select-mode')) return;
+
         if (e.key === 'ArrowRight') { e.preventDefault(); fbNextSpread(); }
         if (e.key === 'ArrowLeft')  { e.preventDefault(); fbPrevSpread(); }
+        if (e.key === 'Home')       { e.preventDefault(); fbGoToSpread(0); }
+        if (e.key === 'End')        { e.preventDefault(); fbGoToSpread(fbTotal - 1); }
+        if (e.key === '+' || e.key === '=') { e.preventDefault(); fbZoomIn(); }
+        if (e.key === '-')         { e.preventDefault(); fbZoomOut(); }
+        if (e.key === '0')         { e.preventDefault(); fbZoom = 1; fbApplyZoom(); }
+        if (e.key === 'f' || e.key === 'F') { e.preventDefault(); readerToggleFullscreen(); }
+        if (e.key === 't' || e.key === 'T') { e.preventDefault(); fbTogglePanel('fbThumbPanel'); }
+        if (e.key === 'c' || e.key === 'C') { e.preventDefault(); fbTogglePanel('fbTocPanel'); }
+        if (e.key === 's' || e.key === 'S') { e.preventDefault(); fbTogglePanel('fbSearchPanel'); }
+        if (e.key === 'p' || e.key === 'P') { e.preventDefault(); fbToggleSingleMode(); }
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.fb-panel.open').forEach(function (x) { x.classList.remove('open'); });
+        }
     });
 
     // Touch/swipe para móvil
@@ -1768,8 +2382,303 @@ function switchReaderMode(mode) {
         }, { passive: true });
     }
 
+    /* =====================================================
+       FLIPBUILDER LOOK — comportamiento del visor
+       ===================================================== */
+
+    // 1) Ocultar la pantalla de carga cuando el libro ya está montado
+    function hideLoadingScreen() {
+        var l = document.getElementById('fbLoadingScreen');
+        if (l) l.classList.add('hide');
+    }
+    if (document.readyState === 'complete') {
+        setTimeout(hideLoadingScreen, 350);
+    } else {
+        window.addEventListener('load', function () {
+            setTimeout(hideLoadingScreen, 350);
+        });
+    }
+    // Red de seguridad: si algo falla, la carga no deja el visor bloqueado
+    setTimeout(function () {
+        var l = document.getElementById('fbLoadingScreen');
+        if (l) l.classList.add('hide');
+    }, 4000);
+
+    // 2) Toolbar auto-ocultable (toolbarAlwaysShow = "No")
+    (function () {
+        var tb = document.getElementById('fbToolbar');
+        if (!tb) return;
+        var hideTimer = null;
+        function show() {
+            tb.classList.remove('fb-tb-hidden');
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(function () {
+                // No ocultar si hay un panel abierto o el puntero está en la barra
+                if (!document.querySelector('.fb-panel.open') &&
+                    !tb.matches(':hover')) {
+                    tb.classList.add('fb-tb-hidden');
+                }
+            }, 3200);
+        }
+        document.addEventListener('mousemove', function (e) {
+            if (e.clientY > window.innerHeight - 130) { show(); }
+        });
+        tb.addEventListener('mouseenter', show);
+        tb.addEventListener('mouseleave', function () {
+            if (!document.querySelector('.fb-panel.open')) {
+                tb.classList.add('fb-tb-hidden');
+            }
+        });
+        document.addEventListener('touchstart', show, { passive: true });
+        show();
+    })();
+
+    // 3) Paneles (índice / miniaturas / búsqueda)
+    window.fbTogglePanel = function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var wasOpen = el.classList.contains('open');
+        document.querySelectorAll('.fb-panel.open').forEach(function (p) {
+            p.classList.remove('open');
+        });
+        if (!wasOpen) {
+            el.classList.add('open');
+            if (id === 'fbSearchPanel') {
+                var inp = document.getElementById('fbSearchInput');
+                if (inp) setTimeout(function () { inp.focus(); }, 320);
+            }
+        }
+        var tb = document.getElementById('fbToolbar');
+        if (tb) tb.classList.remove('fb-tb-hidden');
+    };
+
+    // 4) Zoom (ZoomMapVisible=Hide, defaultZoomWidth 700 / maxZoomWidth 3563)
+    var fbZoom = 1;
+    function fbApplyZoom() {
+        var book = document.getElementById('fbBook');
+        var lbl = document.getElementById('fbZoomLabel');
+        if (book) book.style.setProperty('--fbZoom', fbZoom);
+        if (lbl) lbl.textContent = Math.round(fbZoom * 100) + '%';
+        // Recalcular el escalado del contenido para que el texto no se deforme
+        if (typeof reapplyScales === 'function') reapplyScales();
+    }
+    window.fbZoomIn = function () {
+        fbZoom = Math.min(2.2, fbZoom + 0.15);
+        fbApplyZoom();
+    };
+    window.fbZoomOut = function () {
+        fbZoom = Math.max(0.6, fbZoom - 0.15);
+        fbApplyZoom();
+    };
+
+    // 5) Modo página simple / doble (autoDoublePage = Yes)
+    window.fbToggleSingleMode = function () {
+        var wrap = document.querySelector('.fb-wrapper');
+        if (!wrap) return;
+        var single = wrap.classList.toggle('fb-single-mode');
+        var bS = document.getElementById('fbBtnSingle');
+        var bD = document.getElementById('fbBtnDouble');
+        if (bS) bS.classList.toggle('active', single);
+        if (bD) bD.classList.toggle('active', !single);
+        // En página simple se muestra la hoja derecha (la del lector)
+        if (single) {
+            fbCurrentSpread = 1;
+            renderSpread(1, false, 'next');
+        } else {
+            fbCurrentSpread = 0;
+            renderSpread(0, false, 'prev');
+        }
+        if (typeof reapplyScales === 'function') reapplyScales();
+    };
+
+    // 6) Modo selección de texto
+    window.fbToggleSelectMode = function () {
+        var book = document.getElementById('fbBook');
+        var btn = document.getElementById('fbBtnSelect');
+        if (!book) return;
+        var on = book.classList.toggle('fb-select-mode');
+        if (btn) btn.classList.toggle('active', on);
+        // En modo selección se desactiva el arrastre de página
+        book.style.pointerEvents = on ? 'auto' : '';
+    };
+
+    // 7) Búsqueda en el texto renderizado (leastSearchChar = 3)
+    window.fbClearSearch = function () {
+        var inp = document.getElementById('fbSearchInput');
+        if (inp) { inp.value = ''; inp.focus(); }
+        document.querySelectorAll('.fb-search-hit').forEach(function (n) {
+            n.replaceWith(document.createTextNode(n.textContent));
+        });
+        document.querySelectorAll('.fb-search-hit, mark').forEach(function (n) {
+            if (n.tagName === 'MARK') n.replaceWith(document.createTextNode(n.textContent));
+        });
+        var res = document.getElementById('fbSearchResults');
+        var inf = document.getElementById('fbSearchInfo');
+        if (res) res.innerHTML = '';
+        if (inf) inf.innerHTML = 'Escribe al menos 3 caracteres.';
+    };
+
+    window.fbSearch = function (term) {
+        var info = document.getElementById('fbSearchInfo');
+        var results = document.getElementById('fbSearchResults');
+        term = (term || '').trim();
+
+        // Quitar resaltado previo
+        document.querySelectorAll('mark.fb-search-hit').forEach(function (n) {
+            var parent = n.parentNode;
+            parent.replaceChild(document.createTextNode(n.textContent), n);
+            parent.normalize();
+        });
+        if (!results) return;
+
+        if (term.length < 3) {
+            results.innerHTML = '';
+            if (info) info.innerHTML = 'Escribe al menos 3 caracteres.';
+            return;
+        }
+
+        var store = document.getElementById('fbPagesStore');
+        if (!store) return;
+        var needle = term.toLowerCase();
+        var pageHits = [];
+
+        var sources = store.querySelectorAll('.fb-page-source');
+        sources.forEach(function (src, pi) {
+            var walker = document.createTreeWalker(src, NodeFilter.SHOW_TEXT, null);
+            var targets = [];
+            var node;
+            while ((node = walker.nextNode())) {
+                if (node.nodeValue && node.nodeValue.toLowerCase().indexOf(needle) !== -1) {
+                    targets.push(node);
+                }
+            }
+            if (!targets.length) return;
+            pageHits.push({ index: pi, nodes: targets, count: targets.length });
+            targets.forEach(function (t) {
+                var frag = document.createDocumentFragment();
+                var txt = t.nodeValue;
+                var low = txt.toLowerCase();
+                var pos = 0, idx;
+                while ((idx = low.indexOf(needle, pos)) !== -1) {
+                    if (idx > pos) frag.appendChild(document.createTextNode(txt.slice(pos, idx)));
+                    var mk = document.createElement('mark');
+                    mk.className = 'fb-search-hit';
+                    mk.textContent = txt.substr(idx, term.length);
+                    frag.appendChild(mk);
+                    pos = idx + term.length;
+                }
+                if (pos < txt.length) frag.appendChild(document.createTextNode(txt.slice(pos)));
+                t.parentNode.replaceChild(frag, t);
+            });
+        });
+
+        if (info) {
+            info.innerHTML = pageHits.length
+                ? pageHits.reduce(function (a, p) { return a + p.count; }, 0) +
+                  ' coincidencia(s) en ' + pageHits.length + ' página(s)'
+                : '<span style="color:#FF8A8A;">Sin resultados para “' +
+                  term.replace(/[<>&]/g, '') + '”</span>';
+        }
+
+        results.innerHTML = '';
+        pageHits.forEach(function (p) {
+            var row = document.createElement('div');
+            row.className = 'fb-toc-item';
+            row.innerHTML = '<span class="fb-toc-num">' + (p.index + 1) + '</span>' +
+                            '<span>Página ' + (p.index + 1) + ' · ' + p.count + ' coincidencia(s)</span>';
+            row.addEventListener('click', function () {
+                window.fbGoToSpread(p.index);
+                fbTogglePanel('fbSearchPanel');
+            });
+            results.appendChild(row);
+        });
+
+        // Si la página actual no tiene coincidencias, llevar a la primera que sí
+        if (pageHits.length && !pageHits.some(function (p) { return p.index === fbCurrentSpread || p.index === fbCurrentSpread + 1; })) {
+            window.fbGoToSpread(pageHits[0].index);
+        }
+        if (typeof reapplyScales === 'function') reapplyScales();
+    };
+
+    // 8) Page curl: arrastrar la esquina para pasar la página
+    (function () {
+        var curl = document.getElementById('fbCurl');
+        var page = document.getElementById('fbPageRight');
+        if (!curl || !page) return;
+        var dragging = false, moved = false, startX = 0, startY = 0;
+
+        function down(e) {
+            if (document.getElementById('fbBook').classList.contains('fb-select-mode')) return;
+            dragging = true; moved = false;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            page.classList.add('curl-dragging');
+        }
+        function move(e) {
+            if (!dragging) return;
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            var dx = startX - cx, dy = startY - cy;
+            if (dx > 6 || dy > 6) moved = true;
+            var p = Math.min(1, Math.max(0, (dx + dy) / 140));
+            // Curva la esquina: el degrees grows con el arrastre
+            page.style.clipPath = p > 0.02
+                ? 'polygon(0 0, 100% 0, 100% ' + (100 - p * 26) + '%, ' +
+                  (100 - p * 42) + '% ' + (100 - p * 4) + '%, 0 100%)'
+                : '';
+            if (p > 0.25) { page.style.transform = 'rotateY(-' + (p * 8).toFixed(1) + 'deg)'; }
+        }
+        function up() {
+            if (!dragging) return;
+            dragging = false;
+            page.classList.remove('curl-dragging');
+            var wasFar = parseFloat(page.style.clipPath ? '1' : '0');
+            page.style.clipPath = '';
+            page.style.transform = '';
+            if (moved && wasFar) window.fbNextSpread();
+        }
+        curl.addEventListener('mousedown', down);
+        curl.addEventListener('touchstart', down, { passive: true });
+        document.addEventListener('mousemove', move);
+        document.addEventListener('touchmove', move, { passive: true });
+        document.addEventListener('mouseup', up);
+        document.addEventListener('touchend', up);
+    })();
+
+    // Nombres de página para el caption y el índice
+    var fbPageNames = {!! json_encode(array_values(array_map(function ($p) {
+        return $p['nombre'] ?? ('Página ' . ($p['numero'] ?? ''));
+    }, $fbPages))) !!};
+
+    // Sincroniza toolbar, caption, índice y miniaturas con la página visible
+    window.fbSyncUi = function (idx) {
+        var c = document.getElementById('fbCounterTb');
+        if (c) c.textContent = Math.min(idx + 1, fbTotal) + ' / ' + fbTotal;
+
+        var cap = document.getElementById('fbPageCaption');
+        if (cap) {
+            var nm = fbPageNames[idx] || ('Página ' + Math.min(idx + 1, fbTotal));
+            cap.textContent = 'Pág. ' + (idx + 1) + ' · ' + nm;
+        }
+        var bp = document.getElementById('fbBtnPrevTb');
+        var bn = document.getElementById('fbBtnNextTb');
+        if (bp) bp.disabled = idx <= 0;
+        if (bn) bn.disabled = (idx + 2) >= fbTotal;
+
+        document.querySelectorAll('.fb-toc-item, .fb-vthumb').forEach(function (n) {
+            n.classList.remove('active');
+        });
+        [idx, idx + 1].forEach(function (i) {
+            var a = document.getElementById('fb-toc-' + i);
+            var b = document.getElementById('fb-vthumb-' + i);
+            if (a) a.classList.add('active');
+            if (b) b.classList.add('active');
+        });
+    };
+
     // Render inicial sin animación
     renderSpread(0, false, 'next');
+    requestAnimationFrame(reapplyScales);
 
     // Llenar miniaturas con contenido real escalado (diferido para no bloquear el render)
     setTimeout(fillThumbnails, 200);
@@ -1953,28 +2862,32 @@ function readerSetDoublePage() {
 
 // -- PANTALLA COMPLETA --
 function readerToggleFullscreen() {
-    const container = document.querySelector('.newspaper-reader-container') || document.getElementById('readerViewport');
-    const icon = document.getElementById('readerFsIcon');
-    const btn = document.getElementById('btnReaderFullscreen');
-    const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+      const container = document.querySelector('.newspaper-reader-container') || document.getElementById('readerViewport');
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
 
-    if (!isFs) {
-        if (container.requestFullscreen) container.requestFullscreen();
-        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-        else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-    }
-}
+      if (!isFs) {
+          if (container.requestFullscreen) container.requestFullscreen();
+          else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+          else if (container.mozRequestFullScreen) container.mozRequestFullScreen();
+      } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+      }
+  }
 
-function updateReaderFsBtn() {
-    const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-    const icon = document.getElementById('readerFsIcon');
-    const btn = document.getElementById('btnReaderFullscreen');
-    if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
-    if (btn) {
+  // Sincroniza el icono de fullscreen en toolbar y en el visor legacy
+  function updateReaderFsBtn() {
+      const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+      const icon = document.getElementById('readerFsIcon');
+      const btn = document.getElementById('btnReaderFullscreen');
+      // Icono de la toolbar inferior (FlipBuilder look)
+      const iconTb = document.getElementById('fbFsIconTb');
+      const btnTb = document.querySelector('.fb-toolbar .fb-tb-btn[onclick*="readerToggleFullscreen"]');
+      if (iconTb) iconTb.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+      if (btnTb) btnTb.classList.toggle('active', !!isFs);
+      if (icon) icon.className = isFs ? 'fas fa-compress' : 'fas fa-expand';
+      if (btn) {
         const span = btn.childNodes[1];
         if (span) span.textContent = isFs ? ' Salir de Pantalla Completa' : ' Pantalla Completa';
     }

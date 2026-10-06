@@ -895,3 +895,44 @@ body {
     }
 }
 
+/* ===================== Espacios Publicitarios (Banners) ===================== */
+.ad-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 24px auto;
+    padding: 12px;
+    background: var(--color-navy-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.ad-slot__label {
+    font-family: var(--font-title-montserrat, sans-serif);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.ad-slot__link {
+    display: block;
+    width: 100%;
+    line-height: 0;
+}
+
+.ad-slot__img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ad-slot__link:hover .ad-slot__img {
+    opacity: 0.9;
+}
+

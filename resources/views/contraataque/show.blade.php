@@ -196,6 +196,18 @@
       word-break: break-word;
       overflow-wrap: break-word;
     }
+    /* Las migas no caben en una linea a 360px: se parten y el titular
+       ocupa el ancho completo en vez de empujar el scroll horizontal. */
+    .ca-breadcrumb {
+      flex-wrap: wrap;
+      row-gap: 2px;
+    }
+    .ca-bc-home, .ca-bc-cat { white-space: nowrap; }
+    .ca-bc-title {
+      flex: 1 0 100%;
+      max-width: 100% !important;
+      font-size: 0.75rem;
+    }
     .ca-reactions-grid {
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 8px !important;
@@ -209,21 +221,31 @@
       gap: 10px !important;
     }
   }
+  /* hover propio: el proyecto usa Bootstrap, no Tailwind */
+  .ca-breadcrumb a { transition: color .15s ease; text-decoration: none; }
+  .ca-breadcrumb .ca-bc-home:hover { color: var(--ca-volt) !important; }
+  /* Hasta 900px el hero de 480px de alto se come media pantalla en horizontal */
+  @media (max-width: 900px) {
+    .ca-hero-main-card { min-height: 380px !important; }
+  }
+  @media (max-width: 420px) {
+    .ca-hero-main-card { min-height: 320px !important; }
+  }
 </style>
 
 <div class="container py-2">
 
     <!-- Migas de pan deportivas -->
-    <div class="d-flex align-items-center gap-2 mb-3 text-muted" style="font-size: 0.8rem;">
-        <a href="{{ route('contraataque.index') }}" class="text-white hover:text-emerald-400">
+    <div class="ca-breadcrumb d-flex align-items-center gap-2 mb-3 text-muted" style="font-size: 0.8rem;">
+        <a href="{{ route('contraataque.index') }}" class="text-white ca-bc-home">
             <i class="fas fa-bolt text-warning me-1"></i> Contra Ataque
         </a>
         <span>/</span>
-        <a href="{{ route('contraataque.seccion', $catSlug) }}" class="text-success fw-bold" style="color: var(--ca-volt) !important;">
+        <a href="{{ route('contraataque.seccion', $catSlug) }}" class="text-success fw-bold ca-bc-cat" style="color: var(--ca-volt) !important;">
             {{ $cat }}
         </a>
         <span>/</span>
-        <span class="text-truncate text-muted" style="max-width: 280px;">{{ $titulo }}</span>
+        <span class="text-truncate text-muted ca-bc-title">{{ $titulo }}</span>
     </div>
 
     <div class="row g-4">
@@ -244,9 +266,9 @@
                     
                     <!-- Botones de Compartir Rápido -->
                     <div class="d-flex align-items-center gap-1">
-                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($titulo) }}&url={{ urlencode($url) }}" target="_blank" class="btn btn-sm text-white" style="background: #1DA1F2; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en X"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($url) }}" target="_blank" class="btn btn-sm text-white" style="background: #1877F2; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://api.whatsapp.com/send?text={{ urlencode($titulo . ' ' . $url) }}" target="_blank" class="btn btn-sm text-white" style="background: #25D366; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($titulo) }}&url={{ urlencode($url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white" style="background: #1DA1F2; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en X"><i class="fab fa-x-twitter"></i></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white" style="background: #1877F2; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://api.whatsapp.com/send?text={{ urlencode($titulo . ' ' . $url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white" style="background: #25D366; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en WhatsApp"><i class="fab fa-whatsapp"></i></a>
                         <button type="button" onclick="copySportsLink('{{ $url }}')" class="btn btn-sm text-white" style="background: #334155; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; border: none;" title="Copiar enlace"><i class="fas fa-link"></i></button>
                     </div>
                 </div>
@@ -314,7 +336,7 @@
                 @if($img)
                     <figure class="mb-4">
                         <div class="rounded overflow-hidden position-relative" style="max-height: 480px; border: 1px solid var(--ca-border);">
-                            <img src="{{ $img }}" alt="{{ $titulo }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=80'">
+                            <img loading="eager" fetchpriority="high" decoding="async" src="{{ $img }}" alt="{{ $titulo }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='/images/default-news.svg'">
                         </div>
                         <figcaption class="mt-2 text-muted small" style="font-size: 0.78rem;">
                             <i class="fas fa-camera text-success me-1"></i> {{ $titulo }}
@@ -343,7 +365,7 @@
                             @foreach($noticia->galeria as $index => $foto)
                                 <div class="col-6 col-md-4">
                                     <div class="ca-gallery-thumb" onclick="openSportsLightbox({{ $index }})">
-                                        <img src="{{ $foto->image_url }}" alt="{{ $foto->pie_de_foto ?? 'Foto ' . ($index + 1) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img loading="lazy" decoding="async" src="{{ $foto->image_url }}" alt="{{ $foto->pie_de_foto ?? 'Foto ' . ($index + 1) }}" style="width: 100%; height: 100%; object-fit: cover;">
                                         <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); display: flex; align-items: flex-end; padding: 8px;">
                                             <span style="color: #fff; font-size: 0.72rem; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                                 {{ $foto->pie_de_foto ?: 'Ver foto ' . ($index + 1) }}
@@ -428,9 +450,9 @@
                     </h4>
                     <p class="text-muted small mb-3">Compártela en tus grupos de fútbol, amigos y redes sociales</p>
                     <div class="d-flex flex-wrap justify-content-center gap-2">
-                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($titulo) }}&url={{ urlencode($url) }}" target="_blank" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #1DA1F2; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-x-twitter me-1"></i> Twitter / X</a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($url) }}" target="_blank" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #1877F2; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-facebook-f me-1"></i> Facebook</a>
-                        <a href="https://api.whatsapp.com/send?text={{ urlencode($titulo . ' ' . $url) }}" target="_blank" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #25D366; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-whatsapp me-1"></i> WhatsApp</a>
+                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($titulo) }}&url={{ urlencode($url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #1DA1F2; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-x-twitter me-1"></i> Twitter / X</a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #1877F2; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-facebook-f me-1"></i> Facebook</a>
+                        <a href="https://api.whatsapp.com/send?text={{ urlencode($titulo . ' ' . $url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #25D366; font-family: var(--ca-font-display); letter-spacing: 0.5px;"><i class="fab fa-whatsapp me-1"></i> WhatsApp</a>
                         <button type="button" onclick="copySportsLink('{{ $url }}')" class="btn btn-sm text-white px-3 py-2 fw-bold" style="background: #475569; font-family: var(--ca-font-display); letter-spacing: 0.5px; border: none;"><i class="fas fa-link me-1"></i> Copiar Enlace</button>
                     </div>
                 </div>
@@ -554,12 +576,12 @@
                             <div class="ca-card p-3 d-flex gap-3 h-100">
                                 <div style="width: 88px; height: 88px; min-width: 88px; border-radius: 6px; overflow: hidden; border: 1px solid var(--ca-border);">
                                     <a href="{{ $rUrl }}">
-                                        <img src="{{ $rImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80' }}" 
+                                        <img loading="lazy" decoding="async" src="{{ $rImg ?: '/images/default-news.svg' }}" 
                                              alt="{{ $rTitulo }}" 
                                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
                                              onmouseover="this.style.transform='scale(1.05)'" 
                                              onmouseout="this.style.transform='scale(1)'"
-                                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                             onerror="this.onerror=null;this.src='/images/default-news.svg'">
                                     </a>
                                 </div>
                                 <div class="d-flex flex-column justify-content-between">
@@ -619,7 +641,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if(!empty($r['logo']))
-                                                <img src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
+                                                <img loading="lazy" decoding="async" src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
                                             @endif
                                             <strong class="text-white">{{ $r['club'] }}</strong>
                                         </div>
@@ -644,9 +666,9 @@
                 <h4 class="fw-bold text-white mb-1" style="font-family: var(--ca-font-display); font-size: 1.15rem;">SÍGUENOS EN LA CANCHA</h4>
                 <p class="text-muted small mb-3">No te pierdas los goles al instante, fichajes y coberturas exclusivas.</p>
                 <div class="d-flex justify-content-center gap-2">
-                    <a href="https://facebook.com/uhtvbolivia" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://x.com/UhtvBol" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-x-twitter"></i></a>
-                    <a href="https://youtube.com/@UHTVBolivia" target="_blank" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-youtube"></i></a>
+                    <a href="https://facebook.com/uhtvbolivia" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://x.com/UhtvBol" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-x-twitter"></i></a>
+                    <a href="https://youtube.com/@UHTVBolivia" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 
@@ -675,7 +697,7 @@
             <i class="fas fa-chevron-left"></i>
         </button>
 
-        <img id="sports-lightbox-img" src="" alt="Fotografía deportiva" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.8);border:1px solid var(--ca-border);">
+        <img loading="lazy" decoding="async" id="sports-lightbox-img" src="" alt="Fotografía deportiva" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.8);border:1px solid var(--ca-border);">
 
         <button type="button" onclick="nextSportsLightbox(event)" style="position:absolute;right:10px;z-index:10;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--ca-volt)';this.style.color='var(--ca-volt)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#fff'">
             <i class="fas fa-chevron-right"></i>

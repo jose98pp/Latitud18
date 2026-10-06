@@ -1,4 +1,11 @@
 @forelse($partidos ?? [] as $p)
+    @if(!empty($p['is_placeholder']))
+        {{-- Fallback: la fuente de datos no respondio. No mostrar un partido ficticio. --}}
+        <div class="p-3 text-center rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
+            <i class="fas fa-satellite-dish text-muted mb-1 d-block" style="opacity:.6;"></i>
+            <span class="text-muted" style="font-size: .72rem;">{{ $p['torneo'] }}: sin datos disponibles</span>
+        </div>
+    @else
     <div class="p-2 rounded ca-match-item" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); transition: all 0.2s ease;">
         <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-secondary border-opacity-10" style="font-size: 0.68rem;">
             <span class="text-truncate me-2" style="color: #94A3B8; font-weight: 600;">
@@ -17,7 +24,7 @@
             <!-- Equipo Local -->
             <div class="d-flex align-items-center gap-2" style="width: 40%; overflow: hidden;">
                 @if(!empty($p['local_logo']))
-                    <img src="{{ $p['local_logo'] }}" alt="{{ $p['local'] }}" class="ca-team-logo" onerror="this.style.display='none'">
+                    <img loading="lazy" decoding="async" src="{{ $p['local_logo'] }}" alt="{{ $p['local'] }}" class="ca-team-logo" onerror="this.style.display='none'">
                 @else
                     <span style="width: 10px; height: 10px; border-radius: 50%; background: {{ $p['local_color'] ?? '#00FF87' }}; display: inline-block; flex-shrink: 0;"></span>
                 @endif
@@ -37,7 +44,7 @@
                     {{ $p['visitante'] }}
                 </span>
                 @if(!empty($p['visitante_logo']))
-                    <img src="{{ $p['visitante_logo'] }}" alt="{{ $p['visitante'] }}" class="ca-team-logo" onerror="this.style.display='none'">
+                    <img loading="lazy" decoding="async" src="{{ $p['visitante_logo'] }}" alt="{{ $p['visitante'] }}" class="ca-team-logo" onerror="this.style.display='none'">
                 @else
                     <span style="width: 10px; height: 10px; border-radius: 50%; background: {{ $p['visitante_color'] ?? '#FFFFFF' }}; display: inline-block; flex-shrink: 0;"></span>
                 @endif
@@ -50,6 +57,7 @@
             </div>
         @endif
     </div>
+    @endif
 @empty
     <div class="p-4 text-center rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
         <i class="fas fa-futbol text-muted mb-2 fs-3"></i>

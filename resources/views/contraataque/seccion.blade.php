@@ -20,6 +20,23 @@
     <div class="row g-4">
         <!-- Listado de Noticias de la Sección -->
         <div class="col-lg-8">
+            @if(!empty($filtroSinResultados))
+                <div class="ca-card p-3 mb-4" style="border-left:3px solid var(--ca-gold);">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fas fa-info-circle" style="color:var(--ca-gold);font-size:1.05rem;"></i>
+                        <div>
+                            <strong class="d-block" style="font-family:var(--ca-font-display);text-transform:uppercase;letter-spacing:.5px;">
+                                Sin noticias espec&iacute;ficas de esta disciplina
+                            </strong>
+                            <span class="text-muted" style="font-size:.85rem;">
+                                Todav&iacute;a no hay notas publicadas en
+                                <em>{{ $seccionTitulo }}</em>.
+                                Te mostramos las &uacute;ltimas noticias de deportes.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="row g-4">
                 @forelse($noticias as $noticia)
                     @php
@@ -41,12 +58,12 @@
                         <div class="ca-card h-100 d-flex flex-column">
                             <div style="height: 180px; overflow: hidden; position: relative;">
                                 <a href="{{ $nUrl }}">
-                                    <img src="{{ $nImg ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80' }}" 
+                                    <img loading="lazy" decoding="async" src="{{ $nImg ?: '/images/default-news.svg' }}" 
                                          alt="{{ $nTitulo }}" 
                                          style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
                                          onmouseover="this.style.transform='scale(1.05)'" 
                                          onmouseout="this.style.transform='scale(1)'"
-                                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'">
+                                         onerror="this.onerror=null;this.src='/images/default-news.svg'">
                                 </a>
                                 <span class="badge position-absolute top-2 start-2" style="background: rgba(0,0,0,0.85); color: var(--ca-volt); font-family: var(--ca-font-display);">
                                     {{ $nCat }}
@@ -119,7 +136,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if(!empty($r['logo']))
-                                                <img src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
+                                                <img loading="lazy" decoding="async" src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
                                             @endif
                                             <strong class="text-white">{{ $r['club'] }}</strong>
                                         </div>

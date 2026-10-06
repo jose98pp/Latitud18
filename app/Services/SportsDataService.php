@@ -256,16 +256,23 @@ class SportsDataService
     {
         try {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 6);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'curl/8.4.0');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 6,
+                CURLOPT_CONNECTTIMEOUT => 4,
+                // ESPN rechaza el UA de navegador con 403; el de curl funciona.
+                CURLOPT_USERAGENT => 'curl/8.4.0',
+                CURLOPT_ACCEPT_ENCODING => '',
+                // Verificacion TLS activa (antes estaba en false: riesgo de MITM)
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+            ]);
 
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlErr = curl_error($ch);
             curl_close($ch);
 
             if ($httpCode === 200 && !empty($response)) {
@@ -274,6 +281,11 @@ class SportsDataService
                     return $decoded;
                 }
             }
+
+            Log::warning("ESPN respondio con codigo no esperado: {$url}", [
+                'http' => $httpCode,
+                'curl_error' => $curlErr,
+            ]);
         } catch (\Throwable $e) {
             Log::warning("Error consultando ESPN API ({$url}): " . $e->getMessage());
         }
@@ -375,28 +387,30 @@ class SportsDataService
             ];
         }
 
-        // Para Premier, LaLiga, etc. si el API no responde
+        // Para Premier, LaLiga, etc. si el API no responde.
+        // Se marca como no_disponible para que la UI no muestre datos inventados.
         return [
             [
                 'id' => "fb_{$leagueKey}_1",
                 'torneo' => self::LEAGUES[$leagueKey]['name'] ?? 'Fútbol Internacional',
                 'torneo_badge' => self::LEAGUES[$leagueKey]['badge'] ?? 'INTERNACIONAL',
                 'flag' => self::LEAGUES[$leagueKey]['flag'] ?? '⚽',
-                'estado' => 'FINAL',
+                'estado' => 'SIN DATOS',
                 'is_live' => false,
-                'is_finished' => true,
-                'minuto' => 'FT',
-                'local' => 'Equipo Local',
-                'local_full' => 'Equipo Local',
+                'is_finished' => false,
+                'is_placeholder' => true,
+                'minuto' => '—',
+                'local' => 'Datos no disponibles',
+                'local_full' => 'Datos no disponibles',
                 'local_logo' => null,
                 'local_color' => '#00FF87',
-                'goles_local' => 2,
-                'visitante' => 'Equipo Visitante',
-                'visitante_full' => 'Equipo Visitante',
+                'goles_local' => '-',
+                'visitante' => 'Verifica tu conexión',
+                'visitante_full' => 'Verifica tu conexión',
                 'visitante_logo' => null,
                 'visitante_color' => '#FFFFFF',
-                'goles_visitante' => 1,
-                'estadio' => 'Estadio Principal',
+                'goles_visitante' => '-',
+                'estadio' => 'No se pudo sincronizar con la fuente de datos',
             ]
         ];
     }

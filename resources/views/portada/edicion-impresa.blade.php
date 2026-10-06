@@ -12,7 +12,6 @@
     $epNumero = $ep['numero_edicion'] ?? '';
     $epPrecio = $ep['precio'] ?? '';
     $epPaginas = $ep['paginas'] ?? [];
-    $epPdfUrl = $ep['pdf_url'] ?? null;
 
     // Imagen representativa de portada
     $epImagenPortada = null;
@@ -27,15 +26,35 @@
     }
 
     $epTitularPrincipal = $epPaginas[0]['titular_principal']['titulo'] ?? null;
+    // Si no tiene titular estructurado, buscar en frames del editor visual
+    if (!$epTitularPrincipal && !empty($epPaginas[0]['frames'])) {
+        foreach ($epPaginas[0]['frames'] as $f) {
+            if (($f['type'] ?? '') === 'headline' && !empty($f['content'])) {
+                $epTitularPrincipal = strip_tags($f['content']);
+                break;
+            }
+        }
+    }
     $epCintillo = $epPaginas[0]['cintillo_inferior']['texto'] ?? null;
 
-    // Sumario de noticias del interior
+    // Sumario de noticias del interior (soporta noticias clásicas y frames de InDesign)
     $sumario = [];
     foreach ($epPaginas as $pg) {
-        if (!empty($pg['titular_principal']['titulo'])) {
+        $tit = $pg['titular_principal']['titulo'] ?? null;
+        $cat = $pg['titular_principal']['antetitulo'] ?? ($pg['nombre'] ?? 'NOTICIAS');
+        if (!$tit && !empty($pg['frames'])) {
+            foreach ($pg['frames'] as $f) {
+                if (($f['type'] ?? '') === 'headline' && !empty($f['content'])) {
+                    $tit = strip_tags($f['content']);
+                    if (!empty($f['kicker'])) { $cat = $f['kicker']; }
+                    break;
+                }
+            }
+        }
+        if ($tit) {
             $sumario[] = [
-                'cat'   => $pg['titular_principal']['antetitulo'] ?? ($pg['nombre'] ?? 'NOTICIAS'),
-                'tit'   => $pg['titular_principal']['titulo'],
+                'cat'   => $cat,
+                'tit'   => $tit,
                 'pag'   => 'Pág. ' . ($pg['numero'] ?? '—'),
                 'color' => '#D71920',
             ];
@@ -110,15 +129,10 @@
           <a href="{{ route('periodico.public.index') }}" class="ep-btn ep-btn-primary">
             <i class="fas fa-book-open"></i> Leer Edición
           </a>
-          @if($epPdfUrl)
-            <a href="{{ $epPdfUrl }}" target="_blank" rel="noopener" class="ep-btn ep-btn-secondary">
-              <i class="fas fa-file-pdf"></i> PDF
-            </a>
-          @else
-            <a href="{{ route('periodico.public.pdf', $epId) }}" target="_blank" rel="noopener" class="ep-btn ep-btn-secondary">
-              <i class="fas fa-print"></i> Imprimir
-            </a>
-          @endif
+          {{-- Descarga de PDF real (server-side DomPDF) --}}
+          <a href="{{ route('periodico.public.pdf', $epId) }}" rel="noopener" class="ep-btn ep-btn-secondary" download>
+            <i class="fas fa-file-pdf"></i> Descargar PDF
+          </a>
         </div>
       </div>
 

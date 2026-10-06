@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Noticia;
 use App\Models\Category;
 use App\Models\Banner;
@@ -12,6 +13,65 @@ use App\Services\SportsDataService;
 
 class ContraAtaqueController extends Controller
 {
+    /**
+     * Palabras clave por subseccion deportiva.
+     * 'incluir' = debe coincidir alguna. 'excluir' = descarta falsos positivos
+     * (terminos genericos que tambien aparecen en otra disciplina).
+     */
+    public const SUBSECCIONES = [
+        'futbol-boliviano' => [
+            'incluir' => [
+                'división profesional', 'liga boliviana', 'clausura', 'apertura',
+                'oriente Petrolero', 'blooming', 'bolívar', 'the strongest', 'strongest',
+                'always ready', 'wilstermann', 'aurora', 'blooming', 'petrolero',
+                'independiente', 'real potosí', 'real potosi', 'guabirá', 'guabira',
+                'banguato', 'san josé', 'san jose', 'bulo bulo', 'universidad',
+                'tahuichi', 'municipal de yacuiba',
+            ],
+            'excluir' => ['selección', 'seleccion', 'mundial', 'champions', 'libertadores', 'sudamericana', 'copa simón', 'copa simon'],
+        ],
+        'la-verde' => [
+            'incluir' => [
+                'la verde', 'selección boliviana', 'seleccion boliviana', 'eliminatorias',
+                'copa américa', 'copa america', 'preliminar', 'fbf', 'villegas',
+                'félix ramírez', 'felix ramirez', 'martins', 'robín', 'robin',
+                'cuauhtémoc', 'cuauhtemoc', 'blooming', 'entrenador de la verde',
+            ],
+            'excluir' => [],
+        ],
+        'internacional' => [
+            'incluir' => [
+                'champions', 'libertadores', 'sudamericana', 'conmebol', 'fifa',
+                'premier league', 'la liga', 'laliga', 'serie a', 'bundesliga',
+                'real madrid', 'barcelona', 'atlético', 'atletico', 'manchester',
+                'messi', 'cristiano ronaldo', 'cr7', 'mbappé', 'mbappe', 'haaland',
+                'mundial de fútbol', 'copa del mundo', 'mundial 2026',
+            ],
+            'excluir' => [],
+        ],
+        'motores' => [
+            'incluir' => [
+                'dakar', 'rally', 'fórmula 1', 'formula 1', 'f1', 'motogp',
+                'moto gp', 'nascar', 'automovilismo', 'automotriz', 'volkswagen',
+                'toyota', 'ferrari', 'bmx', 'motocross', 'vehículo', 'vehiculo',
+                'autódromo', 'autodromo', 'monoplaza', 'camoto', 'autoes',
+            ],
+            'excluir' => [],
+        ],
+        'polideportivo' => [
+            'incluir' => [
+                'básquet', 'basquet', 'basketball', 'vóley', 'voleibol', 'handball',
+                'atletismo', 'tenis', 'natación', 'natacion', 'swimming', 'ciclis',
+                'ciclismo', 'maratón', 'maraton', 'gimnasia', 'boxeo', 'karate',
+                'judo', 'taekwondo', 'ajedrez', 'golf', 'surf', 'escalada',
+                'olímpicos', 'panamericanos', 'medallas',
+            ],
+            // 'campamento' y 'amputadas' suelen ser de fútbol; 'olímpico' también
+            // aparece en nombres de estadios (Estadio Olímpico Patria).
+            'excluir' => ['fútbol', 'futbol', 'selección', 'seleccion', 'liga profesional'],
+        ],
+    ];
+
     protected SportsDataService $sportsService;
 
     public function __construct(SportsDataService $sportsService)
@@ -24,18 +84,18 @@ class ContraAtaqueController extends Controller
      */
     private function getSportsCategoryIds()
     {
-        $catIds = Category::where(function($q) {
-            $q->where('id', 9)
-              ->orWhere('name', 'LIKE', '%deport%')
-              ->orWhere('name', 'LIKE', '%futbol%')
-              ->orWhere('name', 'LIKE', '%contra%');
-        })->pluck('id');
+        // Cacheado: la taxonomia cambia muy rara vez y se consulta en cada request
+        // de la portada, secciones y detalle.
+        return Cache::remember('contraataque.deportes.cat_ids', 600, function () {
+            $catIds = Category::where(function ($q) {
+                $q->where('id', 9)
+                  ->orWhere('name', 'LIKE', '%deport%')
+                  ->orWhere('name', 'LIKE', '%futbol%')
+                  ->orWhere('name', 'LIKE', '%contra%');
+            })->pluck('id');
 
-        if ($catIds->isEmpty()) {
-            return collect([9]);
-        }
-
-        return $catIds;
+            return $catIds->isEmpty() ? collect([9]) : $catIds;
+        });
     }
 
     /**
@@ -108,6 +168,8 @@ class ContraAtaqueController extends Controller
         // Columnistas de Opinión Deportiva
         $columnistasDeportes = $this->getRealSportsColumnists();
 
+        $deportesCatIds = $sportsCatIds;
+
         return view('contraataque.index', compact(
             'categorias',
             'categoriaDeportes',
@@ -120,7 +182,8 @@ class ContraAtaqueController extends Controller
             'columnistasDeportes',
             'banners',
             'ligasDisponibles',
-            'ligaActiva'
+            'ligaActiva',
+            'deportesCatIds'
         ));
     }
 
@@ -220,88 +283,36 @@ class ContraAtaqueController extends Controller
             ->whereIn('category_id', $catIds)
             ->with(['category', 'galeria']);
 
-        // Filtrar según la subsección deportiva
-        switch ($seccion) {
-            case 'futbol-boliviano':
-                $query->where(function($q) {
-                    $q->where('titulo', 'LIKE', '%bolivia%')
-                        ->orWhere('titulo', 'LIKE', '%división%')
-                        ->orWhere('titulo', 'LIKE', '%liga%')
-                        ->orWhere('titulo', 'LIKE', '%oriente%')
-                        ->orWhere('titulo', 'LIKE', '%blooming%')
-                        ->orWhere('titulo', 'LIKE', '%bolívar%')
-                        ->orWhere('titulo', 'LIKE', '%strongest%')
-                        ->orWhere('titulo', 'LIKE', '%always%')
-                        ->orWhere('titulo', 'LIKE', '%wilstermann%')
-                        ->orWhere('titulo', 'LIKE', '%aurora%')
-                        ->orWhere('titulo', 'LIKE', '%clausura%')
-                        ->orWhere('titulo', 'LIKE', '%apertura%');
-                });
-                break;
+        // Filtrar según la subsección deportiva.
+        // 'excluir' evita que un término genérico capture noticias de otra disciplina
+        // (ej: "campamento" de fútbol no debe caer en polideportivo).
+        $filtros = self::SUBSECCIONES[$seccion] ?? null;
+        $usadoFiltro = false;
 
-            case 'la-verde':
-                $query->where(function($q) {
-                    $q->where('titulo', 'LIKE', '%verde%')
-                      ->orWhere('titulo', 'LIKE', '%selección%')
-                      ->orWhere('titulo', 'LIKE', '%seleccion%')
-                      ->orWhere('titulo', 'LIKE', '%eliminatorias%')
-                      ->orWhere('titulo', 'LIKE', '%villegas%')
-                      ->orWhere('titulo', 'LIKE', '%copa américa%')
-                      ->orWhere('titulo', 'LIKE', '%fbf%');
+        if ($filtros) {
+            $query->where(function ($q) use ($filtros) {
+                $q->where(function ($sub) use ($filtros) {
+                    foreach ($filtros['incluir'] as $k) {
+                        $sub->orWhere('titulo', 'LIKE', "%{$k}%");
+                    }
                 });
-                break;
-
-            case 'internacional':
-                $query->where(function($q) {
-                    $q->where('titulo', 'LIKE', '%champions%')
-                      ->orWhere('titulo', 'LIKE', '%libertadores%')
-                      ->orWhere('titulo', 'LIKE', '%sudamericana%')
-                      ->orWhere('titulo', 'LIKE', '%messi%')
-                      ->orWhere('titulo', 'LIKE', '%cr7%')
-                      ->orWhere('titulo', 'LIKE', '%ronaldo%')
-                      ->orWhere('titulo', 'LIKE', '%premier%')
-                      ->orWhere('titulo', 'LIKE', '%madrid%')
-                      ->orWhere('titulo', 'LIKE', '%barcelona%')
-                      ->orWhere('titulo', 'LIKE', '%españa%')
-                      ->orWhere('titulo', 'LIKE', '%argentina%')
-                      ->orWhere('titulo', 'LIKE', '%brasil%')
-                      ->orWhere('titulo', 'LIKE', '%inglaterra%')
-                      ->orWhere('titulo', 'LIKE', '%real madrid%')
-                      ->orWhere('titulo', 'LIKE', '%colombia%');
-                });
-                break;
-
-            case 'motores':
-                $query->where(function($q) {
-                    $q->where('titulo', 'LIKE', '%dakar%')
-                      ->orWhere('titulo', 'LIKE', '%rally%')
-                      ->orWhere('titulo', 'LIKE', '%motor%')
-                      ->orWhere('titulo', 'LIKE', '%f1%')
-                      ->orWhere('titulo', 'LIKE', '%volkswagen%')
-                      ->orWhere('titulo', 'LIKE', '%vehículo%')
-                      ->orWhere('titulo', 'LIKE', '%auto%');
-                });
-                break;
-
-            case 'polideportivo':
-                $query->where(function($q) {
-                    $q->where('titulo', 'LIKE', '%básquet%')
-                      ->orWhere('titulo', 'LIKE', '%basquet%')
-                      ->orWhere('titulo', 'LIKE', '%atletismo%')
-                      ->orWhere('titulo', 'LIKE', '%tenis%')
-                      ->orWhere('titulo', 'LIKE', '%natación%')
-                      ->orWhere('titulo', 'LIKE', '%campamento%');
-                });
-                break;
-
-            default:
-                break;
+                if (!empty($filtros['excluir'])) {
+                    $q->whereNot(function ($sub) use ($filtros) {
+                        foreach ($filtros['excluir'] as $k) {
+                            $sub->orWhere('titulo', 'LIKE', "%{$k}%");
+                        }
+                    });
+                }
+            });
+            $usadoFiltro = true;
         }
 
         $noticias = $query->orderBy('created_at', 'desc')->paginate(12);
 
-        // Si la consulta arroja 0 resultados específicos, cargar las últimas noticias de deportes
-        if ($noticias->isEmpty()) {
+        // Si el filtro especifico no arroja resultados, mostrar Ultimas de deportes
+        // pero avisar en la UI que no hay contenido especifico de esa disciplina.
+        $filtroSinResultados = $usadoFiltro && $noticias->isEmpty();
+        if ($filtroSinResultados) {
             $noticias = Noticia::publicadaActiva()
                 ->whereIn('category_id', $catIds)
                 ->with(['category', 'galeria'])
@@ -320,7 +331,8 @@ class ContraAtaqueController extends Controller
             'tablaPosiciones',
             'banners',
             'ligasDisponibles',
-            'ligaActiva'
+            'ligaActiva',
+            'filtroSinResultados'
         ));
     }
 
@@ -359,9 +371,10 @@ class ContraAtaqueController extends Controller
                     'id' => $v->id,
                     'titulo' => $v->titulo,
                     'duracion' => 'Video HD',
-                    'imagen' => $img ?: ($v->youtube_thumbnail ?: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80'),
+                    'imagen' => $img ?: ($v->youtube_thumbnail ?: '/images/default-news.svg'),
                     'categoria' => strtoupper($v->category->name ?? 'DEPORTES'),
-                    'vistas' => number_format($v->views > 0 ? $v->views : 150) . ' vistas',
+                    // Antes inventaba "150 vistas" cuando no habia dato real
+                    'vistas' => $v->views > 0 ? number_format($v->views) . ' vistas' : '',
                     'youtube_id' => $v->youtube_id,
                 ];
             })->toArray();
@@ -372,6 +385,9 @@ class ContraAtaqueController extends Controller
 
     /**
      * Columnistas de opinión deportiva reales
+     *
+     * Solo devuelve articulos que existen en la BD. Antes, si no habia Opinion,
+     * retornaba dos columnistas y dos notas INVENTADAS que parecian reales.
      */
     private function getRealSportsColumnists(): array
     {
@@ -382,36 +398,25 @@ class ContraAtaqueController extends Controller
                 ->get();
 
             if ($articulosDB->isNotEmpty()) {
-                return $articulosDB->map(function($a) {
+                return $articulosDB->map(function ($a) {
+                    $nombre = $a->columnista->nombre ?? 'Línea Editorial';
                     return [
-                        'autor' => $a->columnista->nombre ?? 'Línea Editorial',
+                        'autor' => $nombre,
                         'cargo' => $a->columnista->cargo ?? 'Contra Ataque Opinión',
-                        'foto' => $a->columnista->avatar_url ?? 'https://ui-avatars.com/api/?name=CA&background=00FF87&color=000',
+                        // La columna real es 'avatar' (no 'avatar_url')
+                        'foto' => $a->columnista->avatar
+                            ?: 'https://ui-avatars.com/api/?name=' . rawurlencode(mb_substr($nombre, 0, 2)) . '&background=0B1F3A&color=ffffff&bold=true',
                         'titulo' => $a->titulo,
-                        'extracto' => \Illuminate\Support\Str::limit(strip_tags($a->contenido), 140),
+                        'extracto' => \Illuminate\Support\Str::limit(strip_tags($a->contenido ?? ''), 140),
                     ];
                 })->toArray();
             }
         } catch (\Throwable $e) {
-            // Seguir con los predeterminados
+            return [];
         }
 
-        return [
-            [
-                'autor' => 'Marco "El Mariscal" Roca',
-                'cargo' => 'Jefe de Deportes Contra Ataque',
-                'foto' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
-                'titulo' => 'El replanteo táctico que definió el liderazgo en el Clausura',
-                'extracto' => 'La presión alta en los primeros 25 minutos ahogó por completo la salida del rival y evidenció la falta de recambio...'
-            ],
-            [
-                'autor' => 'Lic. Pamela Soruco',
-                'cargo' => 'Especialista en Fútbol Internacional',
-                'foto' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80',
-                'titulo' => 'Bolivia rumbo al repechaje: La calculadora de la ilusión',
-                'extracto' => 'Con 6 puntos en juego en condición de local, el margen de error es cero pero la fortaleza en la altura sigue siendo el mayor activo...'
-            ]
-        ];
+        // Sin articulos de opinion publicados: no inventar contenido.
+        return [];
     }
 
     /**

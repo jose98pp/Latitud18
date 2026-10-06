@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Latitud18">
-    <title>@yield('title', 'Latitud18 - Información Sin Ruido')</title>
+    <title>@yield('title', 'Latitud18 - InformaciÃ³n Sin Ruido')</title>
     @section('meta')
       <meta name="description" content="{{ setting('footer_about', 'Portal de noticias 24/7. Periodismo independiente y cobertura multimedia.') }}">
       <meta property="og:site_name" content="{{ setting('site_name', 'Latitud 18') }}">
       <meta property="og:type" content="website">
-      <meta property="og:title" content="{{ setting('site_name', 'Latitud 18') }} — {{ setting('site_slogan', 'Información Sin Ruido') }}">
+      <meta property="og:title" content="{{ setting('site_name', 'Latitud 18') }} â€” {{ setting('site_slogan', 'InformaciÃ³n Sin Ruido') }}">
       <meta property="og:description" content="{{ setting('footer_about', 'Portal de noticias 24/7. Periodismo independiente.') }}">
       <meta property="og:url" content="{{ url()->current() }}">
       <meta name="twitter:card" content="summary_large_image">
@@ -25,7 +25,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     @php
@@ -45,13 +45,9 @@
   @include('components.navbar')
 
   {{-- Footer Banners (If any) --}}
-  @if(isset($banners['footer']) && $banners['footer']->count() > 0)
-    @foreach($banners['footer'] as $banner)
-      <div style="display:flex;justify-content:center;padding:8px 0">
-        <a href="{{ $banner->link ?? '#' }}" target="_blank" style="display:block;max-width:970px;width:100%"><img src="{{ asset($banner->image_path) }}" alt="{{ $banner->title }}" style="width:100%;border-radius:2px" loading="lazy"></a>
-      </div>
-    @endforeach
-  @endif
+  <div class="container">
+    <x-ad-slot location="footer" :max-width="970" label="Publicidad" :banners="$banners ?? null" />
+  </div>
 
   {{-- Main Content Injection --}}
   <main style="padding:16px 0 40px">

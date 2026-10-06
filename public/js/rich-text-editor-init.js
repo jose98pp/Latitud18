@@ -270,6 +270,9 @@ class RichTextEditorManager {
 
         // Global keyboard shortcuts
         document.addEventListener('keydown', (e) => {
+            // No interferir con la escritura de simbolos (Alt+numeros, teclado de terceros, IME)
+            if (e.isComposing || e.keyCode === 229) return;
+
             // Only activate when editor is focused
             const activeElement = document.activeElement;
             const isEditorFocused = editorContainer.contains(activeElement);

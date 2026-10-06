@@ -1,35 +1,29 @@
 {{-- =========================================================================
-     6. ESPACIO PUBLICITARIO DINÁMICO & EXPLORADOR DE SECCIONES
+     6. ESPACIO PUBLICITARIO DINÃMICO & EXPLORADOR DE SECCIONES
      ========================================================================= --}}
 @php
   $bannerMiddle = null;
   if (isset($banners)) {
-    $bannerMiddle = ($banners['portada_middle'] ?? collect())->first() 
+    $bannerMiddle = ($banners['portada_middle'] ?? collect())->first()
                  ?? ($banners['footer'] ?? collect())->first()
                  ?? ($banners['home_middle'] ?? collect())->first();
   }
 @endphp
+@if($bannerMiddle)
+  <x-ad-slot location="portada_middle" :max-width="970" label="Espacio Publicitario" :banners="$banners ?? null" />
+@else
 <div class="ad-banner-strip-block">
-  @if($bannerMiddle)
-    ESPACIO PUBLICITARIO • {{ strtoupper($bannerMiddle->title) }}
-    <div style="margin-top:8px;">
-      <a href="{{ $bannerMiddle->link ?: '#' }}" @if($bannerMiddle->link) target="_blank" @endif style="display:inline-block; max-width:970px; width:100%;">
-        <img src="{{ asset($bannerMiddle->image_path) }}" alt="{{ $bannerMiddle->title }}"
-             style="width:100%; max-height:180px; object-fit:contain; border-radius:2px; box-shadow:0 2px 8px rgba(0,0,0,0.08);" loading="lazy">
-      </a>
-    </div>
-  @else
-    ESPACIO PUBLICITARIO • 970 x 90
-    <div style="margin-top:8px;">
-      <a href="https://radiobetania.com/" target="_blank" style="display:inline-block; max-width:800px; width:100%;">
-        <img src="{{ asset('images/betania.jpg') }}" alt="Publicidad Betania"
-             style="width:100%; border-radius:2px; box-shadow:0 2px 8px rgba(0,0,0,0.08);" loading="lazy">
-      </a>
-    </div>
-  @endif
+  ESPACIO PUBLICITARIO â€¢ 970 x 90
+  <div style="margin-top:8px;">
+    <a href="https://radiobetania.com/" target="_blank" rel="noopener sponsored" style="display:inline-block; max-width:800px; width:100%;">
+      <img src="{{ asset('images/betania.jpg') }}" alt="Publicidad Betania"
+           style="width:100%; border-radius:2px; box-shadow:0 2px 8px rgba(0,0,0,0.08);" loading="lazy">
+    </a>
+  </div>
 </div>
+@endif
 
-{{-- Explorador de todas las categorías en píldoras --}}
+{{-- Explorador de todas las categorÃ­as en pÃ­ldoras --}}
 <div style="text-align:center; padding: 20px 0 36px; border-top: 1px solid var(--color-border); margin-bottom: 20px;">
   <h3 style="font-family:var(--font-title-montserrat); font-weight:900; font-size:0.82rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--color-navy); margin-bottom:14px;">
     Explora Todas las Secciones

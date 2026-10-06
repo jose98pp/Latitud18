@@ -27,6 +27,22 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\NewsService::class,
             \App\Services\NewsService::class
         );
+
+        $this->app->bind(
+            \App\Services\Contracts\EdicionServiceInterface::class,
+            \App\Services\EdicionService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contracts\EstadoEditorialServiceInterface::class,
+            \App\Services\EstadoEditorialService::class
+        );
+
+        // Registrar PlantillaService
+        $this->app->bind(
+            \App\Services\Contracts\PlantillaServiceInterface::class,
+            \App\Services\PlantillaService::class
+        );
     }
 
     /**

@@ -10,6 +10,31 @@
    Formato broadsheet 300 x 430 mm
    ============================================================ */
 
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: normal;
+    src: url('{{ public_path("fonts/Montserrat-Regular.ttf") }}') format('truetype');
+}
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    src: url('{{ public_path("fonts/Montserrat-SemiBold.ttf") }}') format('truetype');
+}
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: bold;
+    src: url('{{ public_path("fonts/Montserrat-Bold.ttf") }}') format('truetype');
+}
+@font-face {
+    font-family: 'Bebas Neue';
+    font-style: normal;
+    font-weight: normal;
+    src: url('{{ public_path("fonts/BebasNeue-Regular.ttf") }}') format('truetype');
+}
+
 @page {
     size: 300mm 430mm;
     margin: 10mm 11mm 12mm 11mm;
@@ -74,6 +99,17 @@ td, th { vertical-align: top; }
 
 /* ---------- Rompepaginas ---------- */
 .pagina { page-break-after: always; page-break-inside: avoid; }
+
+/* --- Páginas del editor visual (frames) ---
+   El canvas se imprime a tamaño real (1:1), sin transform: DomPDF no lo soporta. */
+.pagina .np-canvas-wrap { position: relative; width: 100%; height: auto; margin: 0; }
+.pagina .np-canvas { position: absolute; top: 0; left: 0; overflow: hidden; }
+.pagina .np-frame { position: absolute; box-sizing: border-box; overflow: hidden; }
+.pagina .np-ftext { font-family: 'Source Sans 3', sans-serif; font-size: 11px; line-height: 1.45; color: #1e293b; }
+.pagina .np-ftext p { margin: 0 0 6px; }
+.pagina .np-fquote { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.35; color: #334155; }
+.pagina .np-fimg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pagina .np-frame-headline .np-ftext { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: bold; line-height: 1.1; color: #0f172a; }
 .pagina:last-child { page-break-after: auto; }
 
 /* ---------- Etiquetas / kickers ---------- */
@@ -189,13 +225,31 @@ img.foto { border: 0.5pt solid #C8CED6; }
 <body>
 
 @php
-    $paginas = $edicion['paginas'] ?? [];
+    $paginas = collect($edicion['paginas'] ?? [])->sortBy('numero')->values()->all();
     $edicion  = $edicion;
 @endphp
 
 @forelse ($paginas as $p)
     <div class="pagina">
 
+        @if (!empty($p['frames']))
+            {{-- Páginas maquetadas con el editor visual: mismo render que el lector --}}
+            @php
+                $pgW = (float) ($p['ancho'] ?? 720);
+                $pgH = (float) ($p['alto'] ?? 1040);
+                $npSafe = function (?string $html): string {
+                    $html = (string) $html;
+                    if ($html === '') { return ''; }
+                    $html = preg_replace('#<(script|iframe|object|embed|link|meta|base|form)\b[^>]*>.*?</\1>#is', '', $html);
+                    $html = preg_replace('#<(script|iframe|object|embed|link|meta|base|form)\b[^>]*/?>#i', '', $html);
+                    $html = preg_replace('#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html);
+                    $html = preg_replace('#\s(href|src|xlink:href|action|formaction)\s*=\s*("|\')\s*(javascript|vbscript|data)\s*:#i', ' $1=$2#', $html);
+                    return str_replace(['<!--', '-->'], '', $html);
+                };
+            @endphp
+            @include('periodico.partials.frames', ['pg' => $p, 'pgW' => $pgW, 'pgH' => $pgH, 'npSafe' => $npSafe])
+
+        @else
         {{-- ============ PORTADA ============ --}}
         @if (($p['tipo'] ?? '') === 'portada')
 
@@ -639,6 +693,8 @@ img.foto { border: 0.5pt solid #C8CED6; }
             {{ $edicion['titulo'] ?? 'Latitud 18' }} · {{ $edicion['numero_edicion'] ?? '' }} · {{ $edicion['fecha'] ?? '' }} ·
             Santa Cruz de la Sierra, Bolivia · Documento generado automáticamente
         </div>
+
+        @endif {{-- fin @else de frames --}}
 
     </div>
 @empty
