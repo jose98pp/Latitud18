@@ -577,6 +577,7 @@ class PeriodicoController extends Controller
             'description' => 'nullable|string|max:500',
             'frames' => 'required|array',
             'preview_color' => 'nullable|string|max:30',
+            'configuracion' => 'nullable|array',
         ]);
 
         $tplId = 'tpl_custom_' . time() . '_' . Str::random(5);
@@ -584,11 +585,12 @@ class PeriodicoController extends Controller
         $plantilla = PeriodicoPlantilla::create([
             'id' => $tplId,
             'nombre' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
+            'slug' => $this->plantillaService->generarSlugUnico($validated['name']),
             'categoria' => $validated['category'],
             'descripcion' => $validated['description'] ?? '',
             'preview_color' => $validated['preview_color'] ?? '#1e293b',
             'frames' => $validated['frames'],
+            'configuracion' => $validated['configuracion'] ?? null,
             'is_custom' => true,
         ]);
 
@@ -602,6 +604,7 @@ class PeriodicoController extends Controller
                 'description' => $plantilla->descripcion,
                 'preview_color' => $plantilla->preview_color,
                 'frames' => $plantilla->frames,
+                'configuracion' => $plantilla->configuracion,
                 'is_custom' => true,
             ]
         ]);
@@ -630,11 +633,12 @@ class PeriodicoController extends Controller
         $plantilla = PeriodicoPlantilla::create([
             'id' => $tplId,
             'nombre' => ($templateData['name'] ?? 'Plantilla Importada') . ' (Importada)',
-            'slug' => Str::slug($templateData['name'] ?? 'importada'),
+            'slug' => $this->plantillaService->generarSlugUnico($templateData['name'] ?? 'importada'),
             'categoria' => $templateData['category'] ?? 'general',
             'descripcion' => $templateData['description'] ?? 'Plantilla importada desde archivo externo',
             'preview_color' => $templateData['preview_color'] ?? '#0284c7',
             'frames' => $templateData['frames'] ?? [],
+            'configuracion' => $templateData['configuracion'] ?? null,
             'is_custom' => true,
         ]);
 
@@ -648,6 +652,7 @@ class PeriodicoController extends Controller
                 'description' => $plantilla->descripcion,
                 'preview_color' => $plantilla->preview_color,
                 'frames' => $plantilla->frames,
+                'configuracion' => $plantilla->configuracion,
                 'is_custom' => true,
             ]
         ]);

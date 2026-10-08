@@ -1,0 +1,60 @@
+{
+  "id": "tpl-l18-ad-D",
+  "name": "Latitud18 · Publicidad D",
+  "category": "publicidad",
+  "description": "Variante independiente con medidas adaptadas al área útil.",
+  "preview_color": "#D71920",
+  "configuracion": {
+    "columns": 5,
+    "column_width_px": 123.6,
+    "gutter_px": 10,
+    "margin_px": 31,
+    "page_width_px": 720,
+    "page_height_px": 1106,
+    "page_width_mm": 280,
+    "page_height_mm": 430,
+    "margin_mm": 12,
+    "gutter_mm": 4,
+    "schema_version": 1
+  },
+  "frames": [
+    {
+      "id": "cabecera",
+      "type": "text",
+      "x": 31,
+      "y": 31,
+      "w": 658,
+      "h": 90,
+      "z": 1,
+      "content": "<p style=\"font-size:45px;color:#0B1F3A;margin:0\">LATITUD 18</p>"
+    },
+    {
+      "id": "anuncio",
+      "type": "ad",
+      "x": 565,
+      "y": 145,
+      "w": 124,
+      "h": 334,
+      "z": 2,
+      "format_code": "D1",
+      "status": "disponible",
+      "image_fit": "contain",
+      "lockResize": false
+    },
+    {
+      "id": "contenido",
+      "type": "article",
+      "x": 31,
+      "y": 145,
+      "w": 524,
+      "h": 870,
+      "z": 3,
+      "columns": 2,
+      "titular": "Titular editable",
+      "subtitulo": "Bajada de la noticia",
+      "cuerpo": "Inserta el contenido editorial y ajusta sus columnas.",
+      "autor": "Redacción",
+      "categoria_label": "Noticias"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "nombre": "Latitud18 · Edición semanal de 12 páginas",
+  "descripcion": "Edición editable basada en las referencias; 28 × 43 cm.",
+  "mapping": [
+    {
+      "slot": 1,
+      "plantilla_id": "tpl-l18-ref-01"
+    },
+    {
+      "slot": 2,
+      "plantilla_id": "tpl-l18-ref-02"
+    },
+    {
+      "slot": 3,
+      "plantilla_id": "tpl-l18-ref-03"
+    },
+    {
+      "slot": 4,
+      "plantilla_id": "tpl-l18-ref-04"
+    },
+    {
+      "slot": 5,
+      "plantilla_id": "tpl-l18-ref-05"
+    },
+    {
+      "slot": 6,
+      "plantilla_id": "tpl-l18-ref-06"
+    },
+    {
+      "slot": 7,
+      "plantilla_id": "tpl-l18-ref-07"
+    },
+    {
+      "slot": 8,
+      "plantilla_id": "tpl-l18-ref-08"
+    },
+    {
+      "slot": 9,
+      "plantilla_id": "tpl-l18-ref-09"
+    },
+    {
+      "slot": 10,
+      "plantilla_id": "tpl-l18-ref-10"
+    },
+    {
+      "slot": 11,
+      "plantilla_id": "tpl-l18-ref-11"
+    },
+    {
+      "slot": 12,
+      "plantilla_id": "tpl-l18-ref-12"
+    }
+  ]
+}

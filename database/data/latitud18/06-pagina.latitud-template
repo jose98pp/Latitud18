@@ -1,0 +1,158 @@
+{
+  "id": "tpl-l18-ref-06",
+  "name": "Latitud18 · 06 · Santa Cruz",
+  "category": "santa cruz",
+  "description": "Referencia editorial reconstruida en elementos independientes. Tabloide 28 × 43 cm.",
+  "preview_color": "#0B1F3A",
+  "configuracion": {
+    "columns": 5,
+    "column_width_px": 123.6,
+    "gutter_px": 10,
+    "margin_px": 31,
+    "page_width_px": 720,
+    "page_height_px": 1106,
+    "page_width_mm": 280,
+    "page_height_mm": 430,
+    "margin_mm": 12,
+    "gutter_mm": 4,
+    "schema_version": 1
+  },
+  "frames": [
+    {
+      "id": "p6-1",
+      "type": "text",
+      "x": 31,
+      "y": 32,
+      "w": 658,
+      "h": 20,
+      "z": 1,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:11px;line-height:1.15;margin:0;color:#0B1F3A;\">EDICIÓN N.º __  ·  SEMANA DEL __ AL __</p>"
+    },
+    {
+      "id": "p6-2",
+      "type": "text",
+      "x": 31,
+      "y": 66,
+      "w": 658,
+      "h": 40,
+      "z": 2,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:28px;line-height:1.15;margin:0;color:#0B1F3A;\">SANTA CRUZ</p>"
+    },
+    {
+      "id": "p6-3",
+      "type": "divider",
+      "x": 31,
+      "y": 110,
+      "w": 658,
+      "h": 3,
+      "z": 3,
+      "isLocked": false,
+      "color": "#D71920"
+    },
+    {
+      "id": "p6-4",
+      "type": "text",
+      "x": 31,
+      "y": 133,
+      "w": 658,
+      "h": 111,
+      "z": 4,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:35px;line-height:1.15;margin:0;color:#0B1F3A;\">Titular principal de Santa Cruz</p>"
+    },
+    {
+      "id": "p6-5",
+      "type": "text",
+      "x": 31,
+      "y": 251,
+      "w": 658,
+      "h": 49,
+      "z": 5,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:16px;line-height:1.15;margin:0;color:#0B1F3A;\">Bajada editable con contexto y datos principales de la noticia.</p>"
+    },
+    {
+      "id": "p6-6",
+      "type": "image",
+      "x": 31,
+      "y": 320,
+      "w": 658,
+      "h": 365,
+      "z": 6,
+      "isLocked": false,
+      "src": "/images/periodico/latitud18-placeholder.svg",
+      "caption": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "alt": "Fotografía de Santa Cruz"
+    },
+    {
+      "id": "p6-7",
+      "type": "text",
+      "x": 31,
+      "y": 694,
+      "w": 658,
+      "h": 24,
+      "z": 7,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:11px;line-height:1.15;margin:0;color:#0B1F3A;\">Pie de foto y crédito del fotógrafo</p>"
+    },
+    {
+      "id": "p6-8",
+      "type": "text",
+      "x": 31,
+      "y": 745,
+      "w": 324,
+      "h": 65,
+      "z": 8,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:24px;line-height:1.15;margin:0;color:#0B1F3A;\">Noticia complementaria</p>"
+    },
+    {
+      "id": "p6-9",
+      "type": "text",
+      "x": 31,
+      "y": 829,
+      "w": 324,
+      "h": 200,
+      "z": 9,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p6-10",
+      "type": "text",
+      "x": 365,
+      "y": 745,
+      "w": 324,
+      "h": 65,
+      "z": 10,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:24px;line-height:1.15;margin:0;color:#0B1F3A;\">Noticia complementaria</p>"
+    },
+    {
+      "id": "p6-11",
+      "type": "text",
+      "x": 365,
+      "y": 829,
+      "w": 324,
+      "h": 200,
+      "z": 11,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p6-12",
+      "type": "text",
+      "x": 31,
+      "y": 1060,
+      "w": 658,
+      "h": 15,
+      "z": 12,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:10px;line-height:1.15;margin:0;color:#0B1F3A;\">LATITUD18 · INFORMACIÓN SIN RUIDO                         PÁG. 6</p>"
+    }
+  ]
+}

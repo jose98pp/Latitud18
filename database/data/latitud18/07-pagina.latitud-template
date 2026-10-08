@@ -1,0 +1,169 @@
+{
+  "id": "tpl-l18-ref-07",
+  "name": "Latitud18 · 07 · País",
+  "category": "país",
+  "description": "Referencia editorial reconstruida en elementos independientes. Tabloide 28 × 43 cm.",
+  "preview_color": "#0B1F3A",
+  "configuracion": {
+    "columns": 5,
+    "column_width_px": 123.6,
+    "gutter_px": 10,
+    "margin_px": 31,
+    "page_width_px": 720,
+    "page_height_px": 1106,
+    "page_width_mm": 280,
+    "page_height_mm": 430,
+    "margin_mm": 12,
+    "gutter_mm": 4,
+    "schema_version": 1
+  },
+  "frames": [
+    {
+      "id": "p7-1",
+      "type": "text",
+      "x": 31,
+      "y": 32,
+      "w": 658,
+      "h": 20,
+      "z": 1,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:11px;line-height:1.15;margin:0;color:#0B1F3A;\">EDICIÓN N.º __  ·  SEMANA DEL __ AL __</p>"
+    },
+    {
+      "id": "p7-2",
+      "type": "text",
+      "x": 31,
+      "y": 66,
+      "w": 658,
+      "h": 40,
+      "z": 2,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:28px;line-height:1.15;margin:0;color:#0B1F3A;\">PAÍS</p>"
+    },
+    {
+      "id": "p7-3",
+      "type": "divider",
+      "x": 31,
+      "y": 110,
+      "w": 658,
+      "h": 3,
+      "z": 3,
+      "isLocked": false,
+      "color": "#D71920"
+    },
+    {
+      "id": "p7-4",
+      "type": "text",
+      "x": 31,
+      "y": 133,
+      "w": 658,
+      "h": 111,
+      "z": 4,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-weight:700;font-size:35px;line-height:1.15;margin:0;color:#0B1F3A;\">Titular principal de País</p>"
+    },
+    {
+      "id": "p7-5",
+      "type": "text",
+      "x": 31,
+      "y": 251,
+      "w": 658,
+      "h": 49,
+      "z": 5,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:16px;line-height:1.15;margin:0;color:#0B1F3A;\">Bajada editable con contexto y datos principales de la noticia.</p>"
+    },
+    {
+      "id": "p7-6",
+      "type": "image",
+      "x": 31,
+      "y": 320,
+      "w": 658,
+      "h": 365,
+      "z": 6,
+      "isLocked": false,
+      "src": "/images/periodico/latitud18-placeholder.svg",
+      "caption": "",
+      "image_fit": "cover",
+      "image_position": "50% 50%",
+      "alt": "Fotografía de País"
+    },
+    {
+      "id": "p7-7",
+      "type": "text",
+      "x": 31,
+      "y": 694,
+      "w": 658,
+      "h": 24,
+      "z": 7,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:11px;line-height:1.15;margin:0;color:#0B1F3A;\">Pie de foto y crédito del fotógrafo</p>"
+    },
+    {
+      "id": "p7-8",
+      "type": "text",
+      "x": 31,
+      "y": 747,
+      "w": 122,
+      "h": 282,
+      "z": 8,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p7-9",
+      "type": "text",
+      "x": 165,
+      "y": 747,
+      "w": 122,
+      "h": 282,
+      "z": 9,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p7-10",
+      "type": "text",
+      "x": 299,
+      "y": 747,
+      "w": 122,
+      "h": 282,
+      "z": 10,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p7-11",
+      "type": "text",
+      "x": 433,
+      "y": 747,
+      "w": 122,
+      "h": 282,
+      "z": 11,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p7-12",
+      "type": "text",
+      "x": 567,
+      "y": 747,
+      "w": 122,
+      "h": 282,
+      "z": 12,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:12px;line-height:1.15;margin:0;color:#0B1F3A;\">Texto de ejemplo. Sustituye este contenido por la noticia de tu edición. Edita cada columna por separado para ajustar el desarrollo y conservar una lectura clara.\n\nAgrega aquí los antecedentes, declaraciones y datos verificados de la noticia.</p>"
+    },
+    {
+      "id": "p7-13",
+      "type": "text",
+      "x": 31,
+      "y": 1060,
+      "w": 658,
+      "h": 15,
+      "z": 13,
+      "isLocked": false,
+      "content": "<p style=\"font-family:Montserrat,Arial,sans-serif;font-size:10px;line-height:1.15;margin:0;color:#0B1F3A;\">LATITUD18 · INFORMACIÓN SIN RUIDO                         PÁG. 7</p>"
+    }
+  ]
+}
