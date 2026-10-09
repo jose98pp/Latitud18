@@ -225,4 +225,19 @@ class PeriodicoHttpTest extends TestCase
         $response->assertSee('Publicada Visible Público');
         $response->assertDontSee('Borrador Oculto Público');
     }
+
+    /**
+     * Test: el editor usa la misma clave JSON que devuelve el API de plantillas de edición.
+     */
+    public function test_editor_usa_clave_json_de_plantillas_edicion(): void
+    {
+        $api = $this->actingAs($this->admin)->getJson('/admin/periodico/plantilla-edicion');
+
+        $api->assertOk();
+        $this->assertIsArray($api->json('plantillas_edicion'));
+
+        $editor = $this->actingAs($this->admin)->get('/admin/periodico');
+        $editor->assertOk();
+        $editor->assertSee('data.plantillas_edicion', false);
+    }
 }

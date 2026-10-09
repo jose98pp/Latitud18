@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\PeriodicoPlantilla;
+use App\Models\PeriodicoPlantillaEdicion;
 use Illuminate\Support\Str;
 
 class PeriodicoPlantillasSeeder extends Seeder
@@ -28,6 +29,27 @@ class PeriodicoPlantillasSeeder extends Seeder
                 $data
             );
         }
+
+        PeriodicoPlantillaEdicion::updateOrCreate(
+            ['nombre' => 'Edición Estándar Latitud 18 (12 Páginas)'],
+            [
+                'descripcion' => 'Esquema completo oficial de 12 páginas con Portada, Editorial, Política, Santa Cruz, País, Economía, Seguridad y Mundo.',
+                'mapping' => [
+                    ['slot' => 1, 'plantilla_id' => 'tpl-portada-default'],
+                    ['slot' => 2, 'plantilla_id' => 'tpl-editorial-default'],
+                    ['slot' => 3, 'plantilla_id' => 'tpl-politica-a'],
+                    ['slot' => 4, 'plantilla_id' => 'tpl-politica-b'],
+                    ['slot' => 5, 'plantilla_id' => 'tpl-santacruz-a'],
+                    ['slot' => 6, 'plantilla_id' => 'tpl-santacruz-b'],
+                    ['slot' => 7, 'plantilla_id' => 'tpl-pais-a'],
+                    ['slot' => 8, 'plantilla_id' => 'tpl-pais-b'],
+                    ['slot' => 9, 'plantilla_id' => 'tpl-economia-a'],
+                    ['slot' => 10, 'plantilla_id' => 'tpl-economia-b'],
+                    ['slot' => 11, 'plantilla_id' => 'tpl-seguridad-default'],
+                    ['slot' => 12, 'plantilla_id' => 'tpl-mundo-default'],
+                ],
+            ]
+        );
     }
 
     // -------------------------------------------------------------------------

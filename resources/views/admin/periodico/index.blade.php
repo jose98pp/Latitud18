@@ -1937,14 +1937,16 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 
       <div class="tpl-tabs" id="tplTabs">
         <button class="tpl-tab-btn active" onclick="filterTemplateCards('all', this)"><i class="fas fa-border-all me-1"></i> Todas</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('portadas', this)"><i class="fas fa-newspaper me-1"></i> Portadas</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('portada', this)"><i class="fas fa-newspaper me-1"></i> Portadas</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('editorial', this)"><i class="fas fa-feather-alt me-1"></i> Editorial</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('politica', this)"><i class="fas fa-landmark me-1"></i> Política</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('santacruz', this)"><i class="fas fa-map-marker-alt me-1"></i> Santa Cruz</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('pais', this)"><i class="fas fa-flag me-1"></i> País</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('economia', this)"><i class="fas fa-chart-line me-1"></i> Economía</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('entrevistas', this)"><i class="fas fa-microphone-alt me-1"></i> Entrevistas</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('fotografia', this)"><i class="fas fa-camera me-1"></i> Fotografía</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Contra Ataque</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('seguridad', this)"><i class="fas fa-shield-alt me-1"></i> Seguridad</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('mundo', this)"><i class="fas fa-globe me-1"></i> Mundo</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Deportes</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('publicidad', this)"><i class="fas fa-bullhorn me-1"></i> Publicidad</button>
-        <button class="tpl-tab-btn" onclick="filterTemplateCards('contraportada', this)"><i class="fas fa-book-open me-1"></i> Contraportada</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('custom', this)" style="border-color:rgba(74,222,128,0.4);"><i class="fas fa-star me-1 text-warning"></i> Mis Plantillas</button>
       </div>
 
@@ -2320,6 +2322,23 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
   </div>
 </div>
 
+@php
+    $loadedTemplatesForEditor = isset($plantillasModels)
+        ? $plantillasModels->map(function ($t) {
+            return [
+                'id' => $t->id,
+                'name' => $t->nombre,
+                'category' => $t->categoria,
+                'description' => $t->descripcion ?? '',
+                'preview_color' => $t->preview_color ?? '#1e293b',
+                'is_custom' => (bool) $t->is_custom,
+                'frames' => is_array($t->frames) ? $t->frames : (json_decode($t->frames, true) ?: []),
+                'configuracion' => $t->configuracion,
+            ];
+        })->values()->all()
+        : [];
+@endphp
+
 <script>
 // ═══════════════════════════════════════════════════════
 //   INDESIGN-STYLE NEWSPAPER EDITOR — ADVANCED ENGINE
@@ -2336,8 +2355,7 @@ let gridVisible       = false;
 let marginsVisible    = true;
 let rulersVisible     = false;
 let snapGridActive    = true;
-let snapGridSize      = 10;
-let loadedTemplates   = [];
+let loadedTemplates   = @json($loadedTemplatesForEditor);
 let currentFilterCat  = 'all';
 
 // Undo / Redo history
@@ -2409,6 +2427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteract();
     setupKeyboard();
     updateZoomDisplay();
+    renderTemplateCards(loadedTemplates);
     loadTemplatesCatalog();
     updateTopBarBadges(currentEdicion.estado || (currentEdicion.publicada ? 'publicado' : 'borrador'), currentEdicion.fecha_programada);
     renderAllowedTransitions();
@@ -3657,6 +3676,7 @@ function loadTemplatesCatalog() {
         if (data.templates && Array.isArray(data.templates)) {
             loadedTemplates = data.templates;
             renderTemplateCards(loadedTemplates);
+            renderEditionSlotsGrid();
         }
     })
     .catch(err => {
@@ -3675,7 +3695,14 @@ function renderTemplateCards(templates) {
     if (currentFilterCat === 'custom') {
         filtered = filtered.filter(t => t.is_custom);
     } else if (currentFilterCat !== 'all') {
-        filtered = filtered.filter(t => t.category === currentFilterCat);
+        filtered = filtered.filter(t => {
+            const cat = (t.category || '').toLowerCase();
+            const filter = currentFilterCat.toLowerCase();
+            return cat === filter || 
+                   (filter === 'portada' && (cat === 'portadas' || cat === 'portada')) ||
+                   (filter === 'editorial' && (cat === 'editorial' || cat === 'opinion')) ||
+                   (filter === 'deportes' && (cat === 'deportes' || cat === 'contraataque'));
+        });
     }
 
     if (query) {
@@ -3699,15 +3726,21 @@ function renderTemplateCards(templates) {
 
     const categoryIcons = {
         portadas: 'fas fa-newspaper text-danger',
+        portada: 'fas fa-newspaper text-danger',
+        editorial: 'fas fa-feather-alt text-warning',
+        opinion: 'fas fa-feather-alt text-warning',
         politica: 'fas fa-landmark text-primary',
-        economia: 'fas fa-chart-line text-success',
+        santacruz: 'fas fa-map-marker-alt text-success',
+        pais: 'fas fa-flag text-danger',
+        economia: 'fas fa-chart-line text-info',
+        seguridad: 'fas fa-shield-alt text-secondary',
+        mundo: 'fas fa-globe text-primary',
         entrevistas: 'fas fa-microphone-alt text-info',
         fotografia: 'fas fa-camera text-info',
         deportes: 'fas fa-futbol text-danger',
         publicidad: 'fas fa-bullhorn text-warning',
         contraportada: 'fas fa-book-open text-secondary',
         interior: 'fas fa-columns text-info',
-        opinion: 'fas fa-feather-alt text-warning',
         especial: 'fas fa-star text-warning',
         general: 'fas fa-th-large text-secondary'
     };
@@ -4701,13 +4734,32 @@ function openPlantillaEdicionModal() {
     openModal('plantillaEdicionModal');
 }
 
+const SLOT_DEFAULT_TEMPLATES = {
+    1: 'tpl-portada-default',
+    2: 'tpl-editorial-default',
+    3: 'tpl-politica-a',
+    4: 'tpl-politica-b',
+    5: 'tpl-santacruz-a',
+    6: 'tpl-santacruz-b',
+    7: 'tpl-pais-a',
+    8: 'tpl-pais-b',
+    9: 'tpl-economia-a',
+    10: 'tpl-economia-b',
+    11: 'tpl-seguridad-default',
+    12: 'tpl-mundo-default',
+};
+
 function renderEditionSlotsGrid() {
     const grid = document.getElementById('editionSlotsGrid');
     if (!grid) return;
 
-    const tplOptions = (loadedTemplates || []).map(t => `<option value="${t.id}">${t.name} (${t.category})</option>`).join('');
-
     grid.innerHTML = EDITION_SLOTS.map(s => {
+        const defaultTplId = SLOT_DEFAULT_TEMPLATES[s.slot] || '';
+        const tplOptions = (loadedTemplates || []).map(t => {
+            const isSelected = (t.id === defaultTplId) ? 'selected' : '';
+            return `<option value="${t.id}" ${isSelected}>${t.name} (${t.category})</option>`;
+        }).join('');
+
         return `
             <div style="background:#18191c;padding:8px;border:1px solid #2d3035;border-radius:4px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -4734,8 +4786,9 @@ function loadSavedEditionTemplates() {
     })
     .then(r => r.json())
     .then(data => {
-        savedEditionTemplates = data.plantillas || data || [];
-        if (!Array.isArray(savedEditionTemplates) || savedEditionTemplates.length === 0) {
+        const payload = data && (data.plantillas_edicion || data.plantillas || data);
+        savedEditionTemplates = Array.isArray(payload) ? payload : [];
+        if (savedEditionTemplates.length === 0) {
             list.innerHTML = '<div style="color:#64748b;font-size:0.72rem;text-align:center;padding:16px;">Aún no hay plantillas de edición completa guardadas.</div>';
             return;
         }
