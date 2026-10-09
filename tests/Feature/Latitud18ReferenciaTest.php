@@ -20,6 +20,7 @@ class Latitud18ReferenciaTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
         $this->seed(Latitud18ReferenciaSeeder::class);
     }
 
