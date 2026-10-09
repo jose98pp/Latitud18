@@ -62,7 +62,7 @@
                     @elseif ($ftype === 'image')
                         <div style="width:100%;height:100%;display:flex;flex-direction:column;">
                             <div style="flex:1;position:relative;overflow:hidden;">
-                                <img src="{{ $f['src'] ?? '' }}" alt="{{ $f['caption'] ?? '' }}" class="np-fimg">
+                                <img src="{{ $f['src'] ?? '' }}" alt="{{ $f['caption'] ?? '' }}" class="np-fimg" style="object-fit:{{ ($f['image_fit'] ?? 'cover') === 'contain' ? 'contain' : 'cover' }};">
                             </div>
                             @if (!empty($f['caption']))
                                 <div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;">{{ $f['caption'] }}</div>
@@ -86,7 +86,7 @@
                         @endphp
                         @if ($adStatus === 'ocupado' && !empty($adImg))
                             <div style="width:100%;height:100%;position:relative;overflow:hidden;">
-                                <img src="{{ $adImg }}" alt="{{ $f['advertiser_name'] ?? 'Publicidad' }}" style="width:100%;height:100%;object-fit:fill;display:block;">
+                                <img src="{{ $adImg }}" alt="{{ $f['advertiser_name'] ?? 'Publicidad' }}" style="width:100%;height:100%;object-fit:contain;display:block;">
                                 @if(!empty($formatCode))
                                     <span style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.65);color:#fff;font-size:8px;font-weight:bold;padding:1px 4px;border-radius:2px;font-family:'Montserrat',sans-serif;">{{ $formatCode }}</span>
                                 @endif

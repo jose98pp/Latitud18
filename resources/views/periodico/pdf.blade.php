@@ -36,8 +36,8 @@
 }
 
 @page {
-    size: 300mm 430mm;
-    margin: 10mm 11mm 12mm 11mm;
+    size: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => ($pg['configuracion']['page_width_mm'] ?? null) == 280) ? '280mm 430mm' : '300mm 430mm' }};
+    margin: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => ($pg['configuracion']['page_width_mm'] ?? null) == 280) ? '0' : '10mm 11mm 12mm 11mm' }};
 }
 
 * { margin: 0; padding: 0; }
@@ -247,7 +247,11 @@ img.foto { border: 0.5pt solid #C8CED6; }
                     return str_replace(['<!--', '-->'], '', $html);
                 };
             @endphp
+            @if (($p['configuracion']['page_width_mm'] ?? null) == 280)
+                @include('periodico.tabloide-frames')
+            @else
             @include('periodico.partials.frames', ['pg' => $p, 'pgW' => $pgW, 'pgH' => $pgH, 'npSafe' => $npSafe])
+            @endif
 
         @else
         {{-- ============ PORTADA ============ --}}

@@ -10,107 +10,107 @@ class PlantillaService implements PlantillaServiceInterface
 {
     /**
      * Catálogo oficial de formatos publicitarios LATITUD 18.
-     * Dimensiones en píxeles (96 dpi) y centímetros.
+     * Dimensiones en unidades del lienzo de 720 px para una página de 28 cm, y centímetros.
      *
      * @see Requirements 3.1
      */
     public const AD_FORMATS = [
         'A1' => [
             'label' => 'Banner Superior',
-            'w_px'  => 932,
-            'h_px'  => 227,
+            'w_px'  => 635,
+            'h_px'  => 154,
             'w_cm'  => 24.7,
-            'h_cm'  => 6.0,
+            'h_cm'  => 6,
         ],
         'A2' => [
             'label' => 'Banner Interior',
-            'w_px'  => 932,
-            'h_px'  => 227,
+            'w_px'  => 635,
+            'h_px'  => 154,
             'w_cm'  => 24.7,
-            'h_cm'  => 6.0,
+            'h_cm'  => 6,
         ],
         'B1' => [
             'label' => 'Media Página Vertical',
-            'w_px'  => 499,
-            'h_px'  => 983,
-            'w_cm'  => 13.2,
-            'h_cm'  => 26.0,
+            'w_px'  => 324,
+            'h_px'  => 669,
+            'w_cm'  => 12.6,
+            'h_cm'  => 26,
         ],
         'B2' => [
             'label' => 'Media Página Vertical',
-            'w_px'  => 499,
-            'h_px'  => 983,
-            'w_cm'  => 13.2,
-            'h_cm'  => 26.0,
+            'w_px'  => 324,
+            'h_px'  => 669,
+            'w_cm'  => 12.6,
+            'h_cm'  => 26,
         ],
         'C1' => [
             'label' => 'Media Página Horizontal',
-            'w_px'  => 1006,
-            'h_px'  => 484,
-            'w_cm'  => 26.6,
+            'w_px'  => 658,
+            'h_px'  => 329,
+            'w_cm'  => 25.6,
             'h_cm'  => 12.8,
         ],
         'C2' => [
             'label' => 'Media Página Horizontal',
-            'w_px'  => 1006,
-            'h_px'  => 484,
-            'w_cm'  => 26.6,
+            'w_px'  => 658,
+            'h_px'  => 329,
+            'w_cm'  => 25.6,
             'h_cm'  => 12.8,
         ],
         'D1' => [
             'label' => '1/4 Página Vertical',
-            'w_px'  => 242,
-            'h_px'  => 492,
-            'w_cm'  => 6.4,
-            'h_cm'  => 13.0,
+            'w_px'  => 123,
+            'h_px'  => 334,
+            'w_cm'  => 4.8,
+            'h_cm'  => 13,
         ],
         'D2' => [
             'label' => '1/4 Página Vertical',
-            'w_px'  => 242,
-            'h_px'  => 492,
-            'w_cm'  => 6.4,
-            'h_cm'  => 13.0,
+            'w_px'  => 123,
+            'h_px'  => 334,
+            'w_cm'  => 4.8,
+            'h_cm'  => 13,
         ],
         'E1' => [
             'label' => '1/4 Página Horizontal',
-            'w_px'  => 499,
-            'h_px'  => 235,
-            'w_cm'  => 13.2,
+            'w_px'  => 324,
+            'h_px'  => 159,
+            'w_cm'  => 12.6,
             'h_cm'  => 6.2,
         ],
         'E2' => [
             'label' => '1/4 Página Horizontal',
-            'w_px'  => 499,
-            'h_px'  => 235,
-            'w_cm'  => 13.2,
+            'w_px'  => 324,
+            'h_px'  => 159,
+            'w_cm'  => 12.6,
             'h_cm'  => 6.2,
         ],
         'E3' => [
             'label' => '1/4 Página Horizontal',
-            'w_px'  => 499,
-            'h_px'  => 235,
-            'w_cm'  => 13.2,
+            'w_px'  => 324,
+            'h_px'  => 159,
+            'w_cm'  => 12.6,
             'h_cm'  => 6.2,
         ],
         'E4' => [
             'label' => '1/4 Página Horizontal',
-            'w_px'  => 499,
-            'h_px'  => 235,
-            'w_cm'  => 13.2,
+            'w_px'  => 324,
+            'h_px'  => 159,
+            'w_cm'  => 12.6,
             'h_cm'  => 6.2,
         ],
         'F1' => [
             'label' => 'Pie de Página',
-            'w_px'  => 1006,
-            'h_px'  => 182,
-            'w_cm'  => 26.6,
+            'w_px'  => 658,
+            'h_px'  => 123,
+            'w_cm'  => 25.6,
             'h_cm'  => 4.8,
         ],
         'F2' => [
             'label' => 'Pie de Página',
-            'w_px'  => 1006,
-            'h_px'  => 182,
-            'w_cm'  => 26.6,
+            'w_px'  => 658,
+            'h_px'  => 123,
+            'w_cm'  => 25.6,
             'h_cm'  => 4.8,
         ],
     ];
@@ -132,6 +132,9 @@ class PlantillaService implements PlantillaServiceInterface
         $pagina->update([
             'plantilla_id' => $plantilla->id,
             'seccion'      => ucfirst($plantilla->categoria ?? 'general'),
+            'ancho' => $plantilla->configuracion['page_width_px'] ?? $pagina->ancho ?? 720,
+            'alto' => $plantilla->configuracion['page_height_px'] ?? $pagina->alto ?? 1040,
+            'configuracion' => $plantilla->configuracion,
         ]);
 
         // 3. Obtener los frames de la plantilla como array PHP
@@ -231,6 +234,7 @@ class PlantillaService implements PlantillaServiceInterface
             'description'   => $plantilla->descripcion,
             'preview_color' => $plantilla->preview_color,
             'frames'        => is_array($plantilla->frames) ? $plantilla->frames : [],
+            'configuracion' => $plantilla->configuracion,
         ];
     }
 

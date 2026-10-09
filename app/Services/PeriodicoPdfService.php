@@ -39,12 +39,13 @@ class PeriodicoPdfService
             throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
         }
 
+        $this->prepararCacheFuentes();
         $pdf = Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
             ->setOptions([
                 'isRemoteEnabled'      => true,
                 'isHtml5ParserEnabled' => true,
                 'defaultFont'          => 'DejaVu Serif',
-            ]);
+            ], true);
 
         $response = $pdf->download($this->filename($edicion));
         $response->headers->set('Content-Type', 'application/pdf');
@@ -69,13 +70,24 @@ class PeriodicoPdfService
             throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
         }
 
+        $this->prepararCacheFuentes();
         return Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
             ->setOptions([
                 'isRemoteEnabled'      => true,
                 'isHtml5ParserEnabled' => true,
                 'defaultFont'          => 'DejaVu Serif',
-            ])
+            ], true)
             ->output();
+    }
+
+    private function prepararCacheFuentes(): void
+    {
+        foreach (['font_dir', 'font_cache'] as $key) {
+            $path = config('dompdf.options.'.$key, storage_path('fonts'));
+            if ($path && !is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+                throw new \RuntimeException('No se pudo crear el directorio de fuentes del PDF.');
+            }
+        }
     }
 
     /**

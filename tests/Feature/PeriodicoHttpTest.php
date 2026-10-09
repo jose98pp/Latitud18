@@ -20,6 +20,7 @@ class PeriodicoHttpTest extends TestCase
     {
         parent::setUp();
 
+        $this->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
         $this->admin = User::firstOrCreate(
             ['email' => 'admin_test@latitud18.com'],
             ['name' => 'Admin Test', 'password' => bcrypt('secret123'), 'role' => 'admin']

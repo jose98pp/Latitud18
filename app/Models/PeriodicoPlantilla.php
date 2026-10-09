@@ -69,8 +69,8 @@ class PeriodicoPlantilla extends Model
             'numero' => 1,
             'nombre' => 'Página 1: ' . $this->nombre,
             'seccion' => ucfirst($this->categoria ?? 'General'),
-            'ancho' => 720,
-            'alto' => 1040,
+            'ancho' => $this->configuracion['page_width_px'] ?? 720,
+            'alto' => $this->configuracion['page_height_px'] ?? 1040,
             'fondo_color' => '#ffffff',
             'configuracion' => $this->configuracion,
         ]);
@@ -96,6 +96,9 @@ class PeriodicoPlantilla extends Model
         $pagina->update([
             'plantilla_id' => $this->id,
             'seccion' => ucfirst($this->categoria ?? 'General'),
+            'ancho' => $this->configuracion['page_width_px'] ?? $pagina->ancho ?? 720,
+            'alto' => $this->configuracion['page_height_px'] ?? $pagina->alto ?? 1040,
+            'configuracion' => $this->configuracion,
         ]);
 
         // Clonar los frames

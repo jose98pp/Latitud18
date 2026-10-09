@@ -1287,7 +1287,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 
     {{-- Selector de Formato de Papel --}}
     <select class="id-format-select" id="formatSelect" onchange="changePaperFormat(this.value)" title="Formato de página">
-      <option value="tabloid" selected>Tabloide Moderno (720 × 1040)</option>
+      <option value="tabloid" selected>Tabloide 28 × 43 cm (720 × 1106)</option>
       <option value="broadsheet">Broadsheet Clásico (820 × 1160)</option>
       <option value="compact">Compacto A4 (680 × 960)</option>
     </select>
@@ -2345,27 +2345,27 @@ let undoHistory = [];
 let redoHistory = [];
 
 const PAPER_FORMATS = {
-  tabloid:   { w: 720, h: 1040, name: 'Tabloide Moderno' },
+  tabloid:   { w: 720, h: 1106, name: 'Tabloide Moderno' },
   broadsheet:{ w: 820, h: 1160, name: 'Broadsheet Clásico' },
   compact:   { w: 680, h: 960,  name: 'Compacto A4' }
 };
 
 // Catálogo oficial de formatos publicitarios LATITUD 18 (Req 3.1)
 const AD_FORMATS = {
-  'A1': { label: 'Banner Superior', w: 932, h: 227, w_cm: 24.7, h_cm: 6.0 },
-  'A2': { label: 'Banner Interior', w: 932, h: 227, w_cm: 24.7, h_cm: 6.0 },
-  'B1': { label: 'Media Página Vertical', w: 499, h: 983, w_cm: 13.2, h_cm: 26.0 },
-  'B2': { label: 'Media Página Vertical', w: 499, h: 983, w_cm: 13.2, h_cm: 26.0 },
-  'C1': { label: 'Media Página Horizontal', w: 1006, h: 484, w_cm: 26.6, h_cm: 12.8 },
-  'C2': { label: 'Media Página Horizontal', w: 1006, h: 484, w_cm: 26.6, h_cm: 12.8 },
-  'D1': { label: '1/4 Página Vertical', w: 242, h: 492, w_cm: 6.4, h_cm: 13.0 },
-  'D2': { label: '1/4 Página Vertical', w: 242, h: 492, w_cm: 6.4, h_cm: 13.0 },
-  'E1': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
-  'E2': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
-  'E3': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
-  'E4': { label: '1/4 Página Horizontal', w: 499, h: 235, w_cm: 13.2, h_cm: 6.2 },
-  'F1': { label: 'Pie de Página', w: 1006, h: 182, w_cm: 26.6, h_cm: 4.8 },
-  'F2': { label: 'Pie de Página', w: 1006, h: 182, w_cm: 26.6, h_cm: 4.8 }
+  'A1': { label: 'Banner Superior', w: 635, h: 154, w_cm: 24.7, h_cm: 6 },
+  'A2': { label: 'Banner Interior', w: 635, h: 154, w_cm: 24.7, h_cm: 6 },
+  'B1': { label: 'Media Página Vertical', w: 324, h: 669, w_cm: 12.6, h_cm: 26 },
+  'B2': { label: 'Media Página Vertical', w: 324, h: 669, w_cm: 12.6, h_cm: 26 },
+  'C1': { label: 'Media Página Horizontal', w: 658, h: 329, w_cm: 25.6, h_cm: 12.8 },
+  'C2': { label: 'Media Página Horizontal', w: 658, h: 329, w_cm: 25.6, h_cm: 12.8 },
+  'D1': { label: '1/4 Página Vertical', w: 123, h: 334, w_cm: 4.8, h_cm: 13 },
+  'D2': { label: '1/4 Página Vertical', w: 123, h: 334, w_cm: 4.8, h_cm: 13 },
+  'E1': { label: '1/4 Página Horizontal', w: 324, h: 159, w_cm: 12.6, h_cm: 6.2 },
+  'E2': { label: '1/4 Página Horizontal', w: 324, h: 159, w_cm: 12.6, h_cm: 6.2 },
+  'E3': { label: '1/4 Página Horizontal', w: 324, h: 159, w_cm: 12.6, h_cm: 6.2 },
+  'E4': { label: '1/4 Página Horizontal', w: 324, h: 159, w_cm: 12.6, h_cm: 6.2 },
+  'F1': { label: 'Pie de Página', w: 658, h: 123, w_cm: 25.6, h_cm: 4.8 },
+  'F2': { label: 'Pie de Página', w: 658, h: 123, w_cm: 25.6, h_cm: 4.8 }
 };
 
 // Grafo inmutable de transiciones de estado editorial (Req 8.1)
@@ -2433,9 +2433,16 @@ function changePaperFormat(formatKey) {
     document.documentElement.style.setProperty('--paper-w', f.w + 'px');
     document.documentElement.style.setProperty('--paper-h', f.h + 'px');
     
+    (currentEdicion.paginas || []).forEach(page => {
+        page.ancho = f.w; page.alto = f.h;
+        if (formatKey === 'tabloid') page.configuracion = { ...(page.configuracion || {}), page_width_px:f.w, page_height_px:f.h, page_width_mm:280, page_height_mm:430, margin_px:31 };
+        else if (page.configuracion) { delete page.configuracion.page_width_mm; delete page.configuracion.page_height_mm; }
+    });
+    markUnsaved();
     document.querySelectorAll('.id-paper-sheet').forEach(sheet => {
         sheet.style.width = f.w + 'px';
         sheet.style.minHeight = f.h + 'px';
+        sheet.style.height = f.h + 'px';
     });
 
     showToast(`Formato cambiado a ${f.name} (${f.w}x${f.h}px)`, 'success');
@@ -2459,6 +2466,8 @@ function createSheetDOM(page, pIdx) {
     sheet.className = `id-paper-sheet ${pIdx === activePageIndex ? 'active' : ''}`;
     sheet.id = `sheet-${pIdx}`;
     sheet.dataset.page = pIdx;
+    sheet.style.width = (page.ancho || 720) + 'px';
+    sheet.style.height = (page.alto || 1106) + 'px';
 
     // Grid overlay
     const gridOverlay = document.createElement('div');
@@ -2468,6 +2477,8 @@ function createSheetDOM(page, pIdx) {
     // Margin guide
     const marginGuide = document.createElement('div');
     marginGuide.className = 'paper-margin-guide';
+    const margin = page.configuracion?.margin_px ?? 31;
+    marginGuide.style.inset = margin + 'px';
     sheet.appendChild(marginGuide);
 
     // Render existing frames or default layout
@@ -2624,6 +2635,12 @@ function createSpecialElement(type) {
     if (!currentEdicion.paginas[activePageIndex].frames) {
         currentEdicion.paginas[activePageIndex].frames = [];
     }
+    const pg = currentEdicion.paginas[activePageIndex];
+    const m = pg.configuracion?.margin_px ?? 31;
+    fData.w = Math.min(fData.w, (pg.ancho || 720) - 2*m);
+    fData.h = Math.min(fData.h, (pg.alto || 1106) - 2*m);
+    fData.x = Math.max(m, Math.min(fData.x, (pg.ancho || 720)-m-fData.w));
+    fData.y = Math.max(m, Math.min(fData.y, (pg.alto || 1106)-m-fData.h));
     currentEdicion.paginas[activePageIndex].frames.push(fData);
 
     const el = buildFrameElement(fData, activePageIndex);
@@ -2718,7 +2735,7 @@ function buildFrameElement(fData, pIdx) {
         el.innerHTML = `
             <div style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;">
                 <div style="flex:1;position:relative;overflow:hidden;" class="image-stage-wrap">
-                    <img src="${fData.src || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80'}" class="frame-img-inner">
+                    <img src="${fData.src || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80'}" class="frame-img-inner" style="object-fit:${fData.image_fit === 'contain' ? 'contain' : 'cover'};">
                 </div>
                 ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;font-family:'Montserrat',sans-serif;">${fData.caption}</div>` : ''}
             </div>
@@ -2752,7 +2769,7 @@ function buildFrameElement(fData, pIdx) {
             el.innerHTML = `
                 <div style="width:100%;height:100%;position:relative;overflow:hidden;">
                     <span class="ad-format-badge">${formatCode}</span>
-                    <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:fill;display:block;">
+                    <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:contain;display:block;">
                 </div>
             `;
         } else {
@@ -2901,6 +2918,7 @@ function populateInspector(el) {
     if (inspArticle)  inspArticle.style.display  = type === 'article' ? '' : 'none';
     if (inspText)     inspText.style.display     = (type === 'article' || type === 'headline' || type === 'text') ? '' : 'none';
     if (inspImage)    inspImage.style.display    = type === 'image' ? '' : 'none';
+    if (type === 'image') document.getElementById('inspImgFit').value = fData.image_fit || 'cover';
     if (inspQr)       inspQr.style.display       = type === 'qr' ? '' : 'none';
     if (inspAd)       inspAd.style.display       = type === 'ad' ? '' : 'none';
     document.getElementById('inspActions').style.display = '';
@@ -3028,8 +3046,21 @@ function applyOpacity() {
     markUnsaved();
 }
 
+function constrainFrameToPage(el, page) {
+    if (page?.configuracion?.page_width_mm !== 280) return;
+    const margin = page.configuracion.margin_px || 31;
+    const width = page.ancho || 720, height = page.alto || 1106;
+    const w = Math.max(1, Math.min(parseFloat(el.style.width) || 1, width - 2*margin));
+    const h = Math.max(1, Math.min(parseFloat(el.style.height) || 1, height - 2*margin));
+    el.style.width = w + 'px'; el.style.height = h + 'px';
+    el.style.left = Math.max(margin, Math.min(parseFloat(el.style.left) || 0, width-margin-w)) + 'px';
+    el.style.top = Math.max(margin, Math.min(parseFloat(el.style.top) || 0, height-margin-h)) + 'px';
+}
+
 function saveFrameGeoToModel(el) {
     const page = currentEdicion.paginas[activePageIndex];
+    constrainFrameToPage(el, page);
+    updateInspectorGeometry(el);
     const f = page?.frames?.find(f => f.id == el.dataset.frameId);
     if (f) {
         f.x = Math.round(parseFloat(el.style.left));
@@ -3221,6 +3252,8 @@ function applyImageFit() {
     const fit = document.getElementById('inspImgFit').value;
     const img = selectedFrame.querySelector('.frame-img-inner');
     if (img) img.style.objectFit = fit;
+    const f = currentEdicion.paginas[activePageIndex]?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    if (f) f.image_fit = fit;
     markUnsaved();
 }
 
@@ -3430,6 +3463,10 @@ function changeSelectedAdFormat(formatCode) {
     f.format_code = formatCode;
     f.w = fmt.w;
     f.h = fmt.h;
+    const pg = currentEdicion.paginas[activePageIndex];
+    const m = pg.configuracion?.margin_px ?? 31;
+    f.x = Math.max(m, Math.min(f.x, (pg.ancho || 720) - m - f.w));
+    f.y = Math.max(m, Math.min(f.y, (pg.alto || 1106) - m - f.h));
     f.lockResize = true;
     if (!f.propiedades) f.propiedades = {};
     f.propiedades.format_code = formatCode;
@@ -3825,6 +3862,18 @@ function applyTemplateFromCatalog(tplId) {
     sheet.querySelectorAll('.id-frame').forEach(el => el.remove());
     currentEdicion.paginas[activePageIndex].frames = [];
 
+    const page = currentEdicion.paginas[activePageIndex];
+    if (tpl.configuracion) {
+        page.configuracion = JSON.parse(JSON.stringify(tpl.configuracion));
+        page.ancho = page.configuracion.page_width_px || page.ancho || 720;
+        page.alto = page.configuracion.page_height_px || page.alto || 1040;
+    }
+    page.plantilla_id = tplId;
+    sheet.style.width = (page.ancho || 720) + 'px';
+    sheet.style.height = (page.alto || 1040) + 'px';
+    const guide = sheet.querySelector('.paper-margin-guide');
+    if (guide) guide.style.inset = (page.configuracion?.margin_px ?? 12) + 'px';
+
     // Clona los marcos asignando nuevos IDs únicos
     const clonedFrames = JSON.parse(JSON.stringify(tpl.frames || []));
     clonedFrames.forEach((f, idx) => {
@@ -3890,7 +3939,8 @@ function submitSaveTemplate() {
             category: category,
             description: description,
             preview_color: previewColor,
-            frames: currentFrames
+            frames: currentFrames,
+            configuracion: currentEdicion.paginas[activePageIndex]?.configuracion || null
         })
     })
     .then(r => r.json())
@@ -3922,7 +3972,8 @@ function exportCurrentAsTemplateFile() {
             category: 'especial',
             description: `Exportado desde la edición ${currentEdicion.numero_edicion}`,
             preview_color: '#0284c7',
-            frames: currentFrames
+            frames: currentFrames,
+            configuracion: currentEdicion.paginas[activePageIndex]?.configuracion || null
         }
     };
 
@@ -4039,6 +4090,12 @@ function createCustomFrame(fData) {
     if (!currentEdicion.paginas[activePageIndex].frames) {
         currentEdicion.paginas[activePageIndex].frames = [];
     }
+    const pg = currentEdicion.paginas[activePageIndex];
+    const m = pg.configuracion?.margin_px ?? 31;
+    fData.w = Math.min(fData.w, (pg.ancho || 720) - 2*m);
+    fData.h = Math.min(fData.h, (pg.alto || 1106) - 2*m);
+    fData.x = Math.max(m, Math.min(fData.x, (pg.ancho || 720)-m-fData.w));
+    fData.y = Math.max(m, Math.min(fData.y, (pg.alto || 1106)-m-fData.h));
     currentEdicion.paginas[activePageIndex].frames.push(fData);
 
     const sheet = document.querySelector(`.id-paper-sheet[data-page="${activePageIndex}"]`);
@@ -4405,6 +4462,8 @@ function previewRenderPage(idx) {
 
     const page = currentEdicion.paginas[idx];
     if (!page) return;
+    container.style.width = (page.ancho || 720) + 'px';
+    container.style.height = (page.alto || 1040) + 'px';
 
     (page.frames || []).forEach(fData => {
         const el = document.createElement('div');
@@ -4471,7 +4530,7 @@ function previewRenderPage(idx) {
             el.innerHTML = `
                 <div style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;">
                     <div style="flex:1;position:relative;overflow:hidden;">
-                        <img src="${fData.src || ''}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                        <img src="${fData.src || ''}" style="width:100%;height:100%;object-fit:${fData.image_fit === 'contain' ? 'contain' : 'cover'};display:block;">
                     </div>
                     ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;font-family:'Montserrat',sans-serif;">${fData.caption}</div>` : ''}
                 </div>
@@ -4486,7 +4545,7 @@ function previewRenderPage(idx) {
                 el.innerHTML = `
                     <div style="width:100%;height:100%;position:relative;overflow:hidden;">
                         <span class="ad-format-badge">${formatCode}</span>
-                        <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:fill;display:block;">
+                        <img src="${adImg}" alt="${adName}" style="width:100%;height:100%;object-fit:contain;display:block;">
                     </div>
                 `;
             } else {
