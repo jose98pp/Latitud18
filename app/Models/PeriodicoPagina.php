@@ -98,6 +98,7 @@ class PeriodicoPagina extends Model
         return [
             'id' => $this->id,
             'numero' => $this->numero,
+            'plantilla_id' => $this->plantilla_id,
             'nombre' => $this->nombre,
             'seccion' => $this->seccion,
             'ancho' => $this->ancho,

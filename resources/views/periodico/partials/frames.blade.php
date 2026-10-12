@@ -30,26 +30,7 @@
                         <div style="width:100%;height:2px;background:{{ $f['color'] ?? '#cbd5e1' }};"></div>
 
                     @elseif ($ftype === 'masthead')
-                        <div style="border-bottom:3px solid #0284c7;padding-bottom:4px;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                                <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:700;width:140px;line-height:1.2;">
-                                    {{ $f['leftEar'] ?? 'CRE 100%' }}
-                                </div>
-                                <div style="text-align:center;flex:1;">
-                                    <span style="font-family:'Anton',sans-serif;font-size:46px;color:#0284c7;line-height:1;letter-spacing:1px;">{{ $f['newspaperName'] ?? 'LA ESTRELLA' }}</span>
-                                    <span style="background:#D71920;color:#fff;font-family:'Anton',sans-serif;font-size:18px;padding:2px 8px;border-radius:2px;margin-left:4px;vertical-align:middle;">{{ $f['subBadge'] ?? 'del Oriente' }}</span>
-                                    <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;">{{ $f['motto'] ?? 'EL PRIMER PERIÓDICO DE SANTA CRUZ' }}</div>
-                                </div>
-                                <div style="background:#0284c7;color:#fff;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;">
-                                    {{ $f['rightEar'] ?? 'DÓLAR: Bs 12,58' }}
-                                </div>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:3px;margin-top:4px;font-size:9px;color:#64748b;font-weight:600;">
-                                <span>{{ $f['editionDate'] ?? ($edicion['ciudad'] ?? 'Santa Cruz de la Sierra') }}</span>
-                                <span><strong>{{ $f['editionNumber'] ?? ($edicion['numero_edicion'] ?? '') }}</strong></span>
-                                <span>{{ $f['price'] ?? ($edicion['precio'] ?? '') }}</span>
-                            </div>
-                        </div>
+                        @include('periodico.partials.masthead', ['masthead' => $f, 'mastheadScale' => 1, 'mastheadUnit' => 'px'])
 
                     @elseif ($ftype === 'headline')
                         <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">

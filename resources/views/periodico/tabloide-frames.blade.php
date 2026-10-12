@@ -34,6 +34,8 @@
     <div style="position:absolute;left:{{ $x }}mm;top:{{ $y }}mm;width:{{ $w }}mm;height:{{ $h }}mm;overflow:hidden;box-sizing:border-box;">
     @if ($type === 'image' || ($type === 'ad' && ($f['status'] ?? '') === 'ocupado' && $src))
         <img src="{{ $local ?? $src }}" style="position:absolute;left:{{ $imageX }}mm;top:{{ $imageY }}mm;width:{{ $imageW }}mm;height:{{ $imageH }}mm;">
+    @elseif ($type === 'masthead')
+        @include('periodico.partials.masthead', ['masthead' => $f, 'mastheadScale' => $sx, 'mastheadUnit' => 'mm'])
     @elseif ($type === 'ad')
         <div style="background:#fce8e8;color:#D71920;text-align:center;padding:4mm;font:12pt DejaVu Sans;">PUBLICIDAD {{ $f['format_code'] ?? '' }}</div>
     @elseif ($type === 'divider')

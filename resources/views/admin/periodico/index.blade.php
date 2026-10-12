@@ -104,16 +104,22 @@
   z-index: 99990 !important;
   height: 100vh !important;
   border-radius: 0 !important;
-  grid-template-rows: 42px 40px 1fr 110px !important;
+  grid-template-rows: 42px 40px 1fr 150px !important;
 }
 
-.id-app.fullscreen-mode ~ * { display: none !important; }
+#editorWorkspace.fullscreen-workspace { position:fixed; inset:0; z-index:99990; background:#111317; }
+#editorWorkspace.fullscreen-workspace .id-app { height:100vh !important; border-radius:0; }
+#editorWorkspace .id-news-drawer { z-index:99995; width:min(380px, 100vw); }
+.page-thumb { min-width:124px; }
+.page-thumb-label { max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+.page-thumb-actions { display:flex; gap:3px; flex-wrap:nowrap; }
+.page-thumb-actions button { border:0; background:#253047; color:#fff; padding:3px 5px; border-radius:3px; cursor:pointer; }
+.page-thumb-actions button:disabled { opacity:.35; cursor:default; }
 
 body.editor-fullscreen {
   overflow: hidden;
 }
 
-body.editor-fullscreen .content-wrapper,
 body.editor-fullscreen .main-header,
 body.editor-fullscreen .main-sidebar,
 body.editor-fullscreen .main-footer {
@@ -150,7 +156,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 
 .id-app {
   display: grid;
-  grid-template-rows: 42px 40px 1fr 110px;
+  grid-template-rows: 42px 40px 1fr 150px;
   grid-template-columns: 56px 1fr 280px;
   height: calc(100vh - 58px);
   background: var(--id-bg);
@@ -1255,13 +1261,14 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 }
 </style>
 
+<div id="editorWorkspace">
 <div class="id-app" id="idApp">
 
   {{-- ── 1. MENUBAR (TOP) ── --}}
   <div class="id-menubar">
     <div class="id-menubar-title">
       <span style="font-family:'Anton',sans-serif;letter-spacing:1px;font-size:1.1rem;color:var(--id-accent);">ID</span>
-      <span>EDITORIAL SUITE</span>
+      <span>LATITUD 18 · EDITOR</span>
     </div>
 
     {{-- Selector de Edición --}}
@@ -1546,32 +1553,22 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         <span><i class="fas fa-heading" style="color:var(--id-accent);margin-right:5px;"></i> Cabecera del Periódico</span>
       </div>
       <div class="inspector-body">
-        <div>
-          <label class="id-form-label">Nombre del Diario / Sección (máx 100)</label>
-          <input type="text" class="inspector-input" id="inspMastheadName" maxlength="100" onchange="applyMastheadProps()" style="width:100%;">
-        </div>
-        <div style="margin-top:4px;">
-          <label class="id-form-label">Número de Edición (1–99999)</label>
-          <input type="number" class="inspector-input" id="inspMastheadNum" min="1" max="99999" onchange="applyMastheadProps()" style="width:100%;">
-        </div>
-        <div style="margin-top:4px;">
-          <label class="id-form-label">Fecha de Emisión</label>
-          <input type="text" class="inspector-input" id="inspMastheadDate" onchange="applyMastheadProps()" style="width:100%;">
-        </div>
-        <div style="margin-top:4px;">
-          <label class="id-form-label">Ciudad / Lugar (máx 100)</label>
-          <input type="text" class="inspector-input" id="inspMastheadCity" maxlength="100" onchange="applyMastheadProps()" style="width:100%;">
-        </div>
-        <div class="inspector-row" style="margin-top:4px;">
-          <div style="flex:1;">
-            <label class="id-form-label">Oreja Izquierda</label>
-            <input type="text" class="inspector-input" id="inspMastheadLeftEar" onchange="applyMastheadProps()" style="width:100%;">
-          </div>
-          <div style="flex:1;">
-            <label class="id-form-label">Oreja Derecha</label>
-            <input type="text" class="inspector-input" id="inspMastheadRightEar" onchange="applyMastheadProps()" style="width:100%;">
-          </div>
-        </div>
+        <label class="id-form-label" for="inspMastheadName">Nombre</label><input type="text" class="inspector-input" id="inspMastheadName" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadBadge">Insignia (18)</label><input type="text" class="inspector-input" id="inspMastheadBadge" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadMotto">Lema</label><input type="text" class="inspector-input" id="inspMastheadMotto" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadNum">Número de edición</label><input type="text" class="inspector-input" id="inspMastheadNum" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadDate">Fecha</label><input type="text" class="inspector-input" id="inspMastheadDate" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadCity">Ciudad</label><input type="text" class="inspector-input" id="inspMastheadCity" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadPrice">Precio</label><input type="text" class="inspector-input" id="inspMastheadPrice" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadWebsite">Sitio web</label><input type="text" class="inspector-input" id="inspMastheadWebsite" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadLeftEar">Bloque izquierdo</label><input type="text" class="inspector-input" id="inspMastheadLeftEar" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadRightEar">Bloque derecho</label><input type="text" class="inspector-input" id="inspMastheadRightEar" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadLogo">URL del logotipo</label><input type="text" class="inspector-input" id="inspMastheadLogo" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadNameSize">Tamaño del nombre (16–80)</label><input type="number" class="inspector-input" id="inspMastheadNameSize" min="16" max="80" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadLogoWidth">Ancho del logotipo (30–200)</label><input type="number" class="inspector-input" id="inspMastheadLogoWidth" min="30" max="200" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadNameColor">Color del nombre</label><input type="color" class="inspector-input" id="inspMastheadNameColor" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label" for="inspMastheadAccentColor">Color de la insignia</label><input type="color" class="inspector-input" id="inspMastheadAccentColor" onchange="applyMastheadProps()" style="width:100%;margin-bottom:5px;">
+        <label class="id-form-label">Subir logotipo</label><input type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadImageForFrame(this)"><button class="id-btn id-btn-ghost" onclick="resetLatitudMasthead()">Restaurar marca Latitud18</button>
       </div>
     </div>
 
@@ -2339,7 +2336,9 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         : [];
 @endphp
 
+</div> {{-- editorWorkspace: editor, noticias y ventanas --}}
 <script>
+@include('admin.periodico.editor-tools')
 // ═══════════════════════════════════════════════════════
 //   INDESIGN-STYLE NEWSPAPER EDITOR — ADVANCED ENGINE
 // ═══════════════════════════════════════════════════════
@@ -2506,14 +2505,7 @@ function createSheetDOM(page, pIdx) {
             const frameEl = buildFrameElement(fData, pIdx);
             sheet.appendChild(frameEl);
         });
-    } else {
-        // If empty page, auto apply initial default template
-        setTimeout(() => {
-            if (pIdx === 0 && (!page.frames || page.frames.length === 0)) {
-                applyTemplate('la_estrella_portada');
-            }
-        }, 100);
-    }
+    } // Las páginas vacías permanecen vacías hasta que el usuario elija una plantilla.
 
     // Click on canvas background deselects
     sheet.addEventListener('click', (e) => {
@@ -2557,16 +2549,30 @@ function renderPageThumbs() {
 
         thumb.appendChild(preview);
         thumb.appendChild(label);
+        const actions = document.createElement('div');
+        actions.className = 'page-thumb-actions';
+        const buttons = [['Renombrar', '✎', () => renameEditorPage(idx)], ['Duplicar', '+', () => duplicateEditorPage(idx)],
+            ['Mover antes', '←', () => moveEditorPage(idx, -1)], ['Mover después', '→', () => moveEditorPage(idx, 1)], ['Eliminar', '×', () => deleteEditorPage(idx)]];
+        buttons.forEach(([title, text, action]) => {
+            const button = document.createElement('button'); button.type = 'button'; button.title = title; button.setAttribute('aria-label', `${title} página ${idx+1}`); button.textContent = text;
+            button.disabled = (title === 'Mover antes' && idx === 0) || (title === 'Mover después' && idx === currentEdicion.paginas.length - 1) || (title === 'Eliminar' && currentEdicion.paginas.length === 1);
+            button.onclick = event => { event.stopPropagation(); action(); }; actions.appendChild(button);
+        });
+        thumb.appendChild(actions);
         container.appendChild(thumb);
     });
 }
 
 function addNewPage() {
+    recordHistory();
     currentEdicion.paginas.push({
         id: 'pg-' + Date.now(),
         numero: currentEdicion.paginas.length + 1,
         nombre: 'Página ' + (currentEdicion.paginas.length + 1),
         tipo: 'blank',
+        ancho: currentEdicion.paginas[activePageIndex]?.ancho || 720,
+        alto: currentEdicion.paginas[activePageIndex]?.alto || 1106,
+        configuracion: JSON.parse(JSON.stringify(currentEdicion.paginas[activePageIndex]?.configuracion || {})),
         frames: []
     });
     renderAllPages();
@@ -2593,21 +2599,22 @@ function createSpecialElement(type) {
     };
 
     if (type === 'masthead') {
-        fData.w = 680;
-        fData.h = 110;
-        fData.newspaperName = 'LA ESTRELLA';
-        fData.subBadge = 'del Oriente';
-        fData.motto = 'EL PRIMER PERIÓDICO DE SANTA CRUZ • FUNDADO EN 1864';
-        fData.editionDate = 'Santa Cruz de la Sierra • ' + (currentEdicion.fecha || 'Hoy');
-        fData.editionNumber = currentEdicion.numero_edicion || 'N° 11.986';
-        fData.price = currentEdicion.precio || 'Bs 7,00';
-        fData.leftEar = 'CRE 100% Tarifa Equitativa';
-        fData.rightEar = 'DÓLAR: Bs 12,58';
-    } else if (type === 'headline') {
-        fData.w = 680;
-        fData.h = 90;
-        fData.kicker = 'SEGURIDAD NACIONAL';
-        fData.content = '<p style="font-family:\'Oswald\',sans-serif;font-size:32px;font-weight:700;line-height:1.1;color:#0f172a;margin:0;">Titular de impacto periodístico para la edición</p>';
+        const values = mastheadValues(fData, currentEdicion);
+        document.getElementById('inspMastheadName').value = values.newspaperName;
+        document.getElementById('inspMastheadBadge').value = values.subBadge;
+        document.getElementById('inspMastheadMotto').value = values.motto;
+        document.getElementById('inspMastheadNum').value = values.editionNumber;
+        document.getElementById('inspMastheadDate').value = values.editionDate;
+        document.getElementById('inspMastheadCity').value = values.city;
+        document.getElementById('inspMastheadPrice').value = values.price;
+        document.getElementById('inspMastheadWebsite').value = values.website;
+        document.getElementById('inspMastheadLeftEar').value = values.leftEar;
+        document.getElementById('inspMastheadRightEar').value = values.rightEar;
+        document.getElementById('inspMastheadLogo').value = values.logo_src;
+        document.getElementById('inspMastheadNameSize').value = values.nameSize;
+        document.getElementById('inspMastheadLogoWidth').value = values.logoWidth;
+        document.getElementById('inspMastheadNameColor').value = values.nameColor;
+        document.getElementById('inspMastheadAccentColor').value = values.accentColor;
     } else if (type === 'article') {
         fData.w = 680;
         fData.h = 220;
@@ -2693,29 +2700,7 @@ function buildFrameElement(fData, pIdx) {
 
     // Render inner content by type
     if (fData.type === 'masthead') {
-        el.dataset.font = 'Bebas Neue';
-        el.innerHTML = `
-            <div class="frame-masthead-inner" style="border-bottom:3px solid #0284c7;padding-bottom:4px;font-family:'Bebas Neue',sans-serif;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                    <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:700;width:140px;line-height:1.2;font-family:'Montserrat',sans-serif;">
-                        ${fData.leftEar || 'CRE 100%'}
-                    </div>
-                    <div style="text-align:center;flex:1;">
-                        <span style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#0284c7;line-height:1;letter-spacing:1.5px;">${fData.nombre_seccion || fData.newspaperName || 'LATITUD 18'}</span>
-                        <span style="background:#D71920;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;padding:2px 8px;border-radius:2px;margin-left:4px;vertical-align:middle;">${fData.subBadge || 'DIARIO DIGITAL'}</span>
-                        <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;font-family:'Montserrat',sans-serif;">${fData.motto || 'INFORMACIÓN SIN RUIDO • SANTA CRUZ DE LA SIERRA'}</div>
-                    </div>
-                    <div style="background:#0284c7;color:#fff;padding:4px 8px;border-radius:2px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;font-family:'Montserrat',sans-serif;">
-                        ${fData.rightEar || 'DÓLAR: Bs 12,58'}
-                    </div>
-                </div>
-                <div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:3px;margin-top:4px;font-size:9px;color:#64748b;font-weight:600;font-family:'Montserrat',sans-serif;">
-                    <span>${fData.fecha || fData.editionDate || (currentEdicion.fecha || 'Santa Cruz de la Sierra')}</span>
-                    <span><strong>${fData.numero_edicion ? 'Edición ' + fData.numero_edicion : (currentEdicion.numero_edicion || '')}</strong></span>
-                    <span>${fData.ciudad || (currentEdicion.ciudad || 'Santa Cruz')}</span>
-                </div>
-            </div>
-        `;
+            el.innerHTML = renderLatitudMasthead(fData, currentEdicion);
     } else if (fData.type === 'headline') {
         el.innerHTML = `
             <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
@@ -2841,8 +2826,8 @@ function initInteract() {
                     const target = event.target;
                     if (target.dataset.locked === 'true') return;
 
-                    let x = (parseFloat(target.style.left) || 0) + event.dx;
-                    let y = (parseFloat(target.style.top)  || 0) + event.dy;
+                    let x = (parseFloat(target.style.left) || 0) + event.dx / zoomLevel;
+                    let y = (parseFloat(target.style.top)  || 0) + event.dy / zoomLevel;
 
                     if (snapGridActive) {
                         x = Math.round(x / snapGridSize) * snapGridSize;
@@ -2868,13 +2853,13 @@ function initInteract() {
                     const target = event.target;
                     if (target.dataset.locked === 'true' || target.dataset.lockResize === 'true' || target.dataset.type === 'ad') return;
 
-                    let w = Math.max(40, event.rect.width);
-                    let h = Math.max(20, event.rect.height);
+                    let w = Math.max(40, event.rect.width / zoomLevel);
+                    let h = Math.max(20, event.rect.height / zoomLevel);
                     let x = parseFloat(target.style.left) || 0;
                     let y = parseFloat(target.style.top)  || 0;
 
-                    x += event.deltaRect.left;
-                    y += event.deltaRect.top;
+                    x += event.deltaRect.left / zoomLevel;
+                    y += event.deltaRect.top / zoomLevel;
 
                     if (snapGridActive) {
                         w = Math.round(w / snapGridSize) * snapGridSize;
@@ -3098,24 +3083,31 @@ function saveFrameZIndex(el) {
 // ── MASTHEAD PROPS ─────────────────────────────────
 function applyMastheadProps() {
     if (!selectedFrame || selectedFrame.dataset.type !== 'masthead') return;
-    const page = currentEdicion.paginas[activePageIndex];
-    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
+    const f = currentEdicion.paginas[activePageIndex]?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
     if (!f) return;
-
+    recordHistory();
     f.newspaperName = document.getElementById('inspMastheadName').value;
     f.subBadge = document.getElementById('inspMastheadBadge').value;
     f.motto = document.getElementById('inspMastheadMotto').value;
+    f.editionNumber = document.getElementById('inspMastheadNum').value;
+    f.editionDate = document.getElementById('inspMastheadDate').value;
+    f.city = document.getElementById('inspMastheadCity').value;
+    f.price = document.getElementById('inspMastheadPrice').value;
+    f.website = document.getElementById('inspMastheadWebsite').value;
     f.leftEar = document.getElementById('inspMastheadLeftEar').value;
     f.rightEar = document.getElementById('inspMastheadRightEar').value;
-
-    // Re-render masthead inner
-    selectedFrame.innerHTML = '';
-    const newEl = buildFrameElement(f, activePageIndex);
-    selectedFrame.innerHTML = newEl.innerHTML;
+    f.logo_src = document.getElementById('inspMastheadLogo').value;
+    f.nameSize = document.getElementById('inspMastheadNameSize').value;
+    f.logoWidth = document.getElementById('inspMastheadLogoWidth').value;
+    f.nameColor = document.getElementById('inspMastheadNameColor').value;
+    f.accentColor = document.getElementById('inspMastheadAccentColor').value;
+    // Claves antiguas del editor se conservan sincronizadas.
+    f.numero_edicion = f.editionNumber; f.fecha = f.editionDate; f.ciudad = f.city;
+    Object.assign(f, mastheadValues(f, currentEdicion));
+    selectedFrame.innerHTML = renderLatitudMasthead(f, currentEdicion);
     markUnsaved();
 }
 
-// ── TEXT PROPS ─────────────────────────────────────
 function applyTextProps() {
     if (!selectedFrame) return;
     const textDiv = selectedFrame.querySelector('.frame-text-inner');
@@ -3200,6 +3192,8 @@ function applyImageUrlToFrame() {
 }
 
 function uploadImageForFrame(input) {
+    const targetFrameId = selectedFrame?.dataset.frameId;
+    if (!targetFrameId) return;
     const file = input.files[0];
     if (!file) return;
 
@@ -3237,7 +3231,7 @@ function uploadImageForFrame(input) {
                 selectedFrame.querySelector('.upload-spinner-overlay')?.remove();
             }
             if (d.url) { 
-                applyImageSrc(d.url); 
+                applyImageSrc(d.url, targetFrameId);
                 closeModal('imagePickerModal'); 
                 showToast('Imagen cargada con éxito', 'success');
             } else {
@@ -3254,15 +3248,22 @@ function uploadImageForFrame(input) {
         });
 }
 
-function applyImageSrc(src) {
-    if (!selectedFrame) return;
-    let img = selectedFrame.querySelector('.frame-img-inner');
-    if (img) {
-        img.src = src;
+function applyImageSrc(src, targetFrameId = selectedFrame?.dataset.frameId) {
+    const page = currentEdicion.paginas.find(p => (p.frames || []).some(f => f.id == targetFrameId));
+    const f = page?.frames?.find(fr => fr.id == targetFrameId);
+    const targetElement = document.getElementById('frame-' + targetFrameId);
+    if (!targetElement) return;
+    if (!f) return;
+    recordHistory();
+    if (f.type === 'masthead') {
+        f.logo_src = src;
+        targetElement.innerHTML = renderLatitudMasthead(f, currentEdicion);
+        if (selectedFrame === targetElement) populateInspector(selectedFrame);
+    } else {
+        const img = targetElement.querySelector('.frame-img-inner');
+        if (img) img.src = src;
+        f.src = src;
     }
-    const page = currentEdicion.paginas[activePageIndex];
-    const f = page?.frames?.find(fr => fr.id == selectedFrame.dataset.frameId);
-    if (f) f.src = src;
     markUnsaved();
 }
 
@@ -4511,23 +4512,7 @@ function previewRenderPage(idx) {
         el.style.pointerEvents = 'none'; // Desactiva todas las interacciones (Req 6.3)
 
         if (fData.type === 'masthead') {
-            el.innerHTML = `
-                <div class="frame-masthead-inner" style="border-bottom:3px solid #0284c7;padding-bottom:4px;font-family:'Bebas Neue',sans-serif;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                        <div style="background:#fef9c3;color:#854d0e;padding:4px 8px;font-size:9px;font-weight:700;width:140px;line-height:1.2;font-family:'Montserrat',sans-serif;">
-                            ${fData.leftEar || 'CRE 100%'}
-                        </div>
-                        <div style="text-align:center;flex:1;">
-                            <span style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:#0284c7;line-height:1;letter-spacing:1.5px;">${fData.nombre_seccion || fData.newspaperName || 'LATITUD 18'}</span>
-                            <span style="background:#D71920;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;padding:2px 8px;margin-left:4px;vertical-align:middle;">${fData.subBadge || 'DIARIO DIGITAL'}</span>
-                            <div style="font-size:9px;font-weight:800;letter-spacing:1.5px;color:#64748b;text-transform:uppercase;margin-top:2px;font-family:'Montserrat',sans-serif;">${fData.motto || 'INFORMACIÓN SIN RUIDO • SANTA CRUZ DE LA SIERRA'}</div>
-                        </div>
-                        <div style="background:#0284c7;color:#fff;padding:4px 8px;font-size:9px;font-weight:800;width:130px;text-align:right;line-height:1.2;font-family:'Montserrat',sans-serif;">
-                            ${fData.rightEar || 'DÓLAR: Bs 12,58'}
-                        </div>
-                    </div>
-                </div>
-            `;
+            el.innerHTML = renderLatitudMasthead(fData, currentEdicion);
         } else if (fData.type === 'headline') {
             el.innerHTML = `
                 <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
@@ -4918,100 +4903,38 @@ function toggleSnapGrid() {
 let isFullscreen = false;
 
 function toggleFullscreenEditor() {
-    const app = document.getElementById('idApp');
-    const indicator = document.getElementById('fullscreen-overlay-indicator');
-    const icon = document.getElementById('fullscreenIcon');
-    const label = document.getElementById('fullscreenLabel');
-
-    isFullscreen = !isFullscreen;
-
-    if (isFullscreen) {
-        app.classList.add('fullscreen-mode');
-        document.body.classList.add('editor-fullscreen');
-        // Hide Laravel admin layout elements
-        document.querySelectorAll('.main-header, .main-sidebar, .main-footer, .content-header').forEach(el => {
-            if (el) el.style.display = 'none';
-        });
-        // Make the content wrapper and its parent full-screen
-        const contentWrapper = document.querySelector('.content-wrapper');
-        const appWrapper = document.querySelector('.wrapper');
-        if (contentWrapper) {
-            contentWrapper.style.marginLeft = '0';
-            contentWrapper.style.padding = '0';
-            contentWrapper.style.minHeight = '100vh';
-        }
-        if (appWrapper) {
-            appWrapper.style.overflow = 'hidden';
-        }
-        window.scrollTo(0, 0);
-        if (indicator) indicator.classList.add('visible');
-        if (icon) { icon.className = 'fas fa-compress'; }
-        if (label) label.textContent = 'Salir Pantalla Completa';
-        // Try native fullscreen API
-        try {
-            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-        } catch(e) {}
-        showToast('Modo Pantalla Completa activado — Presiona Esc o haz clic en el indicador para salir', 'success');
-    } else {
-        exitFullscreen();
-    }
+    if (isFullscreen) { exitFullscreen(); return; }
+    isFullscreen = true;
+    document.getElementById('editorWorkspace').classList.add('fullscreen-workspace');
+    document.getElementById('idApp').classList.add('fullscreen-mode');
+    document.body.classList.add('editor-fullscreen');
+    document.getElementById('fullscreenIcon').className = 'fas fa-compress';
+    document.getElementById('fullscreenLabel').textContent = 'Salir Pantalla Completa';
 }
 
 function exitFullscreen() {
     isFullscreen = false;
-    const app = document.getElementById('idApp');
-    const indicator = document.getElementById('fullscreen-overlay-indicator');
-    const icon = document.getElementById('fullscreenIcon');
-    const label = document.getElementById('fullscreenLabel');
-
-    app.classList.remove('fullscreen-mode');
+    document.getElementById('editorWorkspace').classList.remove('fullscreen-workspace');
+    document.getElementById('idApp').classList.remove('fullscreen-mode');
     document.body.classList.remove('editor-fullscreen');
-
-    // Restore admin layout
-    document.querySelectorAll('.main-header, .main-sidebar, .main-footer, .content-header').forEach(el => {
-        if (el) el.style.display = '';
-    });
-    const contentWrapper = document.querySelector('.content-wrapper');
-    const appWrapper = document.querySelector('.wrapper');
-    if (contentWrapper) {
-        contentWrapper.style.marginLeft = '';
-        contentWrapper.style.padding = '';
-        contentWrapper.style.minHeight = '';
-    }
-    if (appWrapper) appWrapper.style.overflow = '';
-
-    if (indicator) indicator.classList.remove('visible');
-    if (icon) icon.className = 'fas fa-expand';
-    if (label) label.textContent = 'Pantalla Completa';
-
-    try {
-        if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen();
-    } catch(e) {}
-
-    showToast('Modo Pantalla Completa desactivado', 'success');
+    document.getElementById('fullscreenIcon').className = 'fas fa-expand';
+    document.getElementById('fullscreenLabel').textContent = 'Pantalla Completa';
 }
 
-// Exit fullscreen on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isFullscreen) {
-        exitFullscreen();
+// Escape cierra primero la ventana o noticias; después el editor expandido.
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        if (closeEditorOverlay()) { event.preventDefault(); return; }
+        if (isFullscreen) { event.preventDefault(); exitFullscreen(); }
     }
-    // F11 to toggle
-    if (e.key === 'F11' && document.getElementById('idApp')) {
-        e.preventDefault();
-        toggleFullscreenEditor();
-    }
-});
-
-// Sync with native fullscreen API exit (user presses Esc in browser)
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement && isFullscreen) {
-        exitFullscreen();
+    if (event.key === 'F11' && document.getElementById('idApp')) {
+        event.preventDefault(); toggleFullscreenEditor();
     }
 });
 
 // ── UNDO / REDO ────────────────────────────────────
 function recordHistory() {
+    syncEditorText();
     undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
     if (undoHistory.length > 40) undoHistory.shift();
     redoHistory = [];
@@ -5024,6 +4947,7 @@ function undoAction() {
     }
     redoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
     currentEdicion = undoHistory.pop();
+    renumberEditorPages();
     renderAllPages();
     switchPage(activePageIndex);
     markUnsaved();
@@ -5037,6 +4961,7 @@ function redoAction() {
     }
     undoHistory.push(JSON.parse(JSON.stringify(currentEdicion)));
     currentEdicion = redoHistory.pop();
+    renumberEditorPages();
     renderAllPages();
     switchPage(activePageIndex);
     markUnsaved();
@@ -5052,7 +4977,8 @@ function setupKeyboard() {
             return;
         }
 
-        if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (document.querySelector('#editorWorkspace .id-modal-overlay.open')) return;
+        if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
         if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undoAction(); }
         if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redoAction(); }

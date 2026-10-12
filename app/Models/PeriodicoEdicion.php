@@ -132,7 +132,7 @@ class PeriodicoEdicion extends Model
                 }
 
                 foreach ($paginasData as $pIdx => $pData) {
-                    $pNumero = $pData['numero'] ?? ($pIdx + 1);
+                    $pNumero = $pIdx + 1;
                     $pNombre = $pData['nombre'] ?? ('Página ' . $pNumero);
                     $pSeccion = $pData['seccion'] ?? null;
                     $pAncho = (int)($pData['ancho'] ?? 720);
@@ -149,6 +149,7 @@ class PeriodicoEdicion extends Model
                     if ($pagina) {
                         $pagina->update([
                             'numero' => $pNumero,
+                            'plantilla_id' => $pPlantillaId,
                             'nombre' => $pNombre,
                             'seccion' => $pSeccion,
                             'ancho' => $pAncho,

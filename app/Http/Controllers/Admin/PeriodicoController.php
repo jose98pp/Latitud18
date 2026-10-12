@@ -291,7 +291,8 @@ class PeriodicoController extends Controller
             }
         }
 
-        $edicion->syncFromEditorData($data);
+        $request->validate(['paginas' => 'sometimes|array|min:1']);
+        \Illuminate\Support\Facades\DB::transaction(fn() => $edicion->syncFromEditorData($data));
 
         $edicionArray = $edicion->toEditorArray();
 
