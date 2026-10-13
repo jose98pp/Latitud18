@@ -17,6 +17,7 @@ class Latitud18EditorialV2Test extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(\Database\Seeders\Latitud18ReferenciaSeeder::class);
         $this->seed(Latitud18EditorialV2Seeder::class);
     }
 
