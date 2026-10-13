@@ -1651,7 +1651,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         </div>
         <div class="inspector-row">
           <span class="inspector-label" style="min-width:48px;">Tamaño</span>
-          <input type="number" class="inspector-input" id="inspFontSize" value="14" min="6" max="300" onchange="applyTextProps()">
+          <input type="number" class="inspector-input" id="inspFontSize" value="14" step="0.1" min="6" max="300" onchange="applyTextProps()">
           <span class="inspector-label">px</span>
           <span class="inspector-label" style="min-width:40px;">Línea</span>
           <input type="number" class="inspector-input" id="inspLineH" value="1.4" min="0.8" max="4" step="0.05" onchange="applyTextProps()">
@@ -2629,8 +2629,8 @@ function createSpecialElement(type) {
     } else if (type === 'image') {
         fData.w = 400;
         fData.h = 240;
-        fData.src = 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80';
-        fData.caption = 'CELEBRACIÓN. Retreta cultural y homenaje en Santa Cruz de la Sierra.';
+        fData.src = '/images/periodico/latitud18-editorial-photo.svg';
+        fData.caption = '';
     } else if (type === 'quote') {
         fData.w = 320;
         fData.h = 100;
@@ -2681,6 +2681,7 @@ function buildFrameElement(fData, pIdx) {
     el.className = 'id-frame';
     el.id = `frame-${fData.id}`;
     el.dataset.frameId = fData.id;
+    if (fData.type === 'header') fData.type = 'masthead';
     el.dataset.type = fData.type;
 
     if (fData.isLocked) {
@@ -2714,9 +2715,9 @@ function buildFrameElement(fData, pIdx) {
         const isLinked = !!(fData.noticia_id || fData.propiedades?.noticia_id);
         const catColor = fData.categoria_color || fData.propiedades?.categoria_color || '#D71920';
         const cols = fData.columns || 3;
-        const titular = fData.titular || fData.content_title || 'Titular del Artículo';
+        const titular = fData.titular ?? fData.content_title ?? '';
         const subtitulo = fData.subtitulo || '';
-        const cuerpo = fData.cuerpo || fData.content || 'Texto del artículo periodístico...';
+        const cuerpo = fData.cuerpo ?? fData.content ?? '';
         const autor = fData.autor || '';
 
         el.dataset.font = 'Montserrat';
@@ -2739,7 +2740,7 @@ function buildFrameElement(fData, pIdx) {
         el.innerHTML = `
             <div style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;">
                 <div style="flex:1;position:relative;overflow:hidden;" class="image-stage-wrap">
-                    <img src="${fData.src || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80'}" class="frame-img-inner" style="object-fit:${fData.image_fit === 'contain' ? 'contain' : 'cover'};">
+                    <img src="${fData.src || '/images/periodico/latitud18-editorial-photo.svg'}" class="frame-img-inner" style="object-fit:${fData.image_fit === 'contain' ? 'contain' : 'cover'};">
                 </div>
                 ${fData.caption ? `<div style="font-size:9.5px;color:#475569;line-height:1.3;padding-top:4px;font-style:italic;font-family:'Montserrat',sans-serif;">${fData.caption}</div>` : ''}
             </div>
@@ -2749,7 +2750,7 @@ function buildFrameElement(fData, pIdx) {
     } else if (fData.type === 'box') {
         el.innerHTML = `<div class="frame-box-inner" contenteditable="true" style="font-family:'Montserrat',sans-serif;">${fData.content || 'Caja de contenido'}</div>`;
     } else if (fData.type === 'divider') {
-        el.innerHTML = `<div class="frame-divider-inner"><div style="width:100%;height:2px;background:${fData.color || '#cbd5e1'};"></div></div>`;
+        el.innerHTML = `<div class="frame-divider-inner"><div style="width:100%;height:100%;background:${fData.color || '#cbd5e1'};"></div></div>`;
     } else if (fData.type === 'qr') {
         const qrUrl = encodeURIComponent(fData.url || 'https://latitud18.com/periodico');
         el.innerHTML = `
@@ -2788,7 +2789,7 @@ function buildFrameElement(fData, pIdx) {
     } else {
         // Default text frame
         const cols = fData.columns || 1;
-        el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="column-count:${cols > 1 ? cols : ''};column-gap:14px;font-family:'Montserrat',sans-serif;">${fData.content || 'Texto periodístico...'}</div>`;
+        el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="padding:${fData.editorial_role ? '0' : '4px'};column-count:${cols > 1 ? cols : ''};column-gap:14px;font-family:'Montserrat',sans-serif;">${fData.content ?? ''}</div>`;
     }
 
     // Handles or Lock badge
@@ -2921,6 +2922,22 @@ function populateInspector(el) {
     if (inspMasthead) inspMasthead.style.display = type === 'masthead' ? '' : 'none';
     if (inspArticle)  inspArticle.style.display  = type === 'article' ? '' : 'none';
     if (inspText)     inspText.style.display     = (type === 'article' || type === 'headline' || type === 'text') ? '' : 'none';
+    const textNode = el.querySelector('.frame-text-inner');
+    if (textNode) {
+        const style = window.getComputedStyle(textNode.firstElementChild || textNode);
+        const family = style.fontFamily.replace(/["']/g, '').split(',')[0].trim();
+        ['inspFontFamily', 'cbFontFamily'].forEach(id => {
+            const input = document.getElementById(id);
+            const option = [...input.options].find(o => o.value.replace(/["']/g, '').split(',')[0].trim() === family);
+            if (option) input.value = option.value;
+        });
+        ['inspFontSize', 'cbFontSize'].forEach(id => document.getElementById(id).value = parseFloat(style.fontSize) || 14);
+        document.getElementById('inspTextColor').value = editorialColorHex(style.color);
+        document.getElementById('inspTextBg').value = editorialColorHex(style.backgroundColor);
+        document.getElementById('inspLineH').value = (parseFloat(style.lineHeight) / parseFloat(style.fontSize)) || 1.4;
+        document.getElementById('inspTextAlign').value = style.textAlign || 'left';
+        document.getElementById('inspTextCols').value = fData.columns || 1;
+    }
     if (inspImage)    inspImage.style.display    = type === 'image' ? '' : 'none';
     if (type === 'image') document.getElementById('inspImgFit').value = fData.image_fit || 'cover';
     if (inspQr)       inspQr.style.display       = type === 'qr' ? '' : 'none';
@@ -3121,7 +3138,7 @@ function applyTextProps() {
     const align= document.getElementById('inspTextAlign').value;
     const bg  = document.getElementById('inspTextBg').value;
 
-    Object.assign(textDiv.style, {
+    persistFrameTextStyles({
         fontFamily: ff,
         fontSize: fs + 'px',
         lineHeight: lh,
@@ -3134,18 +3151,13 @@ function applyTextProps() {
 }
 
 function clearTextBg() {
-    if (!selectedFrame) return;
-    const textDiv = selectedFrame.querySelector('.frame-text-inner');
-    if (textDiv) textDiv.style.backgroundColor = 'transparent';
-    markUnsaved();
+    persistFrameTextStyles({backgroundColor: 'transparent'});
 }
 
 function applyStyleToSelection() {
     const ff = document.getElementById('cbFontFamily').value;
-    const fs = document.getElementById('cbFontSize').value;
-    document.execCommand('fontName', false, ff);
-    document.execCommand('fontSize', false, 4);
-    markUnsaved();
+    const fs = Math.max(6, Math.min(300, Number(document.getElementById('cbFontSize').value) || 14));
+    persistFrameTextStyles({fontFamily: ff, fontSize: fs + 'px'});
 }
 
 function toggleBold()      { document.execCommand('bold');      markUnsaved(); }
@@ -3154,26 +3166,16 @@ function toggleUnderline() { document.execCommand('underline'); markUnsaved(); }
 function toggleUppercase() {
     const frame = selectedFrame?.querySelector('.frame-text-inner');
     if (frame) {
-        frame.style.textTransform = frame.style.textTransform === 'uppercase' ? '' : 'uppercase';
-        markUnsaved();
+        persistFrameTextStyles({textTransform: frame.style.textTransform === 'uppercase' ? 'none' : 'uppercase'});
     }
 }
 
 function applyAlign(align) {
-    const frame = selectedFrame?.querySelector('.frame-text-inner');
-    if (frame) {
-        frame.style.textAlign = align;
-        markUnsaved();
-    }
+    persistFrameTextStyles({textAlign: align});
 }
 
 function setColumns(n) {
-    const frame = selectedFrame?.querySelector('.frame-text-inner');
-    if (frame) {
-        frame.style.columnCount = n > 1 ? n : '';
-        frame.style.columnGap = n > 1 ? '14px' : '';
-        markUnsaved();
-    }
+    persistFrameTextStyles({columnCount: n > 1 ? String(n) : '', columnGap: n > 1 ? '14px' : ''});
 }
 
 // ── IMAGE HANDLING ─────────────────────────────────
@@ -4511,7 +4513,7 @@ function previewRenderPage(idx) {
         if (fData.opacity !== undefined) el.style.opacity = fData.opacity;
         el.style.pointerEvents = 'none'; // Desactiva todas las interacciones (Req 6.3)
 
-        if (fData.type === 'masthead') {
+        if (fData.type === 'masthead' || fData.type === 'header') {
             el.innerHTML = renderLatitudMasthead(fData, currentEdicion);
         } else if (fData.type === 'headline') {
             el.innerHTML = `
@@ -4526,9 +4528,9 @@ function previewRenderPage(idx) {
             const isLinked = !!(fData.noticia_id || fData.propiedades?.noticia_id);
             const catColor = fData.categoria_color || fData.propiedades?.categoria_color || '#D71920';
             const cols = fData.columns || 3;
-            const titular = fData.titular || fData.content_title || 'Titular del Artículo';
+            const titular = fData.titular ?? fData.content_title ?? '';
             const subtitulo = fData.subtitulo || '';
-            const cuerpo = fData.cuerpo || fData.content || 'Texto del artículo...';
+            const cuerpo = fData.cuerpo ?? fData.content ?? '';
             const autor = fData.autor || '';
 
             el.innerHTML = `
@@ -4579,7 +4581,7 @@ function previewRenderPage(idx) {
         } else if (fData.type === 'box') {
             el.innerHTML = `<div style="font-family:'Montserrat',sans-serif;padding:8px;border:1px solid #cbd5e1;background:#f8fafc;">${fData.content || ''}</div>`;
         } else if (fData.type === 'divider') {
-            el.innerHTML = `<div style="width:100%;height:2px;background:${fData.color || '#cbd5e1'};"></div>`;
+            el.innerHTML = `<div style="width:100%;height:100%;background:${fData.color || '#cbd5e1'};"></div>`;
         } else if (fData.type === 'qr') {
             const qrUrl = encodeURIComponent(fData.url || 'https://latitud18.com/periodico');
             el.innerHTML = `
@@ -4739,7 +4741,8 @@ function renderEditionSlotsGrid() {
     if (!grid) return;
 
     grid.innerHTML = EDITION_SLOTS.map(s => {
-        const defaultTplId = SLOT_DEFAULT_TEMPLATES[s.slot] || '';
+        const editorialId = 'tpl-l18-v2-' + String(s.slot).padStart(2, '0');
+        const defaultTplId = (loadedTemplates || []).some(t => t.id === editorialId) ? editorialId : (SLOT_DEFAULT_TEMPLATES[s.slot] || '');
         const tplOptions = (loadedTemplates || []).map(t => {
             const isSelected = (t.id === defaultTplId) ? 'selected' : '';
             return `<option value="${t.id}" ${isSelected}>${t.name} (${t.category})</option>`;

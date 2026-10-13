@@ -1,0 +1,54 @@
+{
+  "nombre": "Latitud18 · Editorial v2 · 12 páginas",
+  "descripcion": "12 composiciones diferenciadas; identidad Latitud18 y retícula de periódico local.",
+  "mapping": [
+    {
+      "slot": 1,
+      "plantilla_id": "tpl-l18-v2-01"
+    },
+    {
+      "slot": 2,
+      "plantilla_id": "tpl-l18-v2-02"
+    },
+    {
+      "slot": 3,
+      "plantilla_id": "tpl-l18-v2-03"
+    },
+    {
+      "slot": 4,
+      "plantilla_id": "tpl-l18-v2-04"
+    },
+    {
+      "slot": 5,
+      "plantilla_id": "tpl-l18-v2-05"
+    },
+    {
+      "slot": 6,
+      "plantilla_id": "tpl-l18-v2-06"
+    },
+    {
+      "slot": 7,
+      "plantilla_id": "tpl-l18-v2-07"
+    },
+    {
+      "slot": 8,
+      "plantilla_id": "tpl-l18-v2-08"
+    },
+    {
+      "slot": 9,
+      "plantilla_id": "tpl-l18-v2-09"
+    },
+    {
+      "slot": 10,
+      "plantilla_id": "tpl-l18-v2-10"
+    },
+    {
+      "slot": 11,
+      "plantilla_id": "tpl-l18-v2-11"
+    },
+    {
+      "slot": 12,
+      "plantilla_id": "tpl-l18-v2-12"
+    }
+  ]
+}

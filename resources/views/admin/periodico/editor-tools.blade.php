@@ -121,3 +121,30 @@ function resetZoom() {
     zoomLevel = 1;
     updateZoomDisplay();
 }
+
+function persistFrameTextStyles(styles) {
+    if (!selectedFrame) return;
+    const text = selectedFrame.querySelector('.frame-text-inner');
+    if (!text) return;
+    styles = {...styles};
+    if ('fontSize' in styles && !('lineHeight' in styles)) styles.lineHeight = '1.18';
+    recordHistory();
+    Object.assign(text.style, styles);
+    const inlineStyles = {...styles};
+    delete inlineStyles.columnCount;
+    delete inlineStyles.columnGap;
+    text.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach(node => Object.assign(node.style, inlineStyles));
+    const frame = currentEdicion.paginas[activePageIndex]?.frames?.find(f => f.id == selectedFrame.dataset.frameId);
+    if (frame) {
+        frame.content = text.innerHTML;
+        if ('columnCount' in styles) frame.columns = Number(styles.columnCount) || 1;
+    }
+    markUnsaved();
+}
+
+function editorialColorHex(color) {
+    if (color === 'transparent' || /rgba\([^)]*,\s*0(?:\.0+)?\s*\)/.test(color || '')) return '#ffffff';
+    if (/^#[0-9a-f]{6}$/i.test(color || '')) return color;
+    const parts = String(color).match(/\d+/g);
+    return parts?.length >= 3 ? '#' + parts.slice(0, 3).map(v => Number(v).toString(16).padStart(2, '0')).join('') : '#ffffff';
+}

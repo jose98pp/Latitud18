@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+<rect width="1200" height="800" fill="#e1e7ee"/>
+<path d="M0 800V660L280 330 510 600 830 220 1200 660V800Z" fill="#b8c5d4"/>
+<circle cx="260" cy="210" r="80" fill="#c7d2df"/>
+<rect x="250" y="640" width="700" height="68" rx="4" fill="#0B1F3A"/>
+<text x="600" y="685" text-anchor="middle" fill="white" font-family="Arial" font-size="30">FOTOGRAFÍA EDITABLE</text>
+</svg>

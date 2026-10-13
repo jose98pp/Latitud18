@@ -23,6 +23,12 @@
         }
         $imageW = $w; $imageH = $h; $imageX = 0; $imageY = 0;
         $dim = $local ? @getimagesize($local) : false;
+        if (!$dim && $local && strtolower(pathinfo($local, PATHINFO_EXTENSION)) === 'svg') {
+            // getimagesize no reconoce SVG; usar su retícula para conservar proporciones.
+            if (preg_match('/viewBox="[0-9.]+\s+[0-9.]+\s+([0-9.]+)\s+([0-9.]+)"/', file_get_contents($local), $viewBox)) {
+                $dim = [(float) $viewBox[1], (float) $viewBox[2]];
+            }
+        }
         if ($dim && $dim[0]>0 && $dim[1]>0) {
             // Fotos: recorte centrado. Anuncios: completos, sin deformación.
             $fit = $type === 'ad' ? 'contain' : ($f['image_fit'] ?? 'cover');
@@ -34,12 +40,14 @@
     <div style="position:absolute;left:{{ $x }}mm;top:{{ $y }}mm;width:{{ $w }}mm;height:{{ $h }}mm;overflow:hidden;box-sizing:border-box;">
     @if ($type === 'image' || ($type === 'ad' && ($f['status'] ?? '') === 'ocupado' && $src))
         <img src="{{ $local ?? $src }}" style="position:absolute;left:{{ $imageX }}mm;top:{{ $imageY }}mm;width:{{ $imageW }}mm;height:{{ $imageH }}mm;">
-    @elseif ($type === 'masthead')
+    @elseif (in_array($type, ['masthead', 'header']))
         @include('periodico.partials.masthead', ['masthead' => $f, 'mastheadScale' => $sx, 'mastheadUnit' => 'mm'])
     @elseif ($type === 'ad')
-        <div style="background:#fce8e8;color:#D71920;text-align:center;padding:4mm;font:12pt DejaVu Sans;">PUBLICIDAD {{ $f['format_code'] ?? '' }}</div>
+        <div style="height:{{ $h }}mm;background:#0B1F3A;color:#ffffff;text-align:center;">
+            <div style="position:absolute;top:{{ max(0, $h / 2 - 3) }}mm;width:100%;line-height:6mm;font-family:Montserrat;font-size:10pt;">PUBLICIDAD {{ $f['format_code'] ?? '' }}</div>
+        </div>
     @elseif ($type === 'divider')
-        <div style="height:0.5mm;background:{{ $f['color'] ?? '#D71920' }};"></div>
+        <div style="height:100%;background:{{ $f['color'] ?? '#D71920' }};"></div>
     @elseif ($type === 'article')
         <h2 style="font: bold 18pt DejaVu Sans;">{{ $f['titular'] ?? '' }}</h2>
         <p style="font:10pt DejaVu Sans;">{{ $f['subtitulo'] ?? '' }}</p>

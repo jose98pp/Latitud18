@@ -131,7 +131,7 @@ class PlantillaService implements PlantillaServiceInterface
         // 2. Actualizar referencia de plantilla y sección en la página
         $pagina->update([
             'plantilla_id' => $plantilla->id,
-            'seccion'      => ucfirst($plantilla->categoria ?? 'general'),
+            'seccion'      => $plantilla->configuracion['section_label'] ?? ucfirst($plantilla->categoria ?? 'general'),
             'ancho' => $plantilla->configuracion['page_width_px'] ?? $pagina->ancho ?? 720,
             'alto' => $plantilla->configuracion['page_height_px'] ?? $pagina->alto ?? 1040,
             'configuracion' => $plantilla->configuracion,

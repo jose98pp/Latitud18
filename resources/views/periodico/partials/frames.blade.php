@@ -27,9 +27,9 @@
                      style="left:{{ $fx }}px;top:{{ $fy }}px;width:{{ $fw }}px;height:{{ $fh }}px;z-index:{{ $fz }};opacity:{{ $fop }}">
 
                     @if ($ftype === 'divider')
-                        <div style="width:100%;height:2px;background:{{ $f['color'] ?? '#cbd5e1' }};"></div>
+                        <div style="width:100%;height:100%;background:{{ $f['color'] ?? '#cbd5e1' }};"></div>
 
-                    @elseif ($ftype === 'masthead')
+                    @elseif (in_array($ftype, ['masthead', 'header']))
                         @include('periodico.partials.masthead', ['masthead' => $f, 'mastheadScale' => 1, 'mastheadUnit' => 'px'])
 
                     @elseif ($ftype === 'headline')

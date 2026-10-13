@@ -35,6 +35,6 @@ npm run build
 
 ## Despliegue
 
-Después de fusionar, actualizar los archivos PHP y Blade del proyecto desplegado en `latitud18.ultimahora-tv.com` y ejecutar `php artisan view:clear`. Este cambio no añade tablas, migraciones ni un seeder nuevo. Las funciones del editor se incluyen en Blade y no necesitan un servicio de Vercel.
+Después de fusionar, actualizar los archivos PHP y Blade del proyecto desplegado en `latitud18.ultimahora-tv.com` y ejecutar `php artisan view:clear`. No añade tablas ni migraciones. El catálogo nuevo se instala con `php artisan db:seed --class=Latitud18EditorialV2Seeder --force`; la guía [latitud18-editorial-v2.md](latitud18-editorial-v2.md) explica las doce composiciones y su uso. Las funciones del editor se incluyen en Blade y no necesitan un servicio de Vercel.
 
 Comprobar en el panel: eliminar una página y recargar; duplicar/mover; guardar todos los campos de cabecera; sustituir el logotipo; abrir noticias/plantillas sin salir de pantalla completa; probar zoom y arrastre a 50 %, 100 % y 150 %; y comparar la previsualización con el PDF.

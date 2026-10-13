@@ -31,7 +31,7 @@ class Latitud18ReferenciaTest extends TestCase
 
     public function test_catalog_has_18_templates_and_all_frames_fit_the_printable_area(): void
     {
-        $templates = PeriodicoPlantilla::where('id', 'like', 'tpl-l18-%')->get();
+        $templates = PeriodicoPlantilla::where(function ($q) { $q->where('id', 'like', 'tpl-l18-ref-%')->orWhere('id', 'like', 'tpl-l18-ad-%'); })->get();
         $this->assertCount(18, $templates);
         foreach ($templates as $template) {
             $config = $template->configuracion;
@@ -54,7 +54,7 @@ class Latitud18ReferenciaTest extends TestCase
         $template->update(['nombre' => 'Portada personalizada']);
         $this->seed(Latitud18ReferenciaSeeder::class);
         $this->assertEquals('Portada personalizada', $template->fresh()->nombre);
-        $this->assertEquals(18, PeriodicoPlantilla::where('id', 'like', 'tpl-l18-%')->count());
+        $this->assertEquals(18, PeriodicoPlantilla::where(function ($q) { $q->where('id', 'like', 'tpl-l18-ref-%')->orWhere('id', 'like', 'tpl-l18-ad-%'); })->count());
         $this->assertEquals(1, PeriodicoPlantillaEdicion::where('nombre', 'Latitud18 · Edición semanal de 12 páginas')->count());
     }
 
