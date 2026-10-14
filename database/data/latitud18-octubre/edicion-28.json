@@ -1,0 +1,118 @@
+{
+  "nombre": "Latitud18 · Clásica Octubre · 28 páginas",
+  "descripcion": "28 páginas editables inspiradas en la distribución del periódico local. Incluye 12 páginas de avisos y edictos.",
+  "mapping": [
+    {
+      "slot": 1,
+      "plantilla_id": "tpl-l18-oct-28-01"
+    },
+    {
+      "slot": 2,
+      "plantilla_id": "tpl-l18-oct-28-02"
+    },
+    {
+      "slot": 3,
+      "plantilla_id": "tpl-l18-oct-28-03"
+    },
+    {
+      "slot": 4,
+      "plantilla_id": "tpl-l18-oct-28-04"
+    },
+    {
+      "slot": 5,
+      "plantilla_id": "tpl-l18-oct-28-05"
+    },
+    {
+      "slot": 6,
+      "plantilla_id": "tpl-l18-oct-28-06"
+    },
+    {
+      "slot": 7,
+      "plantilla_id": "tpl-l18-oct-28-07"
+    },
+    {
+      "slot": 8,
+      "plantilla_id": "tpl-l18-oct-28-08"
+    },
+    {
+      "slot": 9,
+      "plantilla_id": "tpl-l18-oct-28-09"
+    },
+    {
+      "slot": 10,
+      "plantilla_id": "tpl-l18-oct-28-10"
+    },
+    {
+      "slot": 11,
+      "plantilla_id": "tpl-l18-oct-28-11"
+    },
+    {
+      "slot": 12,
+      "plantilla_id": "tpl-l18-oct-28-12"
+    },
+    {
+      "slot": 13,
+      "plantilla_id": "tpl-l18-oct-28-13"
+    },
+    {
+      "slot": 14,
+      "plantilla_id": "tpl-l18-oct-28-14"
+    },
+    {
+      "slot": 15,
+      "plantilla_id": "tpl-l18-oct-28-15"
+    },
+    {
+      "slot": 16,
+      "plantilla_id": "tpl-l18-oct-28-16"
+    },
+    {
+      "slot": 17,
+      "plantilla_id": "tpl-l18-oct-28-17"
+    },
+    {
+      "slot": 18,
+      "plantilla_id": "tpl-l18-oct-28-18"
+    },
+    {
+      "slot": 19,
+      "plantilla_id": "tpl-l18-oct-28-19"
+    },
+    {
+      "slot": 20,
+      "plantilla_id": "tpl-l18-oct-28-20"
+    },
+    {
+      "slot": 21,
+      "plantilla_id": "tpl-l18-oct-28-21"
+    },
+    {
+      "slot": 22,
+      "plantilla_id": "tpl-l18-oct-28-22"
+    },
+    {
+      "slot": 23,
+      "plantilla_id": "tpl-l18-oct-28-23"
+    },
+    {
+      "slot": 24,
+      "plantilla_id": "tpl-l18-oct-28-24"
+    },
+    {
+      "slot": 25,
+      "plantilla_id": "tpl-l18-oct-28-25"
+    },
+    {
+      "slot": 26,
+      "plantilla_id": "tpl-l18-oct-28-26"
+    },
+    {
+      "slot": 27,
+      "plantilla_id": "tpl-l18-oct-28-27"
+    },
+    {
+      "slot": 28,
+      "plantilla_id": "tpl-l18-oct-28-28"
+    }
+  ]
+}

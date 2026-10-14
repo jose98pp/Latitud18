@@ -1328,7 +1328,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     </button>
 
     {{-- Plantilla 12 Páginas --}}
-    <button class="id-btn id-btn-ghost" onclick="openPlantillaEdicionModal()" style="color:#c084fc;" title="Configurar plantilla completa de 12 slots">
+    <button class="id-btn id-btn-ghost" onclick="openPlantillaEdicionModal()" style="color:#c084fc;" title="Configurar una edición completa">
       <i class="fas fa-book"></i> Plantilla 12 Págs
     </button>
 
@@ -1943,6 +1943,8 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         <button class="tpl-tab-btn" onclick="filterTemplateCards('seguridad', this)"><i class="fas fa-shield-alt me-1"></i> Seguridad</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('mundo', this)"><i class="fas fa-globe me-1"></i> Mundo</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('deportes', this)"><i class="fas fa-futbol me-1"></i> Deportes</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('cultura', this)"><i class="fas fa-palette me-1"></i> Cultura</button>
+        <button class="tpl-tab-btn" onclick="filterTemplateCards('avisos', this)"><i class="fas fa-file-alt me-1"></i> Avisos / Edictos</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('publicidad', this)"><i class="fas fa-bullhorn me-1"></i> Publicidad</button>
         <button class="tpl-tab-btn" onclick="filterTemplateCards('custom', this)" style="border-color:rgba(74,222,128,0.4);"><i class="fas fa-star me-1 text-warning"></i> Mis Plantillas</button>
       </div>
@@ -2279,16 +2281,21 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 <div class="id-modal-overlay" id="plantillaEdicionModal">
   <div class="id-modal" style="max-width:1050px;max-height:88vh;display:flex;flex-direction:column;">
     <div class="id-modal-header">
-      <div class="id-modal-title"><i class="fas fa-book text-info"></i> Plantilla de Edición Completa (12 Slots)</div>
+      <div class="id-modal-title"><i class="fas fa-book text-info"></i> Plantilla de Edición Completa</div>
       <button class="id-modal-close" onclick="closeModal('plantillaEdicionModal')"><i class="fas fa-times"></i></button>
     </div>
     <div class="id-modal-body" style="overflow-y:auto;flex:1;">
       <div style="display:flex;gap:20px;flex-wrap:wrap;">
         <div style="flex:1;min-width:320px;">
-          <h6 style="color:#fff;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-th-list me-1 text-danger"></i> Asignación de Secciones por Slot</h6>
-          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:12px;">Cada slot representa una página física del periódico semanal con su sección correspondiente.</p>
+          <h6 style="color:#fff;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-th-list me-1 text-danger"></i> Organización de páginas</h6>
+          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:12px;">Asigna una plantilla a cada página de la edición.</p>
+          <label class="id-form-label" for="editionPageCount">Páginas de la edición</label>
+          <select id="editionPageCount" class="id-form-input" onchange="renderEditionSlotsGrid()" style="margin-bottom:12px;">
+            <option value="12">12 páginas · Edición semanal</option>
+            <option value="28">28 páginas · Con suplemento de avisos</option>
+          </select>
           <div id="editionSlotsGrid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;">
-            {{-- 12 slots dynamically injected --}}
+            {{-- Páginas según la extensión elegida --}}
           </div>
           <div style="margin-top:14px;background:#1e2024;padding:12px;border-radius:6px;border:1px solid #334155;">
             <div class="id-form-row">
@@ -2306,7 +2313,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         </div>
         <div style="width:360px;border-left:1px solid #2d3035;padding-left:16px;">
           <h6 style="color:#fff;font-size:0.85rem;margin-bottom:4px;"><i class="fas fa-layer-group me-1 text-warning"></i> Plantillas Guardadas</h6>
-          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:10px;">Crea una edición completa de 12 páginas de forma transaccional.</p>
+          <p style="font-size:0.72rem;color:#94a3b8;margin-bottom:10px;">Elige un modelo de 12 o 28 páginas y crea tu edición.</p>
           <div id="savedEditionTemplatesList" style="display:flex;flex-direction:column;gap:8px;max-height:480px;overflow-y:auto;">
             {{-- Dynamic list of saved edition templates --}}
           </div>
@@ -3741,6 +3748,8 @@ function renderTemplateCards(templates) {
         entrevistas: 'fas fa-microphone-alt text-info',
         fotografia: 'fas fa-camera text-info',
         deportes: 'fas fa-futbol text-danger',
+        cultura: 'fas fa-palette text-info',
+        avisos: 'fas fa-file-alt text-secondary',
         publicidad: 'fas fa-bullhorn text-warning',
         contraportada: 'fas fa-book-open text-secondary',
         interior: 'fas fa-columns text-info',
@@ -4740,9 +4749,12 @@ function renderEditionSlotsGrid() {
     const grid = document.getElementById('editionSlotsGrid');
     if (!grid) return;
 
-    grid.innerHTML = EDITION_SLOTS.map(s => {
+    const count = Number(document.getElementById('editionPageCount')?.value) === 28 ? 28 : 12;
+    const sections = ['Mundo', 'Mundo', 'Deportes', 'Deportes', 'Cultura'];
+    const slots = count === 12 ? EDITION_SLOTS : Array.from({length: 28}, (_, i) => ({slot: i + 1, seccion: i < 11 ? EDITION_SLOTS[i].seccion : (sections[i - 11] || 'Avisos / Edictos')}));
+    grid.innerHTML = slots.map(s => {
         const editorialId = 'tpl-l18-v2-' + String(s.slot).padStart(2, '0');
-        const defaultTplId = (loadedTemplates || []).some(t => t.id === editorialId) ? editorialId : (SLOT_DEFAULT_TEMPLATES[s.slot] || '');
+        const defaultTplId = count === 28 ? ((loadedTemplates || []).find(t => t.id === 'tpl-l18-oct-28-' + String(s.slot).padStart(2, '0'))?.id || '') : ((loadedTemplates || []).some(t => t.id === editorialId) ? editorialId : (SLOT_DEFAULT_TEMPLATES[s.slot] || ''));
         const tplOptions = (loadedTemplates || []).map(t => {
             const isSelected = (t.id === defaultTplId) ? 'selected' : '';
             return `<option value="${t.id}" ${isSelected}>${t.name} (${t.category})</option>`;
@@ -4751,7 +4763,7 @@ function renderEditionSlotsGrid() {
         return `
             <div style="background:#18191c;padding:8px;border:1px solid #2d3035;border-radius:4px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-                    <span style="font-weight:800;color:#38bdf8;font-size:0.75rem;">Slot ${s.slot}</span>
+                    <span style="font-weight:800;color:#38bdf8;font-size:0.75rem;">Página ${s.slot}</span>
                     <span style="color:#94a3b8;font-size:0.65rem;text-transform:uppercase;">${s.seccion}</span>
                 </div>
                 <select class="id-form-input edition-slot-select" data-slot="${s.slot}" style="font-size:0.72rem;padding:4px;width:100%;">
@@ -4787,8 +4799,8 @@ function loadSavedEditionTemplates() {
                     <div style="font-weight:700;color:#f8fafc;font-size:0.78rem;">${tpl.nombre}</div>
                     <div style="font-size:0.68rem;color:#94a3b8;margin-top:2px;">${tpl.descripcion || 'Sin descripción'}</div>
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-                        <span style="font-size:0.62rem;color:#64748b;">12 Páginas</span>
-                        <button type="button" class="id-btn id-btn-primary" onclick="createEditionFromSavedTemplate(${tpl.id}, '${tpl.nombre}')" style="font-size:0.68rem;padding:3px 8px;">
+                        <span style="font-size:0.62rem;color:#64748b;">${(tpl.mapping || []).length} Páginas</span>
+                        <button type="button" class="id-btn id-btn-primary" onclick="createEditionFromSavedTemplate(${Number(tpl.id)})" style="font-size:0.68rem;padding:3px 8px;">
                             <i class="fas fa-magic me-1"></i> Crear Edición
                         </button>
                     </div>
@@ -4818,8 +4830,8 @@ function submitSaveEditionTemplate() {
         mapping.push({ slot: slotNum, plantilla_id: tplId });
     });
 
-    if (mapping.length !== 12) {
-        alert('La plantilla de edición debe contener exactamente 12 slots.');
+    if (mapping.length !== (Number(document.getElementById('editionPageCount')?.value) === 28 ? 28 : 12)) {
+        alert('La cantidad de páginas no coincide con la extensión elegida.');
         return;
     }
 
@@ -4841,7 +4853,7 @@ function submitSaveEditionTemplate() {
         if (data.success) {
             document.getElementById('editionTemplateName').value = '';
             document.getElementById('editionTemplateDesc').value = '';
-            showToast('¡Plantilla de edición de 12 páginas guardada exitosamente!', 'success');
+            showToast('¡Plantilla de edición guardada exitosamente!', 'success');
             loadSavedEditionTemplates();
         } else {
             showToast(data.message || 'Error al guardar plantilla de edición', 'error');
@@ -4853,7 +4865,8 @@ function submitSaveEditionTemplate() {
     });
 }
 
-function createEditionFromSavedTemplate(tplId, tplName) {
+function createEditionFromSavedTemplate(tplId) {
+    const tplName = savedEditionTemplates.find(t => Number(t.id) === Number(tplId))?.nombre || 'Plantilla de edición';
     const defaultNum = `Edición ${Math.floor(Math.random() * 800) + 120}`;
     const num = prompt(`Crear nueva edición completa desde "${tplName}":\n\nNúmero de la edición:`, defaultNum);
     if (!num) return;
@@ -4862,7 +4875,7 @@ function createEditionFromSavedTemplate(tplId, tplName) {
     if (!fecha) return;
 
     closeModal('plantillaEdicionModal');
-    showToast('Generando edición completa de 12 páginas...', 'info');
+    showToast('Generando edición completa...', 'info');
 
     fetch(`/admin/periodico/plantilla-edicion/${tplId}/crear-edicion`, {
         method: 'POST',
@@ -4880,7 +4893,7 @@ function createEditionFromSavedTemplate(tplId, tplName) {
     .then(r => r.json())
     .then(res => {
         if (res.success && res.redirect_url) {
-            showToast(res.message || '¡Edición de 12 páginas creada con éxito!', 'success');
+            showToast(res.message || '¡Edición creada con éxito!', 'success');
             setTimeout(() => {
                 window.location.href = res.redirect_url;
             }, 600);

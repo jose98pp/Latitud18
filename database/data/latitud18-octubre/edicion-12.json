@@ -1,0 +1,54 @@
+{
+  "nombre": "Latitud18 · Clásica Octubre · 12 páginas",
+  "descripcion": "12 páginas editables inspiradas en la distribución del periódico local. Secciones habituales de Latitud18.",
+  "mapping": [
+    {
+      "slot": 1,
+      "plantilla_id": "tpl-l18-oct-12-01"
+    },
+    {
+      "slot": 2,
+      "plantilla_id": "tpl-l18-oct-12-02"
+    },
+    {
+      "slot": 3,
+      "plantilla_id": "tpl-l18-oct-12-03"
+    },
+    {
+      "slot": 4,
+      "plantilla_id": "tpl-l18-oct-12-04"
+    },
+    {
+      "slot": 5,
+      "plantilla_id": "tpl-l18-oct-12-05"
+    },
+    {
+      "slot": 6,
+      "plantilla_id": "tpl-l18-oct-12-06"
+    },
+    {
+      "slot": 7,
+      "plantilla_id": "tpl-l18-oct-12-07"
+    },
+    {
+      "slot": 8,
+      "plantilla_id": "tpl-l18-oct-12-08"
+    },
+    {
+      "slot": 9,
+      "plantilla_id": "tpl-l18-oct-12-09"
+    },
+    {
+      "slot": 10,
+      "plantilla_id": "tpl-l18-oct-12-10"
+    },
+    {
+      "slot": 11,
+      "plantilla_id": "tpl-l18-oct-12-11"
+    },
+    {
+      "slot": 12,
+      "plantilla_id": "tpl-l18-oct-12-12"
+    }
+  ]
+}

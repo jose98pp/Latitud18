@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Handles the transactional creation of a complete 12-page edition.
+ * Handles the transactional creation of a complete 12/28-page edition.
  *
  * The main method `crearDesdeMapping()` wraps all database writes in
  * DB::transaction() so that any failure on any page slot triggers an
@@ -20,18 +20,30 @@ use Illuminate\Support\Str;
  */
 class EdicionService implements EdicionServiceInterface
 {
+    /** Validate a complete, consecutive 12/28-page mapping before any writes. */
+    public static function numeroPaginasParaMapping(array $mapping): int
+    {
+        $count = count($mapping);
+        $slots = array_map(fn ($entry) => (int) ($entry['slot'] ?? 0), $mapping);
+        sort($slots);
+        if (!in_array($count, [12, 28], true) || $slots !== range(1, $count)) {
+            throw new \InvalidArgumentException('La edición debe tener 12 o 28 páginas consecutivas, sin páginas repetidas.');
+        }
+        return $count;
+    }
+
     public function __construct(
         protected PlantillaServiceInterface $plantillaService
     ) {}
 
     /**
-     * Creates a complete 12-page edition from a slot→plantilla mapping.
+     * Creates a complete 12/28-page edition from a slot→plantilla mapping.
      *
      * Wraps all Edicion, PeriodicoPagina, and PeriodicoElemento inserts
      * inside a single DB::transaction(). Any failure on any page slot triggers
      * an automatic rollback, leaving no partial PeriodicoEdicion persisted.
      *
-     * @param array $mapping  12 entries: [{"slot":1,"plantilla_id":"tpl-portada"|null}, ...]
+     * @param array $mapping  12 or 28 entries: [{"slot":1,"plantilla_id":"tpl-portada"|null}, ...]
      * @param array $atributos  Edition attributes: numero_edicion, fecha, titulo, etc.
      * @return PeriodicoEdicion  The created edition with pages and elements loaded
      *
@@ -41,6 +53,7 @@ class EdicionService implements EdicionServiceInterface
      */
     public function crearDesdeMapping(array $mapping, array $atributos): PeriodicoEdicion
     {
+        $numPaginas = self::numeroPaginasParaMapping($mapping);
         // Section name map: slot number → section name (Req 5.2)
         $secciones = [
             1  => 'Portada',
@@ -57,7 +70,7 @@ class EdicionService implements EdicionServiceInterface
             12 => 'Mundo/Deportes/Cultura',
         ];
 
-        return DB::transaction(function () use ($mapping, $atributos, $secciones) {
+        return DB::transaction(function () use ($mapping, $atributos, $secciones, $numPaginas) {
             // Build mapping index keyed by slot number
             $mappingIndex = [];
             foreach ($mapping as $entry) {
@@ -75,16 +88,16 @@ class EdicionService implements EdicionServiceInterface
                 'slogan'         => $atributos['slogan'] ?? 'El Periódico Digital de Santa Cruz',
                 'ciudad'         => $atributos['ciudad'] ?? 'Santa Cruz de la Sierra',
                 'precio'         => $atributos['precio'] ?? 'Bs 7,00',
-                'num_paginas'    => 12,
+                'num_paginas'    => $numPaginas,
                 'publicada'      => false,
                 'activa'         => false,
                 'estado'         => 'borrador',
                 'plantilla_id'   => null,
             ]);
 
-            // Create exactly 12 pages, one per slot (Req 5.1, 5.2)
-            for ($slot = 1; $slot <= 12; $slot++) {
-                $seccion     = $secciones[$slot];
+            // One page per slot; the applied template supplies its own section.
+            for ($slot = 1; $slot <= $numPaginas; $slot++) {
+                $seccion     = $secciones[$slot] ?? ($slot >= 17 ? 'Avisos / Edictos' : 'General');
                 $plantillaId = $mappingIndex[$slot] ?? null;
 
                 try {

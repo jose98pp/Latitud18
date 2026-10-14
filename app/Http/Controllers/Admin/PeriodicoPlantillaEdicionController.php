@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PeriodicoPlantillaEdicion;
 use App\Services\Contracts\EdicionServiceInterface;
+use App\Services\EdicionService;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 /**
- * Gestiona las Plantillas de Edición Completa (12 páginas).
+ * Gestiona las Plantillas de Edición Completa (12 o 28 páginas).
  * Permite crear, listar y generar nuevas ediciones a partir de un mapping
- * de 12 slots con plantillas asignadas.
+ * de 12 o 28 slots con plantillas asignadas.
  *
  * @see Requirements 5.1, 5.4, 5.5, 5.7, 5.8
  */
@@ -34,17 +36,23 @@ class PeriodicoPlantillaEdicionController extends Controller
     }
 
     /**
-     * Guarda una nueva plantilla de edición (mapping de 12 slots).
+     * Guarda una nueva plantilla de edición (mapping de 12 o 28 slots).
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nombre'      => 'required|string|max:150',
             'descripcion' => 'nullable|string|max:255',
-            'mapping'     => 'required|array|size:12',
-            'mapping.*.slot'          => 'required|integer|min:1|max:12',
+            'mapping'     => 'required|array|min:12|max:28',
+            'mapping.*.slot'          => 'required|integer|min:1|max:28|distinct',
             'mapping.*.plantilla_id'  => 'nullable|string',
         ]);
+
+        try {
+            EdicionService::numeroPaginasParaMapping($validated['mapping']);
+        } catch (\InvalidArgumentException $e) {
+            throw ValidationException::withMessages(['mapping' => $e->getMessage()]);
+        }
 
         $plantillaEdicion = PeriodicoPlantillaEdicion::create([
             'nombre'      => $validated['nombre'],
@@ -60,7 +68,7 @@ class PeriodicoPlantillaEdicionController extends Controller
     }
 
     /**
-     * Crea una nueva edición de 12 páginas a partir de una plantilla de edición.
+     * Crea una nueva edición de 12 o 28 páginas a partir de una plantilla de edición.
      */
     public function crearEdicion(Request $request, $id)
     {
@@ -90,7 +98,7 @@ class PeriodicoPlantillaEdicionController extends Controller
 
             return response()->json([
                 'success'      => true,
-                'message'      => 'Edición de 12 páginas creada exitosamente.',
+                'message'      => 'Edición de '.$edicion->num_paginas.' páginas creada exitosamente.',
                 'edicion'      => $edicion->toEditorArray(),
                 'redirect_url' => route('admin.periodico.index', ['edicion_id' => $edicion->id]),
             ]);
