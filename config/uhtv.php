@@ -46,10 +46,10 @@ return [
     ],
 
     'social' => [
-        'facebook' => 'https://facebook.com/uhtvbolivia',
-        'youtube' => 'https://www.youtube.com/@UHTVBolivia',
-        'instagram' => 'https://instagram.com/uhtvbolivia',
-        'twitter' => 'https://x.com/UhtvBol',
-        'tiktok' => 'https://tiktok.com/@uhtvbolivia',
+        'facebook' => 'https://facebook.com/latitud18bo',
+        'youtube' => 'https://www.youtube.com/@Latitud18TV',
+        'instagram' => 'https://instagram.com/latitud18bo',
+        'twitter' => 'https://x.com/Latitud18TV',
+        'tiktok' => 'https://tiktok.com/@latitud18bo',
     ],
 ];

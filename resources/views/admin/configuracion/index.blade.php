@@ -47,7 +47,7 @@
                             <div class="mb-3">
                                 <label for="streaming_tv_title" class="form-label small fw-semibold text-muted">Título de la Emisión TV</label>
                                 <input type="text" class="form-control" id="streaming_tv_title" name="streaming_tv_title" 
-                                       value="{{ $settings['streaming_tv_title'] ?? 'UHTV En Vivo — Transmisión Digital 24/7' }}" 
+                                       value="{{ $settings['streaming_tv_title'] ?? 'Latitud 18 En Vivo — Transmisión Digital 24/7' }}" 
                                        placeholder="Ej: Noticiero Central En Vivo">
                             </div>
 
@@ -234,7 +234,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i class="fab fa-youtube text-danger"></i></span>
                                     <input type="url" class="form-control font-monospace" id="youtube_channel_url" name="youtube_channel_url" 
-                                           value="{{ $settings['youtube_channel_url'] ?? 'https://www.youtube.com/@UHTVBolivia' }}" placeholder="https://youtube.com/@tu-canal">
+                                           value="{{ $settings['youtube_channel_url'] ?? 'https://www.youtube.com/@Latitud18TV' }}" placeholder="https://youtube.com/@tu-canal">
                                 </div>
                                 <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
                                     Al hacer clic en "Suscribirse" o "Ver Canal", los usuarios irán a esta dirección.

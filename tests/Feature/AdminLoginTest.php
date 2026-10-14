@@ -32,7 +32,7 @@ class AdminLoginTest extends TestCase
         $response = $this->get(route('admin.login'));
         
         $response->assertStatus(200);
-        $response->assertSee('UHTV Admin');
+        $response->assertSee('Latitud 18 Admin');
         $response->assertSee('Iniciar Sesión');
     }
 

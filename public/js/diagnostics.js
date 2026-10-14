@@ -1,5 +1,5 @@
 /**
- * Diagnósticos del Sistema UHTV
+ * Diagnósticos del Sistema Latitud 18
  * Verifica el funcionamiento de componentes críticos
  */
 
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function runDiagnostics() {
-    console.group('🔍 UHTV System Diagnostics');
+    console.group('🔍 Latitud 18 System Diagnostics');
     
     // Verificar modo oscuro
     checkDarkMode();
@@ -37,7 +37,7 @@ function checkDarkMode() {
     const isDarkMode = document.documentElement.classList.contains('dark');
     console.log(`Current mode: ${isDarkMode ? 'Dark' : 'Light'}`);
     
-    const savedTheme = localStorage.getItem('uhtv-dark-mode');
+    const savedTheme = localStorage.getItem('latitud18-dark-mode') || localStorage.getItem('uhtv-dark-mode');
     console.log(`Saved theme preference: ${savedTheme || 'None'}`);
     
     if (darkModeButtons.length === 0) {
@@ -160,10 +160,11 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 
 // Exportar funciones para uso manual
-window.UHTVDiagnostics = {
+window.Latitud18Diagnostics = {
     runDiagnostics,
     checkDarkMode,
     checkImages,
     checkCarousel,
     checkSearch
 };
+window.UHTVDiagnostics = window.Latitud18Diagnostics;

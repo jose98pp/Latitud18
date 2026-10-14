@@ -35,7 +35,7 @@
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@UhtvBol">
+<meta name="twitter:site" content="@Latitud18TV">
 <meta name="twitter:title" content="{{ $titulo }}">
 <meta name="twitter:description" content="{{ $excerpt }}">
 <meta name="twitter:image" content="{{ $img }}">
@@ -666,9 +666,9 @@
                 <h4 class="fw-bold text-white mb-1" style="font-family: var(--ca-font-display); font-size: 1.15rem;">SÍGUENOS EN LA CANCHA</h4>
                 <p class="text-muted small mb-3">No te pierdas los goles al instante, fichajes y coberturas exclusivas.</p>
                 <div class="d-flex justify-content-center gap-2">
-                    <a href="https://facebook.com/uhtvbolivia" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://x.com/UhtvBol" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-x-twitter"></i></a>
-                    <a href="https://youtube.com/@UHTVBolivia" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-youtube"></i></a>
+                    <a href="https://facebook.com/latitud18bo" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://x.com/Latitud18TV" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-x-twitter"></i></a>
+                    <a href="https://youtube.com/@Latitud18TV" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: rgba(255,255,255,0.06); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px;"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 

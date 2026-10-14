@@ -16,7 +16,9 @@
         
         @vite(['resources/css/app.css', 'resources/css/browser-compatibility.css', 'resources/js/app.js'])
 
-        <title>{{ config('app.name', 'Admin') }}</title>
+        <title>{{ config('app.name', 'Latitud 18') }}</title>
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
 
         <!-- DNS Prefetch for better performance -->
         <link rel="dns-prefetch" href="//fonts.googleapis.com">

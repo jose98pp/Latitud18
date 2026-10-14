@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error del Servidor - Latitud 18 / UHTV</title>
+    <title>Error del Servidor - Latitud 18</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,12 +21,12 @@
         <!-- Logo y Header -->
         <div class="text-center mb-6">
             <div class="flex justify-center mb-3">
-                <img src="{{ asset('images/Logo.jpg') }}" alt="Latitud 18" class="w-20 h-20 rounded-full shadow-xl border-2 border-red-500 object-cover" onerror="this.onerror=null; this.src='/images/Logo.jpg'">
+                <img src="{{ asset('images/Logo.jpg') }}" alt="Latitud 18" class="w-20 h-20 rounded-full shadow-xl border-2 border-red-500 object-cover" onerror="this.onerror=null; this.src='/favicon.svg'">
             </div>
             <h1 class="text-3xl font-extrabold text-white tracking-wide">
                 LATITUD <span class="text-red-500">18</span>
             </h1>
-            <p class="text-slate-300 text-xs tracking-widest uppercase mt-1">Información Sin Ruido • UHTV</p>
+            <p class="text-slate-300 text-xs tracking-widest uppercase mt-1">Información Sin Ruido</p>
         </div>
 
         <!-- Tarjeta de Error -->
@@ -54,7 +56,7 @@
         <!-- Footer -->
         <div class="text-center mt-6">
             <p class="text-slate-400 text-xs">
-                © {{ date('Y') }} Latitud 18 / UHTV. Todos los derechos reservados.
+                © {{ date('Y') }} Latitud 18. Todos los derechos reservados.
             </p>
         </div>
     </div>

@@ -22,6 +22,7 @@ class PlantillaAplicarTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(\Database\Seeders\PeriodicoPlantillasSeeder::class);
         $this->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
         $this->admin = User::firstOrCreate(
             ['email' => 'admin_test@latitud18.com'],

@@ -3,7 +3,7 @@
   $channelName = setting('youtube_channel_name', 'Latitud 18 TV');
   $channelHandle = setting('youtube_channel_handle', '@Latitud18TV');
   $channelBadge = setting('youtube_channel_badge', 'Canal Oficial • Cobertura 24/7');
-  $channelUrl = setting('youtube_channel_url', 'https://www.youtube.com/@UHTVBolivia');
+  $channelUrl = setting('youtube_channel_url', 'https://www.youtube.com/@Latitud18TV');
   $rawVideos = setting('youtube_gallery_videos', '');
 
   $galleryItems = [];
@@ -63,7 +63,7 @@
           if (!$already) {
               $galleryItems[] = [
                   'id' => $liveCleanId,
-                  'title' => setting('streaming_tv_title', 'UHTV Transmisión Digital En Vivo'),
+                  'title' => setting('streaming_tv_title', 'Latitud 18 Transmisión Digital En Vivo'),
                   'thumbnail' => "https://img.youtube.com/vi/{$liveCleanId}/hqdefault.jpg",
                   'badge' => 'EN VIVO',
                   'date' => 'Transmisión 24/7',

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Latitud18">
-    <title>@yield('title', 'Latitud18 - InformaciÃ³n Sin Ruido')</title>
+    <title>@yield('title', 'Latitud18 - Informacion Sin Ruido')</title>
     @section('meta')
       <meta name="description" content="{{ setting('footer_about', 'Portal de noticias 24/7. Periodismo independiente y cobertura multimedia.') }}">
       <meta property="og:site_name" content="{{ setting('site_name', 'Latitud 18') }}">
@@ -21,7 +21,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LATITUD 18">
-    <link rel="apple-touch-icon" href="/images/Logo.jpg">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/Logo.jpg') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
