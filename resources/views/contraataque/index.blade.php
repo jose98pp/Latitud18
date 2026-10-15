@@ -97,14 +97,16 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
                     <div class="d-flex align-items-center gap-2">
                         <span class="ca-live-dot-pulse"></span>
-                        <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem; letter-spacing: 0.5px;">MARCADORES EN DIRECTO</span>
+                        <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem; letter-spacing: 0.5px;">PARTIDOS Y RESULTADOS</span>
                     </div>
                     <span class="badge bg-danger text-white" style="font-family: var(--ca-font-display); font-size: 0.65rem; letter-spacing: 0.5px;">
-                        EN TIEMPO REAL
+                        ACTUALIZACIÓN AUTOMÁTICA
                     </span>
                 </div>
 
                 <!-- Selector de Ligas / Pestañas Desplazables -->
+                <label for="caMatchDate" class="small text-muted mb-1">Fecha de los partidos · hora de Bolivia</label>
+                <input id="caMatchDate" type="date" class="form-control form-control-sm mb-2" value="{{ $matchFeed['date'] }}" aria-label="Fecha de los partidos">
                 <div class="ca-leagues-nav-wrap mb-3">
                     <div class="ca-leagues-nav" id="caLeaguesNav">
                         @foreach($ligasDisponibles ?? [] as $key => $lg)
@@ -119,8 +121,8 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                 </div>
 
                 <!-- Contenedor dinámico de partidos -->
-                <div id="caMatchesContainer" class="d-flex flex-column gap-2 flex-grow-1" style="min-height: 280px;">
-                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo])
+                <div id="caMatchesContainer" aria-live="polite" data-endpoint="{{ route('contraataque.api.partidos') }}" data-refresh="{{ config('services.sports.refresh_seconds', 180) }}" class="d-flex flex-column gap-2 flex-grow-1" style="min-height: 280px;">
+                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo, 'feed' => $matchFeed])
                 </div>
 
                 <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 text-center">
@@ -200,59 +202,12 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
         <div class="col-lg-7">
             <div class="ca-card p-4 h-100">
                 <div class="ca-sec-header mb-3">
-                    <h2 class="ca-sec-title" style="font-size: 1.3rem;">TABLA DE POSICIONES • CLAUSURA</h2>
-                    <span class="badge" style="background: var(--ca-volt); color: #000; font-family: var(--ca-font-display); font-weight: 900;">2026</span>
+                    <h2 class="ca-sec-title" style="font-size: 1.3rem;">TABLA DE POSICIONES</h2>
+                    <span class="badge" id="caStandingsLeague" style="background:var(--ca-volt);color:#000;">{{ $ligasDisponibles[$ligaActiva]['name'] }}</span>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover mb-2" style="font-size: 0.82rem; vertical-align: middle;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid var(--ca-volt); font-family: var(--ca-font-display); font-size: 0.85rem; color: #94A3B8;">
-                                <th style="width: 35px;">#</th>
-                                <th>CLUB</th>
-                                <th class="text-center">PJ</th>
-                                <th class="text-center">G</th>
-                                <th class="text-center">E</th>
-                                <th class="text-center">P</th>
-                                <th class="text-center">DG</th>
-                                <th class="text-center" style="color: var(--ca-volt); font-size: 0.95rem;">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($tablaPosiciones ?? [] as $row)
-                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                                    <td>
-                                        @if($row['zona'] === 'libertadores')
-                                            <span class="badge" style="background: #16A34A; width: 22px; padding: 3px 0;">{{ $row['pos'] }}</span>
-                                        @elseif($row['zona'] === 'sudamericana')
-                                            <span class="badge" style="background: #0284C7; width: 22px; padding: 3px 0;">{{ $row['pos'] }}</span>
-                                        @else
-                                            <span class="text-muted fw-bold ps-1">{{ $row['pos'] }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if(!empty($row['logo']))
-                                                <img loading="lazy" decoding="async" src="{{ $row['logo'] }}" alt="{{ $row['club'] }}" style="width: 20px; height: 20px; object-fit: contain;" class="me-2" onerror="this.style.display='none'">
-                                            @endif
-                                            <strong class="text-white">{{ $row['club'] }}</strong>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ $row['pj'] }}</td>
-                                    <td class="text-center text-muted">{{ $row['g'] }}</td>
-                                    <td class="text-center text-muted">{{ $row['e'] }}</td>
-                                    <td class="text-center text-muted">{{ $row['p'] }}</td>
-                                    <td class="text-center fw-bold {{ str_contains($row['dg'], '+') ? 'text-success' : 'text-danger' }}">{{ $row['dg'] }}</td>
-                                    <td class="text-center fw-bold" style="color: var(--ca-volt); font-size: 1rem;">{{ $row['pts'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="d-flex align-items-center gap-3 pt-2 text-muted" style="font-size: 0.7rem;">
-                    <div><span class="badge bg-success me-1">1-3</span> Copa Libertadores</div>
-                    <div><span class="badge bg-primary me-1">4-7</span> Copa Sudamericana</div>
+                <div id="caStandingsContainer" aria-live="polite">
+                    @include('contraataque.partials.standings')
                 </div>
             </div>
         </div>
@@ -460,114 +415,5 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
 }
 </style>
 
-<script>
-function switchLeagueScoreboard(leagueKey, btn) {
-    const nav = document.getElementById('caLeaguesNav');
-    if (nav) {
-        nav.querySelectorAll('.ca-league-tab-btn').forEach(b => b.classList.remove('active'));
-    }
-    if (btn) {
-        btn.classList.add('active');
-    }
-
-    const container = document.getElementById('caMatchesContainer');
-    if (!container) return;
-
-    // Estado visual de carga elegante
-    container.innerHTML = `
-        <div class="p-4 text-center text-muted" style="min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div class="spinner-border spinner-border-sm text-success mb-2" role="status" style="width: 1.5rem; height: 1.5rem; color: var(--ca-volt) !important;"></div>
-            <span style="font-size: 0.76rem; letter-spacing: 0.5px; color: #94A3B8;">Actualizando marcadores en tiempo real...</span>
-        </div>
-    `;
-
-    fetch('{{ route("contraataque.api.partidos") }}?liga=' + encodeURIComponent(leagueKey))
-        .then(response => {
-            if (!response.ok) throw new Error('Error de red');
-            return response.json();
-        })
-        .then(data => {
-            renderMatchesList(data.matches || [], container);
-        })
-        .catch(err => {
-            container.innerHTML = `
-                <div class="p-3 text-center text-muted small rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08);">
-                    <i class="fas fa-exclamation-triangle text-warning mb-1 fs-5"></i>
-                    <p class="mb-0">No se pudieron cargar los datos en este momento.</p>
-                </div>
-            `;
-        });
-}
-
-function renderMatchesList(matches, container) {
-    if (!matches || matches.length === 0) {
-        container.innerHTML = `
-            <div class="p-4 text-center rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
-                <i class="fas fa-futbol text-muted mb-2 fs-3"></i>
-                <p class="small text-muted mb-0">No hay partidos programados en vivo para esta fecha.</p>
-            </div>
-        `;
-        return;
-    }
-
-    let html = '';
-    matches.forEach(p => {
-        let badgeHtml = '';
-        if (p.is_live) {
-            badgeHtml = `<span class="ca-badge-live"><i class="fas fa-circle ca-blink" style="font-size: 5px;"></i> VIVO ${p.minuto || ''}</span>`;
-        } else if (p.is_finished) {
-            badgeHtml = `<span class="ca-badge-ft">FINAL</span>`;
-        } else {
-            badgeHtml = `<span style="color: var(--ca-gold); font-weight: 700;"><i class="far fa-clock me-1"></i>${p.estado || ''}</span>`;
-        }
-
-        const localLogo = p.local_logo 
-            ? `<img loading="lazy" decoding="async" src="${p.local_logo}" alt="${p.local}" class="ca-team-logo" onerror="this.style.display='none'">` 
-            : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.local_color || '#00FF87'}; display: inline-block; flex-shrink: 0;"></span>`;
-            
-        const visitLogo = p.visitante_logo 
-            ? `<img loading="lazy" decoding="async" src="${p.visitante_logo}" alt="${p.visitante}" class="ca-team-logo" onerror="this.style.display='none'">` 
-            : `<span style="width: 10px; height: 10px; border-radius: 50%; background: ${p.visitante_color || '#FFFFFF'}; display: inline-block; flex-shrink: 0;"></span>`;
-
-        html += `
-            <div class="p-2 rounded ca-match-item" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); transition: all 0.2s ease;">
-                <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-secondary border-opacity-10" style="font-size: 0.68rem;">
-                    <span class="text-truncate me-2" style="color: #94A3B8; font-weight: 600;">
-                        <span class="me-1">${p.flag || '⚽'}</span> ${p.torneo || 'Fútbol'}
-                    </span>
-                    ${badgeHtml}
-                </div>
-
-                <div class="d-flex align-items-center justify-content-between py-1">
-                    <div class="d-flex align-items-center gap-2" style="width: 40%; overflow: hidden;">
-                        ${localLogo}
-                        <span class="fw-bold text-white text-truncate" style="font-size: 0.84rem;" title="${p.local_full || p.local}">
-                            ${p.local}
-                        </span>
-                    </div>
-
-                    <div class="text-center px-2 py-1 rounded ca-score-box" style="background: #000; font-family: var(--ca-font-display); font-weight: 900; font-size: 1.05rem; color: var(--ca-volt); min-width: 54px; letter-spacing: 1px; border: 1px solid rgba(0,255,135,0.25);">
-                        ${p.goles_local} : ${p.goles_visitante}
-                    </div>
-
-                    <div class="d-flex align-items-center justify-content-end gap-2" style="width: 40%; overflow: hidden;">
-                        <span class="fw-bold text-white text-truncate text-end" style="font-size: 0.84rem;" title="${p.visitante_full || p.visitante}">
-                            ${p.visitante}
-                        </span>
-                        ${visitLogo}
-                    </div>
-                </div>
-
-                ${p.estadio ? `
-                    <div class="d-flex align-items-center mt-1 pt-1 border-top border-secondary border-opacity-10 text-muted" style="font-size: 0.66rem;">
-                        <span class="text-truncate"><i class="fas fa-location-dot me-1 text-danger"></i>${p.estadio}</span>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-</script>
+<script src="{{ asset('js/contraataque-scoreboard.js') }}" defer></script>
 @endsection

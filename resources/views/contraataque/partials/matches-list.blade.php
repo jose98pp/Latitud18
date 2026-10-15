@@ -1,3 +1,4 @@
+@include('contraataque.partials.feed-status', ['feed' => $feed ?? []])
 @forelse($partidos ?? [] as $p)
     @if(!empty($p['is_placeholder']))
         {{-- Fallback: la fuente de datos no respondio. No mostrar un partido ficticio. --}}
@@ -61,6 +62,6 @@
 @empty
     <div class="p-4 text-center rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
         <i class="fas fa-futbol text-muted mb-2 fs-3"></i>
-        <p class="small text-muted mb-0">No hay partidos programados en vivo para esta fecha.</p>
+        <p class="small text-muted mb-0">{{ ($feed['status'] ?? '') === 'empty' ? 'No hay partidos programados para esta fecha.' : 'No hay partidos disponibles para mostrar.' }}</p>
     </div>
 @endforelse
