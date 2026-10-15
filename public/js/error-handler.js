@@ -1,5 +1,5 @@
 /**
- * Sistema de manejo de errores para UHTV
+ * Sistema de manejo de errores para Latitud 18
  */
 
 // Configuración
@@ -49,7 +49,7 @@ window.addEventListener('error', function(event) {
     };
     
     if (ERROR_CONFIG.logToConsole) {
-        console.group('🚨 Error capturado por UHTV Error Handler');
+        console.group('🚨 Error capturado por Latitud 18 Error Handler');
         console.error('Mensaje:', errorInfo.message);
         console.error('Archivo:', errorInfo.filename);
         console.error('Línea:', errorInfo.lineno, 'Columna:', errorInfo.colno);
@@ -75,7 +75,7 @@ window.addEventListener('unhandledrejection', function(event) {
     errorCount++;
     
     if (ERROR_CONFIG.logToConsole) {
-        console.group('🚨 Promise rechazada capturada por UHTV Error Handler');
+        console.group('🚨 Promise rechazada capturada por Latitud 18 Error Handler');
         console.error('Razón:', event.reason);
         console.error('URL:', window.location.href);
         console.groupEnd();
@@ -115,4 +115,4 @@ window.reportError = function(message, context = {}) {
 };
 
 // Inicialización
-console.log('✅ UHTV Error Handler inicializado');
+console.log('✅ Latitud 18 Error Handler inicializado');

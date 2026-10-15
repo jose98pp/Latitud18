@@ -1,4 +1,4 @@
-﻿@extends('layouts.main')
+@extends('layouts.main')
 
 @section('title', $noticia->titulo . ' - Latitud18')
 
@@ -17,7 +17,7 @@
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@UhtvBol">
+<meta name="twitter:site" content="@Latitud18TV">
 <meta name="twitter:title" content="{{ $noticia->titulo }}">
 <meta name="twitter:description" content="{{ $noticia->excerptLimpio ?? Str::limit(strip_tags($noticia->contenido), 160) }}">
 <meta name="twitter:image" content="{{ $noticia->imagenUrl }}">
@@ -591,9 +591,9 @@
           <h4 style="font-family:var(--font-title-montserrat);font-weight:900;font-size:0.82rem;margin-bottom:6px;">NO TE PIERDAS NADA</h4>
           <p style="font-size:0.75rem;color:#94A3B8;margin-bottom:14px;">SÃ­guenos en nuestras redes sociales</p>
           <div style="display:flex;justify-content:center;gap:6px;">
-            <a href="https://facebook.com/uhtvbolivia" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'"><i class="fab fa-facebook-f" style="font-size:0.75rem;"></i></a>
-            <a href="https://x.com/UhtvBol" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'"><i class="fab fa-x-twitter" style="font-size:0.75rem;"></i></a>
-            <a href="https://www.youtube.com/@UHTVBolivia" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'"><i class="fab fa-youtube" style="font-size:0.75rem;"></i></a>
+            <a href="https://facebook.com/latitud18bo" target="_blank" style="width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='var(--color-red)';this.style.color='#fff'\" onmouseout=\"this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'\"><i class=\"fab fa-facebook-f\" style=\"font-size:0.75rem;\"></i></a>
+            <a href=\"https://x.com/Latitud18TV\" target=\"_blank\" style=\"width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;\" onmouseover=\"this.style.background='var(--color-red)';this.style.color='#fff'\" onmouseout=\"this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'\"><i class=\"fab fa-x-twitter\" style=\"font-size:0.75rem;\"></i></a>
+            <a href=\"https://www.youtube.com/@Latitud18TV\" target=\"_blank\" style=\"width:32px;height:32px;background:rgba(255,255,255,0.1);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#94A3B8;text-decoration:none;transition:all 0.2s;\" onmouseover=\"this.style.background='var(--color-red)';this.style.color='#fff'\" onmouseout=\"this.style.background='rgba(255,255,255,0.1)';this.style.color='#94A3B8'\"><i class=\"fab fa-youtube\" style=\"font-size:0.75rem;\"></i></a>
           </div>
         </div>
       </aside>

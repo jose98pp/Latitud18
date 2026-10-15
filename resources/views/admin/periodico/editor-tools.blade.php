@@ -10,7 +10,7 @@ function mastheadValues(frame = {}, edition = {}) {
         editionNumber: frame.numero_edicion ?? frame.editionNumber ?? edition.numero_edicion ?? '',
         editionDate: frame.fecha ?? frame.editionDate ?? edition.fecha ?? '',
         city: frame.ciudad ?? frame.city ?? edition.ciudad ?? 'Santa Cruz de la Sierra',
-        price: frame.price ?? edition.precio ?? 'Bs 7,00', website: frame.website ?? 'latitud18.ultimahora-tv.com',
+        price: frame.price ?? edition.precio ?? 'Bs 7,00', website: frame.website ?? 'latitud18.com',
         leftEar: frame.leftEar ?? '', rightEar: frame.rightEar ?? '', logo_src: frame.logo_src ?? '',
         nameColor: /^#[0-9a-f]{6}$/i.test(frame.nameColor || '') ? frame.nameColor : '#0B1F3A',
         accentColor: /^#[0-9a-f]{6}$/i.test(frame.accentColor || '') ? frame.accentColor : '#D71920',

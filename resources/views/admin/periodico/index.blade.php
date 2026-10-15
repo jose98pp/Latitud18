@@ -33,9 +33,11 @@
         <button type="button" class="btn btn-success btn-save-periodico fw-bold d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" onclick="saveEdicionLayout(true)" title="Guardar cambios de la edición (Ctrl+S)">
             <i class="fas fa-save"></i> <span>Guardar Periódico</span>
         </button>
+        @if(!empty($currentEdicion['id']))
         <a href="{{ route('periodico.public.show', $currentEdicion['id']) }}" target="_blank" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
             <i class="fas fa-external-link-alt"></i> Ver Lector
         </a>
+        @endif
     </div>
 </div>
 @endsection
@@ -1274,7 +1276,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     {{-- Selector de Edición --}}
     <select class="id-edition-select" id="editionSelect" onchange="switchEdition(this.value)">
       @foreach($ediciones as $ed)
-        <option value="{{ $ed['id'] }}" {{ $ed['id'] === $currentEdicion['id'] ? 'selected' : '' }}>
+        <option value="{{ $ed['id'] }}" {{ $ed['id'] === ($currentEdicion['id'] ?? null) ? 'selected' : '' }}>
           {{ $ed['numero_edicion'] }} ({{ $ed['fecha'] }}) {{ !empty($ed['publicada']) ? '✓' : '•' }}
         </option>
       @endforeach
@@ -1343,9 +1345,11 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     </button>
 
     {{-- Vista Previa en Lector Público --}}
+    @if(!empty($currentEdicion['id']))
     <a href="{{ route('periodico.public.show', $currentEdicion['id']) }}" target="_blank" class="id-btn id-btn-ghost">
       <i class="fas fa-eye"></i> Lector
     </a>
+    @endif
 
     <div class="id-menubar-sep"></div>
 
@@ -2042,7 +2046,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     </div>
     <div class="id-modal-body">
       <p style="font-size:0.75rem;color:#cbd5e1;margin-bottom:14px;">
-        Configura la fecha y hora exacta en que la edición <strong>{{ $currentEdicion['numero_edicion'] }}</strong> pasará automáticamente a estado <strong>Publicada</strong> y se activará en el portal web.
+        Configura la fecha y hora exacta en que la edición <strong>{{ $currentEdicion['numero_edicion'] ?? '' }}</strong> pasará automáticamente a estado <strong>Publicada</strong> y se activará en el portal web.
       </p>
       <div class="id-form-row">
         <label class="id-form-label">Fecha y Hora de Publicación *</label>
@@ -2171,11 +2175,11 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
     </div>
     <div class="id-modal-body">
       <p style="font-size:0.78rem;color:#cbd5e1;margin-bottom:14px;">
-        El PDF de <strong>{{ $currentEdicion['numero_edicion'] }}</strong> se genera en el servidor
+        El PDF de <strong>{{ $currentEdicion['numero_edicion'] ?? '' }}</strong> se genera en el servidor
         con todas las páginas compuestas. Es el mismo archivo que descarga el público.
       </p>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <a class="insp-full-btn" href="{{ route('admin.periodico.pdf', $currentEdicion['id']) }}"
+        <a class="insp-full-btn" href="{{ !empty($currentEdicion['id']) ? route('admin.periodico.pdf', $currentEdicion['id']) : '#' }}"
            style="padding:12px;font-size:0.85rem;text-align:center;text-decoration:none;">
           <i class="fas fa-file-pdf text-danger"></i> Descargar PDF real ({{ count($currentEdicion['paginas'] ?? []) }} páginas)
         </a>

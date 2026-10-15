@@ -28,7 +28,7 @@ class CreateAdminUser extends Command
      */
     public function handle()
     {
-        $this->info('🔧 Creando usuario administrador para UHTV...');
+        $this->info('🔧 Creando usuario administrador para Latitud 18...');
         
         // Obtener datos del usuario
         $name = $this->option('name') ?: $this->ask('Nombre del administrador');

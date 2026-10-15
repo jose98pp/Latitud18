@@ -5,7 +5,7 @@
 
 // Variables globales
 let darkModeEnabled = false;
-const DARK_MODE_KEY = 'uhtv-dark-mode';
+const DARK_MODE_KEY = 'latitud18-dark-mode';
 
 // Función para aplicar modo oscuro
 function applyDarkMode(isDark) {

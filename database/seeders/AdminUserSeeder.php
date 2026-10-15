@@ -13,19 +13,19 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         // Verificar si ya existe un usuario admin
-        $adminExists = \App\Models\User::where('email', 'admin@uhtv.com')->first();
+        $adminExists = \App\Models\User::where('email', 'admin@latitud18.com')->orWhere('email', 'admin@uhtv.com')->first();
         
         if (!$adminExists) {
             \App\Models\User::create([
-                'name' => 'Administrador UHTV',
-                'email' => 'admin@uhtv.com',
+                'name' => 'Administrador Latitud 18',
+                'email' => 'admin@latitud18.com',
                 'email_verified_at' => now(),
                 'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
                 'role' => 'admin',
             ]);
             
             $this->command->info('✅ Usuario administrador creado exitosamente');
-            $this->command->info('📧 Email: admin@uhtv.com');
+            $this->command->info('📧 Email: admin@latitud18.com');
             $this->command->info('🔑 Password: admin123');
         } else {
             $this->command->info('ℹ️  El usuario administrador ya existe');

@@ -25,5 +25,5 @@
     <div style="font-size:{{ 10*$ms }}{{ $mu }};margin-top:{{ 5*$ms }}{{ $mu }};border-top:1px solid #cbd5e1;padding-top:{{ 3*$ms }}{{ $mu }};">
         {{ $mf['numero_edicion'] ?? $mf['editionNumber'] ?? $edicion['numero_edicion'] ?? '' }} · {{ $mf['fecha'] ?? $mf['editionDate'] ?? $edicion['fecha'] ?? '' }} · {{ $mf['ciudad'] ?? $mf['city'] ?? $edicion['ciudad'] ?? 'Santa Cruz de la Sierra' }} · {{ $mf['price'] ?? $edicion['precio'] ?? 'Bs 7,00' }}
     </div>
-    <div style="font-size:{{ 9*$ms }}{{ $mu }};margin-top:{{ 3*$ms }}{{ $mu }};">{{ $mf['website'] ?? 'latitud18.ultimahora-tv.com' }}</div>
+    <div style="font-size:{{ 9*$ms }}{{ $mu }};margin-top:{{ 3*$ms }}{{ $mu }};">{{ $mf['website'] ?? 'latitud18.com' }}</div>
 </div>

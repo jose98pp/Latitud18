@@ -1,13 +1,19 @@
 {
-  "name": "Unión Huayllani TV - Noticias y Streaming",
-  "short_name": "UHTV Noticias",
-  "description": "Portal de noticias de última hora, streaming en vivo, periodismo de opinión y periódico digital.",
+  "name": "Latitud 18 - Información Sin Ruido",
+  "short_name": "Latitud 18",
+  "description": "Portal de noticias, streaming en vivo, periodismo de investigación, opinión y periódico digital.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a1128",
-  "theme_color": "#0a1128",
+  "background_color": "#0B1F3A",
+  "theme_color": "#0B1F3A",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/images/Logo.jpg",
       "sizes": "192x192",

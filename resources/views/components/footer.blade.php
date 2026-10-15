@@ -77,7 +77,7 @@
     @include('components.newsletter')
 
     <div style="border-top:1px solid rgba(255,255,255,.08);margin-top:24px;padding-top:16px;text-align:center;font-size:.75rem;color:#64748B">
-      {{ setting('copyright_text', '© ' . date('Y') . ' LATITUD 18 / UHTV Bolivia. Todos los derechos reservados.') }}
+      {{ setting('copyright_text', '© ' . date('Y') . ' LATITUD 18. Todos los derechos reservados.') }}
     </div>
   </div>
 </footer>

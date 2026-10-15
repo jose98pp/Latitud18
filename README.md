@@ -20,18 +20,30 @@ Plataforma integral de medios de comunicación digital, streaming en vivo y peri
 
 ---
 
-## 📚 Documentación Técnica
+## 🐳 Instalación con Docker (Recomendada)
 
-Para información técnica detallada, consulta los documentos de la carpeta [`docs/`](file:///c:/laragon/www/UHTV-master/docs):
+La forma más rápida para que cualquier desarrollador clone y ejecute el proyecto sin configurar PHP, MySQL ni extensiones manualmente:
 
-1. [**Arquitectura del Sistema**](file:///c:/laragon/www/UHTV-master/docs/architecture.md): Modelos, servicios, repositorios, enrutamiento SEO y motor de búsqueda.
-2. [**Manual de Desarrollo**](file:///c:/laragon/www/UHTV-master/docs/README-technical.md): Guía de instalación local, requisitos y comandos de desarrollo con Vite.
-3. [**Guía de Despliegue en Producción**](file:///c:/laragon/www/UHTV-master/docs/deployment.md): Checklist para servidores Nginx, SSL, cachés y políticas de seguridad.
-4. [**Historial de Cambios (Changelog)**](file:///c:/laragon/www/UHTV-master/docs/changelog.md): Registro de versiones y mejoras implementadas.
+```bash
+# 1. Clonar repositorio
+git clone https://github.com/jose98pp/Latitud18.git
+cd Latitud18
+
+# 2. Iniciar contenedores (PHP 8.2, Nginx y MySQL con datos iniciales)
+docker compose up -d
+```
+
+Una vez levantado, ingresa a:
+- **Portada:** [http://localhost:8000](http://localhost:8000)
+- **Panel Admin:** [http://localhost:8000/admin/login](http://localhost:8000/admin/login)
+  - Usuario: `admin@latitud18.com`
+  - Contraseña: `admin123`
+
+Para instrucciones completas, solución de problemas y comandos útiles, consulta [DOCKER.md](file:///e:/Latitud18/DOCKER.md).
 
 ---
 
-## 🚀 Instalación Rápida
+## 💻 Instalación Local Alternativa (Sin Docker)
 
 ```bash
 # 1. Clonar repositorio
@@ -54,3 +66,14 @@ php artisan migrate
 npm run build
 php artisan serve
 ```
+
+---
+
+## 📚 Documentación Técnica
+
+Para información técnica detallada, consulta los documentos de la carpeta [`docs/`](file:///e:/Latitud18/docs):
+
+1. [**Arquitectura del Sistema**](file:///e:/Latitud18/docs/architecture.md): Modelos, servicios, repositorios, enrutamiento SEO y motor de búsqueda.
+2. [**Manual de Desarrollo**](file:///e:/Latitud18/docs/README-technical.md): Guía de instalación local, requisitos y comandos de desarrollo con Vite.
+3. [**Guía de Despliegue en Producción**](file:///e:/Latitud18/docs/deployment.md): Checklist para servidores Nginx, SSL, cachés y políticas de seguridad.
+4. [**Historial de Cambios (Changelog)**](file:///e:/Latitud18/docs/changelog.md): Registro de versiones y mejoras implementadas.

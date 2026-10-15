@@ -1,7 +1,8 @@
-const CACHE_NAME = 'uhtv-cache-v1';
+const CACHE_NAME = 'latitud18-cache-v1';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
+  '/favicon.svg',
   '/images/Logo.jpg',
   '/images/default-news.svg'
 ];

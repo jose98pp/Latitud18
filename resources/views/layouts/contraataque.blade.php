@@ -10,6 +10,8 @@
     <meta property="og:title" content="@yield('title', 'Contra Ataque — Deportes')">
     <meta property="og:description" content="@yield('meta_description', 'Portal oficial de deportes Contra Ataque.')">
     <meta property="og:image" content="{{ asset('images/contraataque-shared-a.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
     
     <!-- Google Fonts Deportivas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -454,7 +456,7 @@
             </div>
 
             <div class="border-top border-secondary pt-3 text-center text-md-between d-md-flex justify-content-between align-items-center" style="font-size:0.75rem;">
-                <div>© {{ date('Y') }} <strong>CONTRA ATAQUE</strong> — Marca Deportiva Oficial de Latitud 18 / UHTV. Todos los derechos reservados. Santa Cruz, Bolivia.</div>
+                <div>© {{ date('Y') }} <strong>CONTRA ATAQUE</strong> — Marca Deportiva Oficial de Latitud 18. Todos los derechos reservados. Santa Cruz, Bolivia.</div>
                 <div class="mt-2 mt-md-0">
                     <a href="{{ route('portada') }}" class="text-muted me-3">Inicio</a>
                     <a href="{{ route('opinion.index') }}" class="text-muted me-3">Opinión</a>

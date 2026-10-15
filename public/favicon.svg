@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="l18grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1F3A"/>
+      <stop offset="100%" stop-color="#162E56"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect width="64" height="64" rx="14" fill="url(#l18grad)"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#D71920" stroke-width="2.5" opacity="0.9"/>
+  <!-- "L" Letter -->
+  <text x="12" y="46" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="36" font-weight="900" fill="#FFFFFF">L</text>
+  <!-- "18" Accent Badge -->
+  <rect x="33" y="16" width="24" height="32" rx="6" fill="#D71920"/>
+  <text x="45" y="39" text-anchor="middle" font-family="'Montserrat', 'Arial Black', -apple-system, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF">18</text>
+</svg>

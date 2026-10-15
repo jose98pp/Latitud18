@@ -119,7 +119,7 @@ function handleImageError(img) {
     
     console.log('Image failed to load, using default:', img.src);
     img.src = '/images/default-news.svg';
-    img.alt = 'Imagen no disponible - UHTV';
+    img.alt = 'Imagen no disponible - Latitud 18';
     img.classList.add('error-image');
     
     // Agregar un placeholder visual si es necesario

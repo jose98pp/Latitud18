@@ -28,6 +28,7 @@ yarn-error.log
 
 # Database Dumps and SQL files (Security)
 *.sql
+!docker/mysql/init.sql
 *.sql.gz
 *.sqlite
 
@@ -36,3 +37,4 @@ php.ini
 test-autoload.php
 homepage.html
 edge_temp/
+/storage/fonts/
