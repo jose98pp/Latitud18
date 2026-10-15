@@ -28,6 +28,7 @@ yarn-error.log
 
 # Database Dumps and SQL files (Security)
 *.sql
+!docker/mysql/init.sql
 *.sql.gz
 *.sqlite
 
