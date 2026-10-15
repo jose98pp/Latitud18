@@ -157,10 +157,12 @@ class ContraAtaqueController extends Controller
         $ligaActiva = 'bolivia';
 
         // Partidos en tiempo real (iniciando con la Liga Boliviana)
-        $partidosVivo = $this->sportsService->getMatches($ligaActiva);
+        $matchFeed = $this->sportsService->getMatchFeed($ligaActiva);
+        $partidosVivo = $matchFeed['matches'];
 
         // Tabla de Posiciones Oficial en Tiempo Real (División Profesional)
-        $tablaPosiciones = $this->sportsService->getBolivianStandings();
+        $standingsFeed = $this->sportsService->getStandingsFeed($ligaActiva);
+        $tablaPosiciones = $standingsFeed['standings'];
 
         // Videos y Jugadas reales de la BD
         $videosDestacados = $this->getRealVideoHighlights($sportsCatIds);
@@ -177,6 +179,8 @@ class ContraAtaqueController extends Controller
             'destacadas',
             'masNoticias',
             'partidosVivo',
+            'matchFeed',
+            'standingsFeed',
             'tablaPosiciones',
             'videosDestacados',
             'columnistasDeportes',
@@ -192,9 +196,15 @@ class ContraAtaqueController extends Controller
      */
     public function apiPartidos(Request $request)
     {
+        $request->validate([
+            'liga' => ['sometimes', 'string', \Illuminate\Validation\Rule::in(array_keys(SportsDataService::LEAGUES))],
+            'fecha' => ['sometimes', 'date_format:Y-m-d'],
+        ]);
         $liga = $request->query('liga', 'bolivia');
         $leagues = $this->sportsService->getLeagues();
-        $matches = $this->sportsService->getMatches($liga);
+        $feed = $this->sportsService->getMatchFeed($liga, $request->query('fecha'));
+        $table = $this->sportsService->getStandingsFeed($liga);
+        $matches = $feed['matches'];
 
         return response()->json([
             'status' => 'success',
@@ -202,6 +212,11 @@ class ContraAtaqueController extends Controller
             'liga_meta' => $leagues[$liga] ?? $leagues['bolivia'],
             'matches' => $matches,
             'count' => count($matches),
+            'feed' => \Illuminate\Support\Arr::except($feed, 'matches'),
+            'standings_feed' => \Illuminate\Support\Arr::except($table, 'standings'),
+            'matches_html' => view('contraataque.partials.matches-list', ['partidos' => $matches, 'feed' => $feed])->render(),
+            'ticker_html' => view('contraataque.partials.ticker', ['partidos' => $matches, 'feed' => $feed])->render(),
+            'standings_html' => view('contraataque.partials.standings', ['tablaPosiciones' => $table['standings'], 'standingsFeed' => $table])->render(),
         ]);
     }
 

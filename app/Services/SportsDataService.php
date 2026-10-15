@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SportsDataService
 {
-    /**
-     * Ligas soportadas con sus códigos de ESPN y metadatos
-     */
     public const LEAGUES = [
         'bolivia' => [
             'id' => 'bolivia',
@@ -67,376 +67,192 @@ class SportsDataService
         ],
     ];
 
-    /**
-     * Obtiene los metadatos de todas las ligas disponibles
-     */
-    public function getLeagues(): array
+    public function getLeagues(): array { return self::LEAGUES; }
+
+    public function getMatches(string $leagueKey = 'bolivia', ?string $date = null): array
     {
-        return self::LEAGUES;
+        return $this->getMatchFeed($leagueKey, $date)['matches'];
     }
 
-    /**
-     * Obtiene los partidos de una liga específica con caché de 3 minutos
-     */
-    public function getMatches(string $leagueKey = 'bolivia'): array
-    {
-        $league = self::LEAGUES[$leagueKey] ?? self::LEAGUES['bolivia'];
-        $cacheKey = "contraataque_matches_{$league['id']}";
-
-        return Cache::remember($cacheKey, 180, function () use ($league) {
-            $url = "https://site.api.espn.com/apis/site/v2/sports/soccer/{$league['espn_slug']}/scoreboard";
-            $data = $this->fetchFromESPN($url);
-
-            if (!$data || empty($data['events'])) {
-                return $this->getFallbackMatches($league['id']);
-            }
-
-            $matches = [];
-            foreach ($data['events'] as $event) {
-                $comp = $event['competitions'][0] ?? null;
-                if (!$comp || empty($comp['competitors'])) {
-                    continue;
-                }
-
-                $competitors = $comp['competitors'];
-                $home = null;
-                $away = null;
-
-                foreach ($competitors as $c) {
-                    if (($c['homeAway'] ?? '') === 'home') {
-                        $home = $c;
-                    } else {
-                        $away = $c;
-                    }
-                }
-
-                // Si no vinieran con la clave homeAway explícita, tomar orden 0 y 1
-                if (!$home && isset($competitors[0])) {
-                    $home = $competitors[0];
-                }
-                if (!$away && isset($competitors[1])) {
-                    $away = $competitors[1];
-                }
-
-                if (!$home || !$away) {
-                    continue;
-                }
-
-                $state = $event['status']['type']['state'] ?? 'pre';
-                $isLive = in_array($state, ['in']);
-                $isFinished = in_array($state, ['post']);
-                $displayClock = $event['status']['displayClock'] ?? '';
-                $detail = $event['status']['type']['shortDetail'] ?? ($event['status']['type']['detail'] ?? '');
-
-                // Estado legible
-                $estado = 'PROGRAMADO';
-                $minuto = $detail;
-                if ($isLive) {
-                    $estado = 'EN VIVO';
-                    $minuto = !empty($displayClock) ? $displayClock . "'" : 'En Vivo';
-                } elseif ($isFinished) {
-                    $estado = 'FINAL';
-                    $minuto = 'FT';
-                } else {
-                    // Formatear hora programada en zona horaria de Bolivia
-                    if (!empty($event['date'])) {
-                        try {
-                            $dt = new \DateTime($event['date']);
-                            $dt->setTimezone(new \DateTimeZone('America/La_Paz'));
-                            $estado = $dt->format('d/m H:i');
-                            $minuto = 'Próximo';
-                        } catch (\Throwable $e) {
-                            $estado = $detail;
-                        }
-                    }
-                }
-
-                $homeTeam = $home['team'] ?? [];
-                $awayTeam = $away['team'] ?? [];
-
-                $localName = $homeTeam['shortDisplayName'] ?? ($homeTeam['displayName'] ?? 'Local');
-                $awayName = $awayTeam['shortDisplayName'] ?? ($awayTeam['displayName'] ?? 'Visitante');
-                $localCode = $homeTeam['abbreviation'] ?? mb_strtoupper(mb_substr($localName, 0, 3));
-                $awayCode = $awayTeam['abbreviation'] ?? mb_strtoupper(mb_substr($awayName, 0, 3));
-
-                $matches[] = [
-                    'id' => $event['id'] ?? uniqid(),
-                    'torneo' => $league['name'],
-                    'torneo_badge' => $league['badge'],
-                    'flag' => $league['flag'],
-                    'estado' => $estado,
-                    'is_live' => $isLive,
-                    'is_finished' => $isFinished,
-                    'minuto' => $minuto,
-                    'local' => $localName,
-                    'local_full' => $homeTeam['displayName'] ?? 'Local',
-                    'local_code' => $localCode,
-                    'local_logo' => $homeTeam['logo'] ?? null,
-                    'local_color' => !empty($homeTeam['color']) ? '#' . $homeTeam['color'] : '#00FF87',
-                    'goles_local' => $home['score'] ?? ($isLive || $isFinished ? 0 : '-'),
-                    'visitante' => $awayName,
-                    'visitante_full' => $awayTeam['displayName'] ?? 'Visitante',
-                    'visitante_code' => $awayCode,
-                    'visitante_logo' => $awayTeam['logo'] ?? null,
-                    'visitante_color' => !empty($awayTeam['color']) ? '#' . $awayTeam['color'] : '#FFFFFF',
-                    'goles_visitante' => $away['score'] ?? ($isLive || $isFinished ? 0 : '-'),
-                    'estadio' => $comp['venue']['fullName'] ?? ($event['venue']['displayName'] ?? 'Estadio Oficial'),
-                ];
-            }
-
-            return !empty($matches) ? $matches : $this->getFallbackMatches($league['id']);
-        });
-    }
-
-    /**
-     * Obtiene la tabla de posiciones oficial de la Liga Boliviana
-     */
     public function getBolivianStandings(): array
     {
-        return Cache::remember('contraataque_standings_bolivia', 600, function () {
-            $url = "https://site.api.espn.com/apis/v2/sports/soccer/bol.1/standings";
-            $data = $this->fetchFromESPN($url);
-
-            if (!$data || empty($data['children'][0]['standings']['entries'])) {
-                return $this->getFallbackStandings();
-            }
-
-            $entries = $data['children'][0]['standings']['entries'];
-            $table = [];
-
-            foreach ($entries as $index => $entry) {
-                $team = $entry['team'] ?? [];
-                $stats = collect($entry['stats'] ?? []);
-
-                $pj = (int) ($stats->firstWhere('name', 'gamesPlayed')['value'] ?? 0);
-                $pts = (int) ($stats->firstWhere('name', 'points')['value'] ?? 0);
-                $g = (int) ($stats->firstWhere('name', 'wins')['value'] ?? 0);
-                $e = (int) ($stats->firstWhere('name', 'ties')['value'] ?? 0);
-                $p = (int) ($stats->firstWhere('name', 'losses')['value'] ?? 0);
-                $gf = (int) ($stats->firstWhere('name', 'pointsFor')['value'] ?? 0);
-                $gc = (int) ($stats->firstWhere('name', 'pointsAgainst')['value'] ?? 0);
-                $dgVal = (int) ($stats->firstWhere('name', 'pointDifferential')['value'] ?? ($gf - $gc));
-                $dg = ($dgVal > 0 ? "+{$dgVal}" : (string)$dgVal);
-
-                $pos = $index + 1;
-                $zona = 'neutro';
-                if ($pos <= 4) {
-                    $zona = 'libertadores';
-                } elseif ($pos <= 8) {
-                    $zona = 'sudamericana';
-                } elseif ($pos >= 15) {
-                    $zona = 'descenso';
-                }
-
-                $table[] = [
-                    'pos' => $pos,
-                    'club' => $team['shortDisplayName'] ?? ($team['displayName'] ?? 'Club'),
-                    'club_full' => $team['displayName'] ?? 'Club',
-                    'logo' => $team['logos'][0]['href'] ?? ($team['logo'] ?? null),
-                    'pj' => $pj,
-                    'g' => $g,
-                    'e' => $e,
-                    'p' => $p,
-                    'gf' => $gf,
-                    'gc' => $gc,
-                    'dg' => $dg,
-                    'pts' => $pts,
-                    'zona' => $zona,
-                ];
-            }
-
-            return !empty($table) ? $table : $this->getFallbackStandings();
-        });
+        return $this->getStandingsFeed('bolivia')['standings'];
     }
 
-    /**
-     * Realiza la petición cURL a los endpoints de ESPN con User-Agent seguro
-     */
-    private function fetchFromESPN(string $url): ?array
+    public function getMatchFeed(string $leagueKey = 'bolivia', ?string $date = null): array
     {
+        $date ??= now('America/La_Paz')->format('Y-m-d');
+        return $this->feed('matches', $leagueKey, $date);
+    }
+
+    public function getStandingsFeed(string $leagueKey = 'bolivia', ?string $date = null): array
+    {
+        $date ??= now('America/La_Paz')->format('Y-m-d');
+        return $this->feed('standings', $leagueKey, $date);
+    }
+
+    private function feed(string $kind, string $leagueKey, string $date): array
+    {
+        if (!isset(self::LEAGUES[$leagueKey])) throw new \InvalidArgumentException('Liga no válida.');
+        CarbonImmutable::createFromFormat('!Y-m-d', $date, 'America/La_Paz');
+        $provider = config('services.sports.provider', 'espn');
+        $identity = substr(hash('sha256', (string) config('services.sports.api_key')), 0, 12);
+        $key = "sports:v3:{$provider}:{$identity}:{$kind}:{$leagueKey}:{$date}";
+        if ($cached = Cache::get($key)) return $cached;
+        $league = self::LEAGUES[$leagueKey];
+        $source = $provider === 'api-football' ? 'API-Football' : 'ESPN';
         try {
-            $ch = curl_init();
-            curl_setopt_array($ch, [
-                CURLOPT_URL => $url,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_TIMEOUT => 6,
-                CURLOPT_CONNECTTIMEOUT => 4,
-                // ESPN rechaza el UA de navegador con 403; el de curl funciona.
-                CURLOPT_USERAGENT => 'curl/8.4.0',
-                CURLOPT_ACCEPT_ENCODING => '',
-                // Verificacion TLS activa (antes estaba en false: riesgo de MITM)
-                CURLOPT_SSL_VERIFYPEER => true,
-                CURLOPT_SSL_VERIFYHOST => 2,
-            ]);
-
-            $response = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $curlErr = curl_error($ch);
-            curl_close($ch);
-
-            if ($httpCode === 200 && !empty($response)) {
-                $decoded = json_decode($response, true);
-                if (is_array($decoded)) {
-                    return $decoded;
-                }
+            if ($provider === 'api-football') {
+                $items = $this->apiFootball($kind, $leagueKey, $date);
+            } elseif ($provider === 'espn') {
+                $items = $this->espn($kind, $league, $date);
+            } else {
+                throw new \RuntimeException('Proveedor deportivo no válido.');
             }
-
-            Log::warning("ESPN respondio con codigo no esperado: {$url}", [
-                'http' => $httpCode,
-                'curl_error' => $curlErr,
-            ]);
+            $result = [$kind => $items, 'status' => $items ? 'ok' : 'empty', 'updated_at' => now()->toIso8601String(), 'source' => $source, 'date' => $date];
+            Cache::put($key.':last', $result, 21600);
+            Cache::put($key, $result, $kind === 'matches' ? max(60, (int)config('services.sports.refresh_seconds', 180)) : 900);
+            return $result;
         } catch (\Throwable $e) {
-            Log::warning("Error consultando ESPN API ({$url}): " . $e->getMessage());
+            // Never log credentials, headers or provider payloads.
+            Log::warning('Datos deportivos temporalmente no disponibles.', ['provider' => $provider, 'league' => $leagueKey, 'kind' => $kind]);
+            $last = Cache::get($key.':last');
+            $result = $last ? array_replace($last, ['status' => 'stale']) : [$kind => [], 'status' => 'unavailable', 'updated_at' => null, 'source' => $source, 'date' => $date];
+            if ($kind === 'matches' && $last) {
+                // A cached live score must not keep claiming to be live during an outage.
+                $result[$kind] = array_map(fn ($m) => array_replace($m, ['is_live' => false, 'estado' => 'SIN ACTUALIZAR', 'minuto' => 'Último dato recibido']), $result[$kind]);
+            }
+            Cache::put($key, $result, 30);
+            return $result;
         }
-
-        return null;
     }
 
-    /**
-     * Fallback de partidos garantizados de la División Profesional
-     */
-    private function getFallbackMatches(string $leagueKey): array
+    private function json(string $url, array $query = [], array $headers = []): array
     {
-        if ($leagueKey === 'bolivia') {
-            return [
-                [
-                    'id' => 'fb_bol_1',
-                    'torneo' => 'División Profesional',
-                    'torneo_badge' => 'LIGA BOLIVIANA',
-                    'flag' => '🇧🇴',
-                    'estado' => 'FINAL',
-                    'is_live' => false,
-                    'is_finished' => true,
-                    'minuto' => 'FT',
-                    'local' => 'Ind. Petrolero',
-                    'local_full' => 'Independiente Petrolero',
-                    'local_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20889.png',
-                    'local_color' => '#dc2626',
-                    'goles_local' => 1,
-                    'visitante' => 'Bulo Bulo',
-                    'visitante_full' => 'San Antonio Bulo Bulo',
-                    'visitante_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/22137.png',
-                    'visitante_color' => '#00FF87',
-                    'goles_visitante' => 3,
-                    'estadio' => 'Estadio Olímpico Patria (Sucre)',
-                ],
-                [
-                    'id' => 'fb_bol_2',
-                    'torneo' => 'División Profesional',
-                    'torneo_badge' => 'LIGA BOLIVIANA',
-                    'flag' => '🇧🇴',
-                    'estado' => 'FINAL',
-                    'is_live' => false,
-                    'is_finished' => true,
-                    'minuto' => 'FT',
-                    'local' => 'The Strongest',
-                    'local_full' => 'The Strongest',
-                    'local_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3283.png',
-                    'local_color' => '#ca8a04',
-                    'goles_local' => 2,
-                    'visitante' => 'Bolívar',
-                    'visitante_full' => 'Club Bolívar',
-                    'visitante_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3277.png',
-                    'visitante_color' => '#38bdf8',
-                    'goles_visitante' => 1,
-                    'estadio' => 'Estadio Hernando Siles (La Paz)',
-                ],
-                [
-                    'id' => 'fb_bol_3',
-                    'torneo' => 'División Profesional',
-                    'torneo_badge' => 'LIGA BOLIVIANA',
-                    'flag' => '🇧🇴',
-                    'estado' => 'HOY 19:30',
-                    'is_live' => false,
-                    'is_finished' => false,
-                    'minuto' => 'Próximo',
-                    'local' => 'Always Ready',
-                    'local_full' => 'Club Always Ready',
-                    'local_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20349.png',
-                    'local_color' => '#dc2626',
-                    'goles_local' => '-',
-                    'visitante' => 'Wilstermann',
-                    'visitante_full' => 'Jorge Wilstermann',
-                    'visitante_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3279.png',
-                    'visitante_color' => '#b91c1c',
-                    'goles_visitante' => '-',
-                    'estadio' => 'Estadio Municipal de El Alto',
-                ],
-                [
-                    'id' => 'fb_bol_4',
-                    'torneo' => 'División Profesional',
-                    'torneo_badge' => 'LIGA BOLIVIANA',
-                    'flag' => '🇧🇴',
-                    'estado' => 'MAÑANA 17:30',
-                    'is_live' => false,
-                    'is_finished' => false,
-                    'minuto' => 'Próximo',
-                    'local' => 'Oriente Petrolero',
-                    'local_full' => 'Oriente Petrolero',
-                    'local_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3278.png',
-                    'local_color' => '#16a34a',
-                    'goles_local' => '-',
-                    'visitante' => 'Blooming',
-                    'visitante_full' => 'Club Blooming',
-                    'visitante_logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3280.png',
-                    'visitante_color' => '#0284c7',
-                    'goles_visitante' => '-',
-                    'estadio' => 'Estadio Ramón Tahuichi Aguilera',
-                ],
-            ];
-        }
-
-        // Para Premier, LaLiga, etc. si el API no responde.
-        // Se marca como no_disponible para que la UI no muestre datos inventados.
-        return [
-            [
-                'id' => "fb_{$leagueKey}_1",
-                'torneo' => self::LEAGUES[$leagueKey]['name'] ?? 'Fútbol Internacional',
-                'torneo_badge' => self::LEAGUES[$leagueKey]['badge'] ?? 'INTERNACIONAL',
-                'flag' => self::LEAGUES[$leagueKey]['flag'] ?? '⚽',
-                'estado' => 'SIN DATOS',
-                'is_live' => false,
-                'is_finished' => false,
-                'is_placeholder' => true,
-                'minuto' => '—',
-                'local' => 'Datos no disponibles',
-                'local_full' => 'Datos no disponibles',
-                'local_logo' => null,
-                'local_color' => '#00FF87',
-                'goles_local' => '-',
-                'visitante' => 'Verifica tu conexión',
-                'visitante_full' => 'Verifica tu conexión',
-                'visitante_logo' => null,
-                'visitante_color' => '#FFFFFF',
-                'goles_visitante' => '-',
-                'estadio' => 'No se pudo sincronizar con la fuente de datos',
-            ]
-        ];
+        $response = Http::acceptJson()->withHeaders(['User-Agent' => 'curl/8.4.0'] + $headers)->connectTimeout(3)->timeout(6)->get($url, $query);
+        if (!$response->successful() || !is_array($data = $response->json())) throw new \RuntimeException('Respuesta deportiva inválida.');
+        return $data;
     }
 
-    /**
-     * Fallback de tabla de posiciones de la Liga Boliviana
-     */
-    private function getFallbackStandings(): array
+    private function espn(string $kind, array $league, string $date): array
     {
-        return [
-            ['pos' => 1, 'club' => 'Bolívar', 'club_full' => 'Club Bolívar', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3277.png', 'pj' => 18, 'g' => 13, 'e' => 2, 'p' => 3, 'gf' => 42, 'gc' => 16, 'dg' => '+26', 'pts' => 41, 'zona' => 'libertadores'],
-            ['pos' => 2, 'club' => 'The Strongest', 'club_full' => 'The Strongest', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3283.png', 'pj' => 18, 'g' => 12, 'e' => 3, 'p' => 3, 'gf' => 38, 'gc' => 19, 'dg' => '+19', 'pts' => 39, 'zona' => 'libertadores'],
-            ['pos' => 3, 'club' => 'Always Ready', 'club_full' => 'Club Always Ready', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20349.png', 'pj' => 17, 'g' => 10, 'e' => 4, 'p' => 3, 'gf' => 31, 'gc' => 17, 'dg' => '+14', 'pts' => 34, 'zona' => 'libertadores'],
-            ['pos' => 4, 'club' => 'Oriente Petrolero', 'club_full' => 'Oriente Petrolero', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3278.png', 'pj' => 18, 'g' => 9, 'e' => 4, 'p' => 5, 'gf' => 29, 'gc' => 22, 'dg' => '+7', 'pts' => 31, 'zona' => 'sudamericana'],
-            ['pos' => 5, 'club' => 'Blooming', 'club_full' => 'Club Blooming', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3280.png', 'pj' => 18, 'g' => 8, 'e' => 5, 'p' => 5, 'gf' => 27, 'gc' => 24, 'dg' => '+3', 'pts' => 29, 'zona' => 'sudamericana'],
-            ['pos' => 6, 'club' => 'Aurora', 'club_full' => 'Club Aurora', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3281.png', 'pj' => 17, 'g' => 8, 'e' => 4, 'p' => 5, 'gf' => 26, 'gc' => 23, 'dg' => '+3', 'pts' => 28, 'zona' => 'sudamericana'],
-            ['pos' => 7, 'club' => 'San Antonio Bulo Bulo', 'club_full' => 'San Antonio Bulo Bulo', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/22137.png', 'pj' => 18, 'g' => 7, 'e' => 5, 'p' => 6, 'gf' => 24, 'gc' => 22, 'dg' => '+2', 'pts' => 26, 'zona' => 'sudamericana'],
-            ['pos' => 8, 'club' => 'Wilstermann', 'club_full' => 'Jorge Wilstermann', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3279.png', 'pj' => 17, 'g' => 6, 'e' => 6, 'p' => 5, 'gf' => 22, 'gc' => 20, 'dg' => '+2', 'pts' => 24, 'zona' => 'neutro'],
-            ['pos' => 9, 'club' => 'Real Tomayapo', 'club_full' => 'CD Real Tomayapo', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/21356.png', 'pj' => 18, 'g' => 6, 'e' => 4, 'p' => 8, 'gf' => 20, 'gc' => 26, 'dg' => '-6', 'pts' => 22, 'zona' => 'neutro'],
-            ['pos' => 10, 'club' => 'Guabirá', 'club_full' => 'Club Guabirá', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/3282.png', 'pj' => 18, 'g' => 5, 'e' => 4, 'p' => 9, 'gf' => 19, 'gc' => 28, 'dg' => '-9', 'pts' => 19, 'zona' => 'neutro'],
-            ['pos' => 11, 'club' => 'Ind. Petrolero', 'club_full' => 'Independiente Petrolero', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20889.png', 'pj' => 18, 'g' => 5, 'e' => 3, 'p' => 10, 'gf' => 21, 'gc' => 32, 'dg' => '-11', 'pts' => 18, 'zona' => 'neutro'],
-            ['pos' => 12, 'club' => 'Nacional Potosí', 'club_full' => 'Nacional Potosí', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/10427.png', 'pj' => 17, 'g' => 5, 'e' => 2, 'p' => 10, 'gf' => 18, 'gc' => 30, 'dg' => '-12', 'pts' => 17, 'zona' => 'neutro'],
-            ['pos' => 13, 'club' => 'Real Santa Cruz', 'club_full' => 'Real Santa Cruz', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20888.png', 'pj' => 18, 'g' => 4, 'e' => 3, 'p' => 11, 'gf' => 16, 'gc' => 31, 'dg' => '-15', 'pts' => 15, 'zona' => 'neutro'],
-            ['pos' => 14, 'club' => 'Gualberto Villarroel', 'club_full' => 'GV San José', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/22138.png', 'pj' => 18, 'g' => 4, 'e' => 2, 'p' => 12, 'gf' => 17, 'gc' => 35, 'dg' => '-18', 'pts' => 14, 'zona' => 'neutro'],
-            ['pos' => 15, 'club' => 'Universitario de Vinto', 'club_full' => 'FC Universitario', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/21576.png', 'pj' => 17, 'g' => 3, 'e' => 4, 'p' => 10, 'gf' => 15, 'gc' => 34, 'dg' => '-19', 'pts' => 13, 'zona' => 'descenso'],
-            ['pos' => 16, 'club' => 'Royal Pari', 'club_full' => 'Royal Pari FC', 'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/19875.png', 'pj' => 18, 'g' => 2, 'e' => 4, 'p' => 12, 'gf' => 14, 'gc' => 37, 'dg' => '-23', 'pts' => 10, 'zona' => 'descenso'],
-        ];
+        if ($kind === 'matches') {
+            // Soccer scoreboards reject date ranges. Query the two UTC days in parallel,
+            // then filter to Bolivia's day and deduplicate overlapping events.
+            $days = [str_replace('-', '', $date), CarbonImmutable::parse($date)->addDay()->format('Ymd')];
+            $url = "https://site.api.espn.com/apis/site/v2/sports/soccer/{$league['espn_slug']}/scoreboard";
+            $responses = Http::pool(fn ($pool) => array_map(fn ($day) => $pool->acceptJson()->withHeaders(['User-Agent' => 'curl/8.4.0'])->connectTimeout(3)->timeout(6)->get($url, ['dates' => $day, 'limit' => 100]), $days));
+            $events = [];
+            foreach ($responses as $response) {
+                if ($response instanceof \Throwable || !$response->successful() || !is_array($response->json('events'))) throw new \RuntimeException('Sin estructura de partidos.');
+                $events = array_merge($events, $response->json('events'));
+            }
+            $events = collect($events)->unique('id')->values();
+            $matches = [];
+            foreach ($events as $event) {
+                $comp = $event['competitions'][0] ?? [];
+                $teams = collect($comp['competitors'] ?? []);
+                $home = $teams->firstWhere('homeAway', 'home'); $away = $teams->firstWhere('homeAway', 'away');
+                if (!$home || !$away || empty($event['id']) || empty($event['date'])) throw new \RuntimeException('Partido incompleto.');
+                $status = $comp['status'] ?? $event['status'] ?? [];
+                $state = $status['type']['state'] ?? 'pre';
+                $name = $status['type']['name'] ?? '';
+                $special = ['STATUS_POSTPONED' => 'APLAZADO', 'STATUS_CANCELED' => 'CANCELADO', 'STATUS_SUSPENDED' => 'SUSPENDIDO', 'STATUS_DELAYED' => 'DEMORADO'];
+                $live = $state === 'in' && !isset($special[$name]);
+                $finished = $state === 'post' && !isset($special[$name]);
+                $time = CarbonImmutable::parse($event['date'])->setTimezone('America/La_Paz');
+                // ESPN dates are queried with a buffer; the visible day is always Bolivia's day.
+                if ($time->format('Y-m-d') !== $date) continue;
+                $matches[] = $this->match($league, $event['id'], $time,
+                    $home['team']['shortDisplayName'] ?? $home['team']['displayName'] ?? 'Local',
+                    $away['team']['shortDisplayName'] ?? $away['team']['displayName'] ?? 'Visitante',
+                    $home['team']['logo'] ?? null, $away['team']['logo'] ?? null,
+                    $home['score'] ?? null, $away['score'] ?? null, $live, $finished,
+                    $special[$name] ?? ($live ? 'EN VIVO' : ($finished ? 'FINAL' : $time->format('d/m H:i'))),
+                    $live ? ($status['type']['shortDetail'] ?? 'En juego') : ($finished ? 'FT' : ''), $comp['venue']['fullName'] ?? '');
+            }
+            return $matches;
+        }
+        $data = $this->json("https://site.api.espn.com/apis/v2/sports/soccer/{$league['espn_slug']}/standings");
+        $groups = $data['children'] ?? [];
+        if (isset($data['standings'])) $groups = [$data];
+        if (!is_array($groups) || (!$groups && !array_key_exists('children', $data))) throw new \RuntimeException('Sin estructura de posiciones.');
+        $rows = [];
+        foreach ($groups as $group) foreach ($group['standings']['entries'] ?? [] as $i => $entry) {
+            $stats = collect($entry['stats'] ?? []);
+            $stat = fn ($name) => (int) ($stats->firstWhere('name', $name)['value'] ?? 0);
+            $rows[] = $this->standing($entry['team']['shortDisplayName'] ?? $entry['team']['displayName'] ?? 'Club', $entry['team']['logos'][0]['href'] ?? null,
+                $stat('rank') ?: $i+1, $stat('gamesPlayed'), $stat('wins'), $stat('ties'), $stat('losses'), $stat('pointsFor'), $stat('pointsAgainst'), $stat('points'), $group['name'] ?? '');
+        }
+        return $rows;
+    }
+
+    private function apiFootball(string $kind, string $key, string $date): array
+    {
+        $token = (string) config('services.sports.api_key');
+        if ($token === '') throw new \RuntimeException('Falta configurar la clave.');
+        $names = ['bolivia' => ['Primera Division', 'Primera División', 'División Profesional'], 'premier' => ['Premier League'], 'laliga' => ['La Liga'], 'serie_a' => ['Serie A'], 'bundesliga' => ['Bundesliga'], 'champions' => ['UEFA Champions League']];
+        $countries = ['bolivia' => 'Bolivia', 'premier' => 'England', 'laliga' => 'Spain', 'serie_a' => 'Italy', 'bundesliga' => 'Germany'];
+        $request = function ($path, $query) use ($token) {
+            $day = now('UTC');
+            $budgetKey = 'sports:budget:'.substr(hash('sha256', $token), 0, 12).':'.$day->format('Y-m-d');
+            Cache::add($budgetKey, 0, $day->copy()->endOfDay()->addMinute());
+            if (Cache::increment($budgetKey) > (int) config('services.sports.daily_budget', 90)) {
+                throw new \RuntimeException('Presupuesto diario de consultas alcanzado.');
+            }
+            $data = $this->json('https://v3.football.api-sports.io/'.$path, $query, ['x-apisports-key' => $token]);
+            if (!empty($data['errors']) || !isset($data['response']) || !is_array($data['response'])) throw new \RuntimeException('Proveedor sin datos autorizados.');
+            return $data['response'];
+        };
+        $leagueKey = 'sports:leagues:'.substr(hash('sha256', $token),0,12).':'.$key;
+        $competitions = Cache::remember($leagueKey, 86400, fn () => $request('leagues', array_filter(['country' => $countries[$key] ?? null, 'search' => Str::ascii($names[$key][0])])));
+        $normalize = fn ($s) => strtolower(Str::ascii($s));
+        $competition = collect($competitions)->first(fn ($c) => in_array($normalize($c['league']['name'] ?? ''), array_map($normalize, $names[$key]), true));
+        $season = collect($competition['seasons'] ?? [])->first(fn ($s) => $date >= ($s['start'] ?? '') && $date <= ($s['end'] ?? ''));
+        if (!$competition || !$season) throw new \RuntimeException('Sin cobertura de liga o temporada.');
+        $league = self::LEAGUES[$key];
+        $query = ['league' => $competition['league']['id'], 'season' => $season['year']];
+        if ($kind === 'matches') {
+            $data = $request('fixtures', $query + ['date' => $date, 'timezone' => 'America/La_Paz']);
+            $matches = [];
+            foreach ($data as $item) {
+                if (empty($item['fixture']['id']) || empty($item['fixture']['date']) || empty($item['teams']['home']['name']) || empty($item['teams']['away']['name'])) throw new \RuntimeException('Partido incompleto.');
+                $status = $item['fixture']['status']['short'] ?? 'NS';
+                $live = in_array($status, ['1H','HT','2H','ET','BT','P','LIVE'], true);
+                $finished = in_array($status, ['FT','AET','PEN'], true);
+                $special = ['PST' => 'APLAZADO', 'CANC' => 'CANCELADO', 'SUSP' => 'SUSPENDIDO', 'INT' => 'INTERRUMPIDO', 'ABD' => 'ABANDONADO', 'AWD' => 'DECISIÓN OFICIAL', 'WO' => 'NO PRESENTADO', 'TBD' => 'FECHA POR CONFIRMAR'];
+                $time = CarbonImmutable::parse($item['fixture']['date'])->setTimezone('America/La_Paz');
+                $matches[] = $this->match($league, $item['fixture']['id'], $time, $item['teams']['home']['name'], $item['teams']['away']['name'],
+                    $item['teams']['home']['logo'] ?? null, $item['teams']['away']['logo'] ?? null, $item['goals']['home'] ?? null, $item['goals']['away'] ?? null, $live, $finished,
+                    $special[$status] ?? ($live ? 'EN VIVO' : ($finished ? 'FINAL' : $time->format('d/m H:i'))),
+                    $live ? ($status === 'HT' ? 'DESCANSO' : (($item['fixture']['status']['elapsed'] ?? '')."'")) : ($finished ? $status : ''), $item['fixture']['venue']['name'] ?? '');
+            }
+            return $matches;
+        }
+        $data = $request('standings', $query); $rows = [];
+        foreach ($data as $competition) foreach ($competition['league']['standings'] ?? [] as $group) foreach ($group as $r) {
+            $all = $r['all'] ?? [];
+            $rows[] = $this->standing($r['team']['name'] ?? 'Club', $r['team']['logo'] ?? null, (int)($r['rank'] ?? 0), (int)($all['played'] ?? 0), (int)($all['win'] ?? 0), (int)($all['draw'] ?? 0), (int)($all['lose'] ?? 0), (int)($all['goals']['for'] ?? 0), (int)($all['goals']['against'] ?? 0), (int)($r['points'] ?? 0), $r['group'] ?? '');
+        }
+        return $rows;
+    }
+
+    private function match(array $league, $id, CarbonImmutable $time, string $home, string $away, $homeLogo, $awayLogo, $homeScore, $awayScore, bool $live, bool $finished, string $state, string $minute, string $venue): array
+    {
+        return ['id' => (string)$id, 'torneo' => $league['name'], 'torneo_badge' => $league['badge'], 'flag' => $league['flag'],
+            'estado' => $state, 'is_live' => $live, 'is_finished' => $finished, 'minuto' => $minute, 'date' => $time->toIso8601String(),
+            'local' => $home, 'local_full' => $home, 'local_code' => mb_strtoupper(mb_substr($home,0,3)), 'local_logo' => $this->imageUrl($homeLogo), 'local_color' => '#00FF87',
+            'visitante' => $away, 'visitante_full' => $away, 'visitante_code' => mb_strtoupper(mb_substr($away,0,3)), 'visitante_logo' => $this->imageUrl($awayLogo), 'visitante_color' => '#FFFFFF',
+            'goles_local' => ($live || $finished) && is_numeric($homeScore) ? (int)$homeScore : '-', 'goles_visitante' => ($live || $finished) && is_numeric($awayScore) ? (int)$awayScore : '-', 'estadio' => $venue];
+    }
+
+    private function standing(string $club, $logo, int $rank, int $played, int $wins, int $draws, int $losses, int $for, int $against, int $points, string $group): array
+    {
+        return ['pos' => $rank, 'club' => $club, 'club_full' => $club, 'logo' => $this->imageUrl($logo), 'pj' => $played, 'g' => $wins, 'e' => $draws, 'p' => $losses, 'gf' => $for, 'gc' => $against, 'dg' => sprintf('%+d', $for-$against), 'pts' => $points, 'zona' => 'neutro', 'group' => $group];
+    }
+
+    private function imageUrl($url): ?string
+    {
+        return is_string($url) && filter_var($url, FILTER_VALIDATE_URL) && parse_url($url, PHP_URL_SCHEME) === 'https' ? $url : null;
     }
 }
