@@ -19,6 +19,7 @@ class Latitud18OctubreTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(\Database\Seeders\Latitud18ReferenciaSeeder::class);
         $this->seed(Latitud18OctubreSeeder::class);
         $this->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
     }
