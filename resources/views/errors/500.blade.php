@@ -21,7 +21,7 @@
         <!-- Logo y Header -->
         <div class="text-center mb-6">
             <div class="flex justify-center mb-3">
-                <img src="{{ asset('images/Logo.jpg') }}" alt="Latitud 18" class="w-20 h-20 rounded-full shadow-xl border-2 border-red-500 object-cover" onerror="this.onerror=null; this.src='/favicon.svg'">
+                <img src="{{ asset('images/Logo.jpg') }}?v=2" alt="Latitud 18" class="w-20 h-20 rounded-full shadow-xl border-2 border-red-500 object-cover" onerror="this.onerror=null; this.src='/favicon.svg'">
             </div>
             <h1 class="text-3xl font-extrabold text-white tracking-wide">
                 LATITUD <span class="text-red-500">18</span>

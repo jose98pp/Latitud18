@@ -23,7 +23,7 @@
     <meta name="apple-mobile-web-app-title" content="LATITUD 18">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/Logo.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/Logo.jpg') }}?v=2">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

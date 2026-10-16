@@ -1,9 +1,9 @@
-const CACHE_NAME = 'latitud18-cache-v1';
+const CACHE_NAME = 'latitud18-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
   '/favicon.svg',
-  '/images/Logo.jpg',
+  '/images/Logo.jpg?v=2',
   '/images/default-news.svg'
 ];
 

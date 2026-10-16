@@ -80,4 +80,16 @@ class BrandConsistencyTest extends TestCase
         $this->assertGreaterThan(50, filesize(public_path('favicon.ico')));
         $this->assertGreaterThan(500, filesize(public_path('images/Logo.jpg')));
     }
+
+    /**
+     * Test periodico reader page branding and loading screen
+     */
+    public function test_periodico_reader_branding(): void
+    {
+        $response = $this->get('/periodico');
+
+        $response->assertStatus(200);
+        $response->assertSee('Latitud 18');
+        $response->assertDontSee('UHTV');
+    }
 }

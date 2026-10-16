@@ -717,10 +717,22 @@
     transition: opacity .55s ease, visibility .55s ease;
 }
 #fbLoadingScreen.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-#fbLoadingScreen .fls-logo {
-    height: 40px;
-    max-width: 220px;
-    object-fit: contain;
+#fbLoadingScreen .fls-logo-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+#fbLoadingScreen .fls-brand-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 19px;
+    letter-spacing: 2.5px;
+    color: #FFFFFF;
+}
+#fbLoadingScreen .fls-brand-title span {
+    color: #D71920;
 }
 #fbLoadingScreen .fls-caption {
     font-family: 'Montserrat', sans-serif;
@@ -1509,7 +1521,22 @@
      PANTALLA DE CARGA (loadingBackground #1F2232)
      ══════════════════════════════════════════════════════ --}}
     <div id="fbLoadingScreen">
-        <img src="/images/Logo.jpg" alt="" class="fls-logo" onerror="this.style.display='none'">
+        <div class="fls-logo-box">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="56" height="56" style="display:block;">
+              <defs>
+                <linearGradient id="l18fls" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0B1F3A"/>
+                  <stop offset="100%" stop-color="#162E56"/>
+                </linearGradient>
+              </defs>
+              <rect width="64" height="64" rx="14" fill="url(#l18fls)"/>
+              <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#D71920" stroke-width="2.5" opacity="0.9"/>
+              <text x="12" y="46" font-family="'Montserrat', 'Arial Black', sans-serif" font-size="36" font-weight="900" fill="#FFFFFF">L</text>
+              <rect x="33" y="16" width="24" height="32" rx="6" fill="#D71920"/>
+              <text x="45" y="39" text-anchor="middle" font-family="'Montserrat', 'Arial Black', sans-serif" font-size="20" font-weight="900" fill="#FFFFFF">18</text>
+            </svg>
+            <div class="fls-brand-title">LATITUD <span>18</span></div>
+        </div>
         <div class="fls-caption">{{ $edicionActiva['titulo'] ?? 'Latitud 18' }} — {{ $edicionActiva['fecha'] ?? '' }}</div>
         <div class="fls-bar"><span></span></div>
     </div>
