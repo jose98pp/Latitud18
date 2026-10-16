@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', ($edicionActiva['titulo'] ?? 'La Estrella') . ' - Periódico Digital Semanal')
+@section('title', ($edicionActiva['titulo'] ?? 'Latitud 18') . ' - Periódico Digital Semanal')
 
 @section('content')
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1411,6 +1411,7 @@
 </style>
 
 <div class="container py-3">
+    @if(!empty($edicionActiva))
     <!-- CONTENEDOR PRINCIPAL DEL LECTOR -->
     <div class="newspaper-reader-container">
         {{-- HEADER DE CONTROLES --}}
@@ -2070,8 +2071,28 @@
         </div>{{-- /reader-stage-viewport --}}
         </div>{{-- /editorialSection --}}
     </div>{{-- /newspaper-reader-container --}}
+    @else
+        <div class="newspaper-reader-container p-5 text-center text-white my-4" style="background:#1A202C;border-radius:8px;border:1px solid #334155;">
+            <div class="mx-auto mb-3" style="width:68px;height:68px;border-radius:50%;background:rgba(215,25,32,0.15);display:flex;align-items:center;justify-content:center;color:#D71920;font-size:2rem;">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <h3 class="h4 fw-bold mb-2" style="font-family:'Montserrat',sans-serif;">Edición Semanal en Preparación</h3>
+            <p class="text-slate-400 small mb-4" style="max-width:520px;margin:0 auto;line-height:1.6;">
+                Nuestro equipo de redacción e investigación periodística está preparando la nueva edición digital de Latitud 18.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{{ route('portada') }}" class="btn btn-danger btn-sm px-4 fw-bold">
+                    <i class="fas fa-home me-2"></i> Ir a la Portada
+                </a>
+                <a href="{{ route('admin.login') }}" class="btn btn-outline-light btn-sm px-4">
+                    <i class="fas fa-lock me-2"></i> Panel Editorial
+                </a>
+            </div>
+        </div>
+    @endif
 </div>{{-- /container --}}
 
+@if(!empty($edicionActiva))
 {{-- SIN CDN: Flipbook CSS3 propio con JS vanilla --}}
 <script>
 // ============================================================
@@ -2904,4 +2925,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(updateMobileScale, 300);
 });
 </script>
+@endif
 @endsection
