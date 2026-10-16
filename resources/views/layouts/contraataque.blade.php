@@ -9,7 +9,7 @@
     <meta name="description" content="@yield('meta_description', 'Contra Ataque: La sección de deportes más completa de Bolivia. Fútbol Boliviano, Selección La Verde, Champions League, Liga Profesional, estadísticas en vivo y opinión.')">
     <meta property="og:title" content="@yield('title', 'Contra Ataque — Deportes')">
     <meta property="og:description" content="@yield('meta_description', 'Portal oficial de deportes Contra Ataque.')">
-    <meta property="og:image" content="{{ asset('images/contraataque-shared-a.png') }}">
+    <meta property="og:image" content="{{ asset('images/contraataque-oficial.png') }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
     
@@ -184,7 +184,10 @@
         }
 
         .ca-brand-logo-wrap { display:flex;align-items:center;min-width:0; }
-        .ca-shared-logo { display:block;width:350px;max-width:100%;height:auto; }
+        .ca-shared-logo { display:block;width:350px;max-width:100%; }
+        .ca-brand-viewport { position:relative;aspect-ratio:2048/465;overflow:hidden;flex-shrink:0; }
+        .ca-brand-viewport img { position:absolute;left:0;bottom:-4%;width:100%;height:auto;max-width:none; }
+        .ca-brand-footer { width:240px;max-width:100%; }
         @media (max-width: 767px) { .ca-shared-logo { width:250px; } }
         @media (max-width: 400px) { .ca-shared-logo { width:200px; } }
 
@@ -362,7 +365,7 @@
 
                 <!-- Brand Logo & Name -->
                 <a href="{{ route('contraataque.index') }}" class="ca-brand-logo-wrap text-decoration-none">
-                    <img loading="eager" fetchpriority="high" decoding="async" src="{{ asset('images/contraataque-shared-a.svg') }}" alt="Contra Ataque · Deportes de Latitud18" class="ca-shared-logo">
+                    <span class="ca-shared-logo ca-brand-viewport"><img loading="eager" fetchpriority="high" decoding="async" src="{{ asset('images/contraataque-oficial.png') }}" width="2048" height="565" alt="Contraataque · Deportes de Latitud 18"></span>
 
                 </a>
 
@@ -416,7 +419,7 @@
             <div class="row g-4 mb-4">
                 <div class="col-lg-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <img loading="eager" decoding="async" src="{{ asset('images/contraataque-shared-a.svg') }}" alt="Contra Ataque" style="width:240px;max-width:100%;height:auto;">
+                        <span class="ca-brand-viewport ca-brand-footer"><img loading="lazy" decoding="async" src="{{ asset('images/contraataque-oficial.png') }}" width="2048" height="565" alt="Contraataque · Deportes de Latitud 18"></span>
 
                     </div>
                     <p style="font-size:0.82rem; line-height:1.5;">

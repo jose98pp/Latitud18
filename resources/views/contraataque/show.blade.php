@@ -62,7 +62,7 @@
     "name": "Contra Ataque Deportes",
     "logo": {
       "@type": "ImageObject",
-      "url": "{{ file_exists(public_path('images/contraataque-logo.jpg')) ? asset('images/contraataque-logo.jpg') : asset('images/Logo.jpg') }}"
+      "url": "{{ asset('images/contraataque-oficial.png') }}"
     }
   }
 }

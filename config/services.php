@@ -2,7 +2,8 @@
 
 return [
     'sports' => [
-        'provider' => env('SPORTS_DATA_PROVIDER', 'espn'),
+        // ESPN is the selected provider for Contraataque; no API key is needed.
+        'provider' => 'espn',
         'api_key' => env('API_FOOTBALL_KEY'),
         'refresh_seconds' => max(60, (int) env('SPORTS_REFRESH_SECONDS', 180)),
         'daily_budget' => max(1, (int) env('SPORTS_API_DAILY_BUDGET', 90)),
