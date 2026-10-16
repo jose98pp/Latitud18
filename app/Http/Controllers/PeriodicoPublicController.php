@@ -104,6 +104,35 @@ class PeriodicoPublicController extends Controller
         return view('periodico.reader', compact('edicionActiva', 'ediciones', 'categorias', 'banners'));
     }
 
+    /** PDF inline del lector. Las ediciones privadas nunca llegan a la caché. */
+    public function documento(Request $request, $id)
+    {
+        $model = PeriodicoEdicion::with(['paginas.elementos'])
+            ->where('publicada', true)->where('estado', 'publicado')->findOrFail($id);
+        $edicion = $model->toEditorArray();
+        $uploaded = $this->pdfService->resolveUploadedPdf($edicion);
+        $revision = hash('sha256', json_encode($edicion) . ($uploaded ? hash_file('sha256', $uploaded) : ''));
+
+        try {
+            $bytes = \Illuminate\Support\Facades\Cache::remember(
+                'periodico-reader-v1:' . $id . ':' . $revision, 600,
+                fn () => $this->pdfService->contenido($edicion)
+            );
+            $response = response($bytes, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="latitud18.pdf"',
+                'Cache-Control' => 'private, max-age=0, must-revalidate',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
+            $response->setEtag(hash('sha256', $bytes));
+            $response->isNotModified($request);
+            return $response;
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['message' => 'No se pudo preparar la edición. Intenta nuevamente.'], 503);
+        }
+    }
+
     /**
      * Genera y descarga el PDF real de la edición (motor DomPDF server-side)
      */
