@@ -1,3 +1,22 @@
+# Actualización: logo oficial y ESPN
+
+La cabecera, el pie y los metadatos de Contraataque usan ahora `public/images/contraataque-oficial.png`, el PNG original suministrado por el usuario. El encuadre CSS de cabecera y pie oculta «OPCIÓN 1» sin modificar la imagen y conserva las proporciones del logo. En redes se comparte la imagen original completa.
+
+ESPN queda seleccionado en `config/services.php`, incluso si el alojamiento conserva `SPORTS_DATA_PROVIDER=api-football` de una configuración anterior. No requiere clave. El adaptador alternativo de API-Football permanece disponible en el código, pero no está seleccionado para el sitio.
+
+Después de actualizar el repositorio en el alojamiento habitual ejecutar:
+
+```sh
+php artisan config:clear
+php artisan view:clear
+```
+
+Si el despliegue utiliza caché de configuración, ejecutar después `php artisan config:cache`. No requiere migraciones, compilación Node ni Vercel. Subir también el PNG nuevo.
+
+La cobertura depende de ESPN: una competición no disponible se identifica como tal, sin inventar resultados. Los horarios se presentan en America/La_Paz; los resultados y posiciones usan la caché y el tratamiento de errores existentes.
+
+## Historial de la integración anterior
+
 # Contraataque: marca y datos deportivos
 
 ## Marca
