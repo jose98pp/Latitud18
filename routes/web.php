@@ -85,6 +85,7 @@ Route::get('/deportes', function () {
 Route::prefix('periodico')->name('periodico.public.')->group(function () {
     Route::get('/', [PeriodicoPublicController::class, 'index'])->name('index');
     Route::get('/edicion/{id}', [PeriodicoPublicController::class, 'show'])->name('show');
+    Route::get('/edicion/{id}/documento', [PeriodicoPublicController::class, 'documento'])->name('documento');
     Route::get('/edicion/{id}/pdf', [PeriodicoPublicController::class, 'pdf'])->name('pdf');
 });
 

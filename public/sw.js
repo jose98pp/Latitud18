@@ -1,4 +1,4 @@
-const CACHE_NAME = 'latitud18-cache-v2';
+const CACHE_NAME = 'latitud18-cache-v3';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
@@ -37,6 +37,10 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET' || request.url.includes('/admin') || request.url.includes('/logout')) {
     return;
   }
+
+  // The reader and its PDF must reflect current publication permissions and content.
+  const pathname = new URL(request.url).pathname;
+  if (pathname === '/periodico' || pathname.startsWith('/periodico/')) return;
 
   // HTML navigation requests: Network First, fallback to cache
   if (request.mode === 'navigate') {

@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
             SiteSettingSeeder::class,
             EditorialRealDataSeeder::class,
             PeriodicoPlantillasSeeder::class,
+            Latitud18ReferenciaSeeder::class,
+            Latitud18OctubreSeeder::class,
+            Latitud18EditorialV2Seeder::class,
         ]);
     }
 }
