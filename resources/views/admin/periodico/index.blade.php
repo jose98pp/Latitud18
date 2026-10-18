@@ -45,7 +45,7 @@
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cinzel:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@500;700;800;900&family=Oswald:wght@500;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.27/dist/interact.min.js"></script>
+<script src="{{ asset('vendor/interact/interact.min.js') }}"></script>
 
 <style>
 /* ══════════════════════════════════════════════════
@@ -520,11 +520,16 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
   position: absolute;
   border: 1px solid transparent;
   cursor: move;
+  touch-action: none;
   min-width: 40px;
   min-height: 20px;
   user-select: none;
   z-index: 10;
 }
+
+.id-frame [contenteditable="false"] { cursor: move; user-select: none; }
+.id-frame [contenteditable="true"] { cursor: text; user-select: text; touch-action: auto; }
+.id-frame img { -webkit-user-drag: none; }
 
 .id-frame:hover { border-color: rgba(2,132,199,0.5); }
 .id-frame.selected {
@@ -2694,6 +2699,7 @@ function buildFrameElement(fData, pIdx) {
     el.dataset.frameId = fData.id;
     if (fData.type === 'header') fData.type = 'masthead';
     el.dataset.type = fData.type;
+    el.title = 'Arrastra para mover. Usa los tiradores para cambiar el tamaño. Doble clic para editar texto.';
 
     if (fData.isLocked) {
         el.classList.add('locked');
@@ -2817,9 +2823,26 @@ function buildFrameElement(fData, pIdx) {
         });
     }
 
-    el.addEventListener('mousedown', (e) => {
-        e.stopPropagation();
-        selectFrame(el);
+    // Let pointer/mouse events bubble: Interact listens on the document.
+    el.addEventListener('mousedown', () => selectFrame(el));
+    el.addEventListener('touchstart', () => selectFrame(el), {passive: true});
+    el.querySelectorAll('img').forEach(img => { img.draggable = false; });
+    el.addEventListener('dragstart', event => event.preventDefault());
+    el.querySelectorAll('[contenteditable]').forEach(text => {
+        text.setAttribute('contenteditable', 'false');
+        text.addEventListener('input', () => { syncFrameTextToModel(el); markUnsaved(); });
+        text.addEventListener('blur', () => {
+            syncFrameTextToModel(el);
+            text.setAttribute('contenteditable', 'false');
+        });
+    });
+    el.addEventListener('dblclick', event => {
+        if (el.dataset.locked === 'true') return;
+        const text = event.target.closest('.frame-text-inner, .frame-quote-inner, .frame-box-inner');
+        if (!text || !el.contains(text)) return;
+        recordHistory();
+        text.setAttribute('contenteditable', 'true');
+        text.focus();
     });
 
     return el;
@@ -2827,8 +2850,13 @@ function buildFrameElement(fData, pIdx) {
 
 // ── INTERACT.JS DRAG & RESIZE ──────────────────────
 function initInteract() {
+    if (typeof interact !== 'function') {
+        showToast('No se cargó la herramienta de movimiento. Recarga la página.', 'error');
+        return;
+    }
     interact('.id-frame')
         .draggable({
+            ignoreFrom: '.resize-handle, [contenteditable="true"], input, textarea, select, button, a',
             listeners: {
                 start(event) {
                     if (event.target.dataset.locked === 'true') return;
@@ -2855,6 +2883,7 @@ function initInteract() {
             }
         })
         .resizable({
+            ignoreFrom: '[contenteditable="true"], input, textarea, select, button',
             edges: { left: '.w, .nw, .sw', right: '.e, .ne, .se', bottom: '.s, .se, .sw', top: '.n, .nw, .ne' },
             listeners: {
                 start(event) {
@@ -3087,6 +3116,18 @@ function constrainFrameToPage(el, page) {
     el.style.width = w + 'px'; el.style.height = h + 'px';
     el.style.left = Math.max(margin, Math.min(parseFloat(el.style.left) || 0, width-margin-w)) + 'px';
     el.style.top = Math.max(margin, Math.min(parseFloat(el.style.top) || 0, height-margin-h)) + 'px';
+}
+
+function syncFrameTextToModel(el) {
+    const page = currentEdicion.paginas.find(p => p.frames?.some(f => String(f.id) === el.dataset.frameId));
+    const frame = page?.frames?.find(f => String(f.id) === el.dataset.frameId);
+    if (!frame) return;
+    const texts = el.querySelectorAll('.frame-text-inner, .frame-quote-inner, .frame-box-inner');
+    if (!texts.length) return;
+    if (frame.type === 'article') {
+        frame.titular = texts[0].innerHTML;
+        if (texts[1]) { frame.cuerpo = texts[1].innerHTML; frame.content = texts[1].innerHTML; }
+    } else frame.content = texts[0].innerHTML;
 }
 
 function saveFrameGeoToModel(el) {
@@ -3969,6 +4010,7 @@ function submitSaveTemplate() {
         return;
     }
 
+    syncEditorText();
     const currentFrames = currentEdicion.paginas[activePageIndex]?.frames || [];
     if (currentFrames.length === 0) {
         if (!confirm('La página actual está vacía. ¿Deseas guardar una plantilla sin elementos?')) {
@@ -5070,16 +5112,7 @@ function switchEdition(id) {
 }
 
 function saveEdicionLayout(showSuccessToast = true) {
-    // Sync active frames text
-    (currentEdicion.paginas || []).forEach((page, pIdx) => {
-        (page.frames || []).forEach(f => {
-            const el = document.getElementById(`frame-${f.id}`);
-            if (el) {
-                const textInner = el.querySelector('.frame-text-inner') || el.querySelector('.frame-quote-inner') || el.querySelector('.frame-box-inner');
-                if (textInner) f.content = textInner.innerHTML;
-            }
-        });
-    });
+    syncEditorText();
 
     const ind = document.getElementById('saveIndicator');
     if (ind) {

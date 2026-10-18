@@ -1,0 +1,7 @@
+{
+  "name": "latitud18-editor-dom-tests",
+  "private": true,
+  "description": "Pruebas de eventos del editor con Interact real en un DOM de prueba",
+  "scripts": { "test:pointer": "node --test editor-pointer.test.cjs" },
+  "devDependencies": { "jsdom": "30.1.2" }
+}
