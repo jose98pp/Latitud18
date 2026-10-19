@@ -2370,6 +2370,7 @@ let gridVisible       = false;
 let marginsVisible    = true;
 let rulersVisible     = false;
 let snapGridActive    = true;
+let snapGridSize      = 10;
 let loadedTemplates   = @json($loadedTemplatesForEditor);
 let currentFilterCat  = 'all';
 

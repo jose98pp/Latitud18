@@ -10,7 +10,7 @@ function harness(type='image',zoom=1,attributes={}) {
  const w=dom.window;w.PointerEvent=undefined; // Dispatch the mouse path used by desktop Interact.
  w.eval(fs.readFileSync(path.join(root,'public/vendor/interact/interact.min.js'),'utf8'));
  const frame={id:'f1',type,x:50,y:50,w:200,h:100,content:'Texto editable',titular:'Titular',cuerpo:'Cuerpo',...attributes};
- w.currentEdicion={paginas:[{frames:[frame],ancho:720,alto:1106}]};w.activePageIndex=0;w.zoomLevel=zoom;w.snapGridActive=false;
+ w.currentEdicion={paginas:[{frames:[frame],ancho:720,alto:1106}]};w.activePageIndex=0;w.zoomLevel=zoom;w.snapGridActive=false;w.snapGridSize=10;
  w.AD_FORMATS={};w.renderLatitudMasthead=()=>'<div>LATITUD 18</div>';
  let history=0,dirty=0;
  w.selectFrame=el=>{el.classList.add('selected');w.selectedFrame=el;};
@@ -93,3 +93,11 @@ test('frames added after initialization remain draggable through delegated event
   assert.equal(next.x,70);assert.equal(next.y,60);
  }finally{h.close();}
 });
+test('active snap grid aligns dragged frames to snapGridSize intervals',()=>{
+ const h=harness('image');try{
+  h.w.snapGridActive=true;
+  h.gesture(h.element.querySelector('img'),[100,100],[123,117]);
+  assert.equal(h.frame.x,70);assert.equal(h.frame.y,70);
+ }finally{h.close();}
+});
+
