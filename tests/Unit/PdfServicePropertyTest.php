@@ -61,7 +61,7 @@ class PdfServicePropertyTest extends TestCase
         $response = $this->service->descarga($edicionData);
 
         $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('public', $response->headers->get('Cache-Control'));
-        $this->assertStringContainsString('max-age=600', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('private', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
     }
 }

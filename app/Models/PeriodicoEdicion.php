@@ -100,8 +100,15 @@ class PeriodicoEdicion extends Model
      */
     public function syncFromEditorData(array $data): void
     {
+        // Un PDF subido es definitivo hasta que se modifica su maqueta. El payload
+        // del editor nunca debe restaurar una URL antigua después de esa edición.
+        if (isset($data['paginas']) && is_array($data['paginas'])
+            && $data['paginas'] != $this->toEditorArray()['paginas']) {
+            $this->pdf_url = null;
+        }
+
         // Actualizar campos base
-        $campos = ['numero_edicion', 'fecha', 'titulo', 'subtitulo', 'slogan', 'ciudad', 'precio', 'estado', 'pdf_url'];
+        $campos = ['numero_edicion', 'fecha', 'titulo', 'subtitulo', 'slogan', 'ciudad', 'precio', 'estado'];
         foreach ($campos as $c) {
             if (array_key_exists($c, $data)) {
                 $this->{$c} = $data[$c];
@@ -180,5 +187,6 @@ class PeriodicoEdicion extends Model
         }
 
         $this->save();
+        $this->unsetRelation('paginas');
     }
 }

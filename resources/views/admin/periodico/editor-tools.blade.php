@@ -98,7 +98,21 @@ function closeEditorOverlay() {
 }
 
 function syncEditorText() {
-    document.querySelectorAll('.id-paper-sheet .id-frame').forEach(syncFrameTextToModel);
+    (currentEdicion.paginas || []).forEach((page, index) => {
+      const sheet = document.querySelector(`.id-paper-sheet[data-page="${index}"]`);
+      const elements = new Map([...(sheet?.querySelectorAll('.id-frame') || [])].map(element => [element.dataset.frameId, element]));
+      (page.frames || []).forEach(frame => {
+        const element = elements.get(String(frame.id));
+        if (frame.type === 'article') {
+            element?.querySelectorAll('[data-article-field]').forEach(node => {
+                frame[node.dataset.articleField] = node.innerHTML.trim();
+            });
+        } else {
+            const text = element?.querySelector('.frame-text-inner, .frame-quote-inner, .frame-box-inner');
+            if (text) frame.content = text.innerHTML;
+        }
+      });
+    });
 }
 
 function updateZoomDisplay() {
@@ -132,7 +146,10 @@ function persistFrameTextStyles(styles) {
     text.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach(node => Object.assign(node.style, inlineStyles));
     const frame = currentEdicion.paginas[activePageIndex]?.frames?.find(f => f.id == selectedFrame.dataset.frameId);
     if (frame) {
-        frame.content = text.innerHTML;
+        const styleKey = frame.type === 'article' ? 'article_title_style' : 'text_style';
+        frame[styleKey] = {...frame[styleKey], ...inlineStyles};
+        if (frame.type === 'article') frame.titular = text.innerHTML.trim();
+        else frame.content = text.innerHTML;
         if ('columnCount' in styles) frame.columns = Number(styles.columnCount) || 1;
     }
     markUnsaved();

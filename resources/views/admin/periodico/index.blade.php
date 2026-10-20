@@ -2185,6 +2185,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       </p>
       <div style="display:flex;flex-direction:column;gap:10px;">
         <a class="insp-full-btn" href="{{ !empty($currentEdicion['id']) ? route('admin.periodico.pdf', $currentEdicion['id']) : '#' }}"
+           onclick="event.preventDefault(); downloadEditionPdf(this.href)"
            style="padding:12px;font-size:0.85rem;text-align:center;text-decoration:none;">
           <i class="fas fa-file-pdf text-danger"></i> Descargar PDF real ({{ count($currentEdicion['paginas'] ?? []) }} páginas)
         </a>
@@ -2192,7 +2193,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
       @if (!empty($currentEdicion['pdf_url']))
         <p style="font-size:0.7rem;color:#94a3b8;margin-top:12px;">
           <i class="fas fa-info-circle"></i>
-          Existe un PDF subido para esta edición, se entregará ese archivo en lugar del generado.
+          El PDF subido se conserva hasta modificar la maqueta. Al guardar cambios se generará el PDF actualizado.
         </p>
       @endif
     </div>
@@ -2365,6 +2366,8 @@ let selectedFrame     = null;
 let currentTool       = 'select';
 let zoomLevel         = 1.0;
 let hasUnsavedChanges = false;
+let editorRevision = 0;
+let saveInFlight = null;
 let frameIdCounter    = 1000;
 let gridVisible       = false;
 let marginsVisible    = true;
@@ -2710,11 +2713,11 @@ function buildFrameElement(fData, pIdx) {
         el.dataset.lockResize = 'true';
     }
 
-    el.style.left = (fData.x || 20) + 'px';
-    el.style.top = (fData.y || 20) + 'px';
+    el.style.left = (fData.x ?? 20) + 'px';
+    el.style.top = (fData.y ?? 20) + 'px';
     el.style.width = (fData.w || 200) + 'px';
     el.style.height = (fData.h || 100) + 'px';
-    el.style.zIndex = fData.z || 10;
+    el.style.zIndex = fData.z ?? 10;
     if (fData.opacity !== undefined) el.style.opacity = fData.opacity;
 
     // Render inner content by type
@@ -2743,12 +2746,12 @@ function buildFrameElement(fData, pIdx) {
             <div style="width:100%;height:100%;position:relative;display:flex;flex-direction:column;box-sizing:border-box;font-family:'Montserrat',sans-serif;${isLinked ? 'padding-top:8px;' : ''}">
                 ${isLinked ? `<div class="frame-category-bar" style="background:${catColor};"></div><div class="frame-linked-badge" title="Vinculado a noticia"><i class="fas fa-link"></i></div>` : ''}
                 <div class="article-headline-block" style="margin-bottom:4px;">
-                    <div class="frame-text-inner" contenteditable="true" style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;line-height:1.15;color:#0f172a;margin:0;">
+                    <div class="frame-text-inner" data-article-field="titular" contenteditable="true" style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;line-height:1.15;color:#0f172a;margin:0;">
                         ${titular}
                     </div>
                     ${subtitulo ? `<div style="font-size:10.5px;font-weight:600;color:#64748b;font-style:italic;margin-top:2px;">${subtitulo}</div>` : ''}
                 </div>
-                <div class="frame-text-inner" contenteditable="true" style="flex:1;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.4;color:#1e293b;column-count:${cols > 1 ? cols : ''};column-gap:12px;text-align:justify;overflow:hidden;">
+                <div class="frame-text-inner" data-article-field="cuerpo" contenteditable="true" style="flex:1;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.4;color:#1e293b;column-count:${cols > 1 ? cols : ''};column-gap:12px;text-align:justify;overflow:hidden;">
                     ${cuerpo}
                 </div>
                 ${autor ? `<div style="font-size:9px;font-weight:700;color:${catColor};text-transform:uppercase;margin-top:4px;">Por: ${autor}</div>` : ''}
@@ -2809,6 +2812,10 @@ function buildFrameElement(fData, pIdx) {
         const cols = fData.columns || 1;
         el.innerHTML = `<div class="frame-text-inner" contenteditable="true" style="padding:${fData.editorial_role ? '0' : '4px'};column-count:${cols > 1 ? cols : ''};column-gap:14px;font-family:'Montserrat',sans-serif;">${fData.content ?? ''}</div>`;
     }
+
+    const styledText = el.querySelector('.frame-text-inner');
+    const textStyles = fData.type === 'article' ? fData.article_title_style : fData.text_style;
+    if (styledText && textStyles) Object.assign(styledText.style, textStyles);
 
     // Handles or Lock badge
     if (fData.isLocked) {
@@ -3120,7 +3127,8 @@ function constrainFrameToPage(el, page) {
 }
 
 function syncFrameTextToModel(el) {
-    const page = currentEdicion.paginas.find(p => p.frames?.some(f => String(f.id) === el.dataset.frameId));
+    const pageIndex = el.closest?.('.id-paper-sheet')?.dataset.page;
+    const page = pageIndex !== undefined ? currentEdicion.paginas[Number(pageIndex)] : currentEdicion.paginas.find(p => p.frames?.some(f => String(f.id) === el.dataset.frameId));
     const frame = page?.frames?.find(f => String(f.id) === el.dataset.frameId);
     if (!frame) return;
     const texts = el.querySelectorAll('.frame-text-inner, .frame-quote-inner, .frame-box-inner');
@@ -4422,7 +4430,8 @@ function onTransitionClick(nuevoEstado) {
     updateEditorialState(nuevoEstado);
 }
 
-function updateEditorialState(estado, fechaProgramada = null) {
+async function updateEditorialState(estado, fechaProgramada = null) {
+    if (!await ensureEditionSaved()) return;
     document.getElementById('editorialDropdownMenu')?.classList.remove('show');
 
     fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}/estado`, {
@@ -4561,11 +4570,11 @@ function previewRenderPage(idx) {
         const el = document.createElement('div');
         el.className = 'id-frame preview-frame';
         el.style.position = 'absolute';
-        el.style.left = (fData.x || 20) + 'px';
-        el.style.top = (fData.y || 20) + 'px';
+        el.style.left = (fData.x ?? 20) + 'px';
+        el.style.top = (fData.y ?? 20) + 'px';
         el.style.width = (fData.w || 200) + 'px';
         el.style.height = (fData.h || 100) + 'px';
-        el.style.zIndex = fData.z || 10;
+        el.style.zIndex = fData.z ?? 10;
         if (fData.opacity !== undefined) el.style.opacity = fData.opacity;
         el.style.pointerEvents = 'none'; // Desactiva todas las interacciones (Req 6.3)
 
@@ -5098,6 +5107,7 @@ function openPdfExportModal() { openModal('pdfExportModal'); }
 
 // ── SAVE & PUBLISH BACKEND ─────────────────────────
 function markUnsaved() {
+    editorRevision++;
     hasUnsavedChanges = true;
     const ind = document.getElementById('saveIndicator');
     ind.innerHTML = '<i class="fas fa-circle" style="color:#f59e0b;font-size:0.5rem;"></i> <span>Cambios sin guardar</span>';
@@ -5112,68 +5122,77 @@ function switchEdition(id) {
     window.location.href = `{{ route('admin.periodico.index') }}?edicion_id=${id}`;
 }
 
-function saveEdicionLayout(showSuccessToast = true) {
-    syncEditorText();
-
-    const ind = document.getElementById('saveIndicator');
-    if (ind) {
-        ind.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
-        ind.style.color = '#38bdf8';
+async function saveEdicionLayout(showSuccessToast = true) {
+    if (saveInFlight) {
+        const saved = await saveInFlight;
+        if (!saved || !hasUnsavedChanges) return saved;
+        return saveEdicionLayout(showSuccessToast);
     }
+    syncEditorText();
+    const revision = editorRevision;
+    const editionId = currentEdicion.id;
+    const pagesAtSave = [...(currentEdicion.paginas || [])];
+    const payload = JSON.stringify(currentEdicion);
+    const ind = document.getElementById('saveIndicator');
+    const buttons = document.querySelectorAll('#mainSaveBtn, .btn-save-periodico');
+    if (ind) ind.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
+    buttons.forEach(button => { button.disabled = true; });
 
-    const saveBtns = document.querySelectorAll('#mainSaveBtn, .btn-save-periodico');
-    saveBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Guardando...</span>';
-    });
-
-    fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(currentEdicion)
-    })
-    .then(r => r.json())
-    .then(data => {
-        hasUnsavedChanges = false;
-        if (ind) {
-            ind.innerHTML = '<i class="fas fa-check-circle" style="color:#4ade80;"></i> <span>Al día</span>';
-            ind.style.color = '#4ade80';
+    saveInFlight = (async () => {
+        try {
+            const response = await fetch(`{{ url('/admin/periodico') }}/${editionId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json'},
+                body: payload
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.edicion) {
+                throw new Error(data.message || 'No se pudo guardar la edición.');
+            }
+            if (currentEdicion.id === editionId) {
+                // Reconciliar IDs asignados por el servidor sin perder ediciones hechas durante la petición.
+                pagesAtSave.forEach((page, index) => {
+                    if (currentEdicion.paginas.includes(page) && data.edicion.paginas[index]) page.id = data.edicion.paginas[index].id;
+                });
+                currentEdicion.pdf_url = data.edicion.pdf_url;
+                hasUnsavedChanges = editorRevision !== revision;
+                if (ind) {
+                    ind.innerHTML = hasUnsavedChanges ? '<span>Cambios sin guardar</span>' : '<i class="fas fa-check-circle"></i> <span>Al día</span>';
+                    ind.style.color = hasUnsavedChanges ? '#f59e0b' : '#4ade80';
+                }
+            }
+            if (showSuccessToast) showToast(hasUnsavedChanges ? 'Cambios guardados; hay nuevas ediciones pendientes.' : '¡Edición guardada exitosamente!', 'success');
+            return true;
+        } catch (error) {
+            hasUnsavedChanges = true;
+            if (ind) { ind.innerHTML = '<span>Error al guardar</span>'; ind.style.color = '#ef4444'; }
+            showToast(error.message || 'Error al guardar la edición.', 'error');
+            return false;
+        } finally {
+            buttons.forEach(button => { button.disabled = false; });
         }
-        saveBtns.forEach(btn => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-save"></i> <span>Guardar Periódico</span>';
-        });
-        const mainBtn = document.getElementById('mainSaveBtn');
-        if (mainBtn) mainBtn.innerHTML = '<i class="fas fa-save"></i> <span>GUARDAR</span>';
-
-        if (showSuccessToast) showToast('¡Edición guardada exitosamente!', 'success');
-    })
-    .catch(err => {
-        console.error(err);
-        if (ind) {
-            ind.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> <span>Error</span>';
-            ind.style.color = '#ef4444';
-        }
-        saveBtns.forEach(btn => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-save"></i> <span>Guardar Periódico</span>';
-        });
-        const mainBtn = document.getElementById('mainSaveBtn');
-        if (mainBtn) mainBtn.innerHTML = '<i class="fas fa-save"></i> <span>GUARDAR</span>';
-
-        showToast('Error al guardar la edición. Verifica tu conexión.', 'error');
-    });
+    })();
+    const result = await saveInFlight;
+    saveInFlight = null;
+    return result;
 }
 
-function togglePublishEdition() {
-    const isPub = !currentEdicion.publicada;
-    currentEdicion.publicada = isPub;
+async function ensureEditionSaved() {
+    if (!hasUnsavedChanges && !saveInFlight) return true;
+    do {
+        if (!await saveEdicionLayout(false)) return false;
+    } while (hasUnsavedChanges);
+    return true;
+}
 
-    fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}/publish`, {
+async function downloadEditionPdf(url) {
+    if (await ensureEditionSaved()) window.location.assign(url);
+}
+
+async function togglePublishEdition() {
+    if (!await ensureEditionSaved()) return;
+    const isPub = !currentEdicion.publicada;
+    return fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}/publish`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -5182,8 +5201,13 @@ function togglePublishEdition() {
         },
         body: JSON.stringify({ publicada: isPub })
     })
-    .then(r => r.json())
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'No se pudo cambiar la publicación.');
+        return data;
+    })
     .then(data => {
+        currentEdicion.publicada = isPub;
         const btn = document.getElementById('publishBtn');
         const lbl = document.getElementById('publishBtnLabel');
         const badge = document.getElementById('pageStatusBadge');
@@ -5199,7 +5223,8 @@ function togglePublishEdition() {
             if (badge) { badge.className = 'badge bg-secondary'; badge.textContent = '⬤ Borrador'; }
             showToast('La edición pasó a modo borrador', 'success');
         }
-    });
+    })
+    .catch(error => { showToast(error.message, 'error'); });
 }
 
 function showToast(msg, type = 'success') {

@@ -9,10 +9,7 @@
     $logo = $mf['logo_src'] ?? '';
     if (!preg_match('#^(https?://|/(?!/))#i', $logo)) $logo = '';
     if ($logo && $mu === 'mm') {
-        $logoPath = parse_url($logo, PHP_URL_PATH);
-        $localLogo = $logoPath ? realpath(public_path(ltrim($logoPath, '/'))) : false;
-        $publicRoot = realpath(public_path());
-        if ($localLogo && $publicRoot && str_starts_with($localLogo, $publicRoot.DIRECTORY_SEPARATOR)) $logo = $localLogo;
+        $logo = app(\App\Services\PeriodicoPdfService::class)->imagenParaPdf($logo);
     }
 @endphp
 <div style="width:100%;overflow:hidden;border-bottom:{{ 3*$ms }}{{ $mu }} solid {{ $accentColor }};font-family:Montserrat,DejaVu Sans,sans-serif;color:{{ $nameColor }};">

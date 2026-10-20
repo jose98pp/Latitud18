@@ -19,6 +19,6 @@ test('Los tamaños y colores editados se guardan dentro del contenido del marco'
  const child={style:{}};const text={style:{},innerHTML:'contenido',querySelectorAll:()=>[child]};const frame={id:'titulo'};
  const ctx={selectedFrame:{dataset:{frameId:'titulo'},querySelector:()=>text},currentEdicion:{paginas:[{frames:[frame]}]},activePageIndex:0,recordHistory(){},markUnsaved(){}};
  vm.createContext(ctx);vm.runInContext(helper,ctx);ctx.persistFrameTextStyles({fontSize:'28px',color:'#D71920'});
- assert.equal(child.style.fontSize,'28px');assert.equal(child.style.color,'#D71920');assert.equal(frame.content,'contenido');
+ assert.equal(child.style.fontSize,'28px');assert.equal(child.style.color,'#D71920');assert.equal(frame.content,'contenido');assert.equal(frame.text_style.fontSize,'28px');assert.equal(frame.text_style.color,'#D71920');
  assert.equal(child.style.lineHeight,'1.18');
 });

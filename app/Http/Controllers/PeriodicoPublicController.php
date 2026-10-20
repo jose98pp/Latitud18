@@ -115,7 +115,7 @@ class PeriodicoPublicController extends Controller
 
         try {
             $bytes = \Illuminate\Support\Facades\Cache::remember(
-                'periodico-reader-v1:' . $id . ':' . $revision, 600,
+                'periodico-reader-v2:' . $id . ':' . $revision, 600,
                 fn () => $this->pdfService->contenido($edicion)
             );
             $response = response($bytes, 200, [

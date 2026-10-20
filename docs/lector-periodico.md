@@ -35,3 +35,11 @@ DearFlip 1.7 usa `DFLIP.defaults` para cargar PDF.js, el worker y Three/Mockup. 
 Los errores HTTP (incluidos 404/503), respuestas HTML y herramientas que no cargan se muestran inmediatamente. Hay un límite de 60 segundos para preparar el PDF y de 25 para dibujar las páginas. Una falla cancela el motor y oculta su contenedor, incluido el spinner. Si ya se obtuvo un PDF válido, ofrece lectura continua embebida. El botón «Usar modo 2D» permite reintentar sin WebGL. Una respuesta tardía de un intento cancelado no sustituye el estado del nuevo intento.
 
 Se actualizan las versiones de los assets del lector (`?v=2`). Después de subir esta corrección ejecutar `php artisan optimize:clear` y `php artisan view:cache`. La versión de producción consultada todavía mostraba el lector HTML anterior, por lo que la captura recibida se utilizó para comprobar el síntoma del PR y no como prueba del código desplegado.
+
+## Guardado de la maqueta y PDF actualizado
+
+La descarga desde el editor guarda primero la edición y espera la confirmación del servidor. Los errores de validación mantienen el aviso de cambios pendientes. Titular y cuerpo se guardan por separado, junto con las fotografías, los estilos de texto y las coordenadas de cada marco.
+
+Un PDF subido se conserva mientras no se modifique la maqueta. Al guardar cambios de páginas o marcos, la edición pasa a generar su PDF desde esos datos, sin borrar el archivo subido. El lector recibe una revisión nueva y las descargas no conservan una copia antigua en la caché del navegador. Las imágenes locales, incluidas las de `/storage`, se incrustan desde disco; no necesitan una petición al dominio público del sitio.
+
+Después de desplegar esta corrección, ejecutar `php artisan optimize:clear` y `php artisan view:cache`, y recargar el editor y el lector. No requiere migraciones ni instalar dependencias.

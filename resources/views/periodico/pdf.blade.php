@@ -36,8 +36,8 @@
 }
 
 @page {
-    size: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => ($pg['configuracion']['page_width_mm'] ?? null) == 280) ? '280mm 430mm' : '300mm 430mm' }};
-    margin: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => ($pg['configuracion']['page_width_mm'] ?? null) == 280) ? '0' : '10mm 11mm 12mm 11mm' }};
+    size: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => array_key_exists('frames', $pg)) ? (($edicion['paginas'][0]['configuracion']['page_width_mm'] ?? 280).'mm '.($edicion['paginas'][0]['configuracion']['page_height_mm'] ?? 430).'mm') : '300mm 430mm' }};
+    margin: {{ collect($edicion['paginas'] ?? [])->contains(fn($pg) => array_key_exists('frames', $pg)) ? '0' : '10mm 11mm 12mm 11mm' }};
 }
 
 * { margin: 0; padding: 0; }
@@ -232,7 +232,7 @@ img.foto { border: 0.5pt solid #C8CED6; }
 @forelse ($paginas as $p)
     <div class="pagina">
 
-        @if (!empty($p['frames']))
+        @if (array_key_exists('frames', $p))
             {{-- Páginas maquetadas con el editor visual: mismo render que el lector --}}
             @php
                 $pgW = (float) ($p['ancho'] ?? 720);
@@ -244,14 +244,14 @@ img.foto { border: 0.5pt solid #C8CED6; }
                     $html = preg_replace('#<(script|iframe|object|embed|link|meta|base|form)\b[^>]*/?>#i', '', $html);
                     $html = preg_replace('#\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html);
                     $html = preg_replace('#\s(href|src|xlink:href|action|formaction)\s*=\s*("|\')\s*(javascript|vbscript|data)\s*:#i', ' $1=$2#', $html);
+                    $html = preg_replace_callback('/(<img\b[^>]*\bsrc\s*=\s*)([\"\'])(.*?)\2/is', function ($match) {
+                        $src = app(\App\Services\PeriodicoPdfService::class)->imagenParaPdf(html_entity_decode($match[3], ENT_QUOTES));
+                        return $match[1].$match[2].e($src).$match[2];
+                    }, $html);
                     return str_replace(['<!--', '-->'], '', $html);
                 };
             @endphp
-            @if (($p['configuracion']['page_width_mm'] ?? null) == 280)
-                @include('periodico.tabloide-frames')
-            @else
-            @include('periodico.partials.frames', ['pg' => $p, 'pgW' => $pgW, 'pgH' => $pgH, 'npSafe' => $npSafe])
-            @endif
+            @include('periodico.tabloide-frames')
 
         @else
         {{-- ============ PORTADA ============ --}}

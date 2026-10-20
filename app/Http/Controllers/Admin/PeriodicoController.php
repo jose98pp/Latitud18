@@ -14,6 +14,7 @@ use App\Services\PeriodicoPdfService;
 use App\Services\Contracts\PlantillaServiceInterface;
 use App\Services\Contracts\EstadoEditorialServiceInterface;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class PeriodicoController extends Controller
 {
@@ -419,14 +420,11 @@ class PeriodicoController extends Controller
             $file = $request->file('image');
             $filename = 'periodico_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
 
-            $destDir = public_path('images/periodico');
-            if (!file_exists($destDir)) {
-                mkdir($destDir, 0755, true);
+            $path = Storage::disk('public')->putFileAs('periodico', $file, $filename);
+            if (!$path) {
+                return response()->json(['success' => false, 'message' => 'No se pudo guardar la imagen. Intenta nuevamente.'], 503);
             }
-
-            $file->move($destDir, $filename);
-
-            $publicUrl = asset('images/periodico/' . $filename);
+            $publicUrl = Storage::disk('public')->url($path);
 
             return response()->json([
                 'success' => true,
