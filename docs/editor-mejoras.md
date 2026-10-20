@@ -38,3 +38,26 @@ npm run build
 Después de fusionar, actualizar los archivos PHP y Blade del proyecto desplegado en `latitud18.ultimahora-tv.com` y ejecutar `php artisan view:clear`. No añade tablas ni migraciones. El catálogo nuevo se instala con `php artisan db:seed --class=Latitud18EditorialV2Seeder --force`; la guía [latitud18-editorial-v2.md](latitud18-editorial-v2.md) explica las doce composiciones y su uso. Las funciones del editor se incluyen en Blade y no necesitan un servicio de Vercel.
 
 Comprobar en el panel: eliminar una página y recargar; duplicar/mover; guardar todos los campos de cabecera; sustituir el logotipo; abrir noticias/plantillas sin salir de pantalla completa; probar zoom y arrastre a 50 %, 100 % y 150 %; y comparar la previsualización con el PDF.
+
+## Corrección del movimiento y tamaño con el mouse
+
+Se reprodujo el fallo con Interact 1.10.27 y eventos de mouse en un DOM de prueba: `stopPropagation()` del mousedown del cuadro impedía que el motor recibiera el inicio del arrastre. Se conserva la selección del cuadro y se deja pasar el evento. El motor y su licencia quedan incluidos en `public/vendor/interact`, sin depender de jsDelivr en cada apertura del editor.
+
+- Arrastrar el contenido mueve el cuadro. Seleccionarlo muestra sus ocho tiradores para cambiar el tamaño.
+- Doble clic sobre un texto activa la escritura. Mientras se escribe no se arrastra el cuadro; al salir del texto vuelve al modo de movimiento.
+- Las imágenes desactivan el arrastre nativo del navegador. Se configura touch-action para permitir la interacción en el lienzo.
+- La posición y el tamaño se convierten según el zoom del editor. Se conservan los márgenes existentes y los bloqueos explícitos; un objeto bloqueado se desbloquea desde el inspector. Los espacios publicitarios siguen usando sus medidas comerciales protegidas.
+- Se sincronizan los textos antes de guardar una plantilla propia. El titular y cuerpo de un artículo se guardan por separado.
+
+Después de actualizar el código en el alojamiento, subir también `public/vendor/interact` y ejecutar `php artisan view:clear`. No requiere compilación de Node ni migraciones.
+
+Pruebas de DOM con el motor real (entorno de desarrollo Node 24, no en cPanel):
+
+```sh
+npm --prefix tests/Frontend install
+npm --prefix tests/Frontend run test:pointer
+node --test tests/Frontend/editorial-v2.test.cjs
+php vendor/bin/phpunit tests/Feature/PeriodicoEditorToolsTest.php
+```
+
+Se prueban nueve tipos de cuadro, arrastre, reducción desde un tirador al 50/100/150% de zoom, edición sin arrastre, cuadros añadidos después de inicializar y persistencia al guardar/recrear una plantilla personalizada. Son pruebas de DOM y servidor; la revisión visual dentro de la sesión administrativa publicada queda pendiente.

@@ -98,11 +98,7 @@ function closeEditorOverlay() {
 }
 
 function syncEditorText() {
-    (currentEdicion.paginas || []).forEach(page => (page.frames || []).forEach(frame => {
-        const element = document.getElementById('frame-' + frame.id);
-        const text = element?.querySelector('.frame-text-inner, .frame-quote-inner, .frame-box-inner');
-        if (text) frame.content = text.innerHTML;
-    }));
+    document.querySelectorAll('.id-paper-sheet .id-frame').forEach(syncFrameTextToModel);
 }
 
 function updateZoomDisplay() {

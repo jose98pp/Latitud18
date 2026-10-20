@@ -100,4 +100,36 @@ class PeriodicoEditorToolsTest extends TestCase
             $response->assertSee($value, false);
         }
     }
+    public function test_moved_resized_frames_survive_edition_and_custom_template_reload(): void
+    {
+        $edition = PeriodicoPlantilla::findOrFail('tpl-l18-ref-01')->crearEdicion();
+        $data = $edition->fresh()->toEditorArray();
+        $changed = [];
+        foreach ($data['paginas'][0]['frames'] as $index => &$frame) {
+            if (!in_array($frame['type'], ['text', 'image'])) continue;
+            $frame['x'] += 1;
+            $frame['y'] += 1;
+            $frame['w'] -= 10;
+            $frame['h'] -= 5;
+            $changed[$index] = array_intersect_key($frame, array_flip(['x','y','w','h']));
+        }
+        unset($frame);
+        $this->assertNotEmpty($changed);
+        $this->putJson('/admin/periodico/'.$edition->id, $data)->assertOk();
+        $saved = $edition->fresh()->toEditorArray();
+        foreach ($changed as $index => $geometry) {
+            $this->assertEquals($geometry, array_intersect_key($saved['paginas'][0]['frames'][$index], $geometry));
+        }
+        $response = $this->postJson('/admin/periodico/templates', [
+            'name' => 'Mi plantilla modificada', 'category' => 'portada',
+            'frames' => $saved['paginas'][0]['frames'],
+            'configuracion' => $saved['paginas'][0]['configuracion'] ?? null,
+        ])->assertOk()->assertJsonPath('success', true);
+        $template = PeriodicoPlantilla::findOrFail($response->json('template.id'));
+        $copy = $template->crearEdicion()->fresh()->toEditorArray();
+        foreach ($changed as $index => $geometry) {
+            $this->assertEquals($geometry, array_intersect_key($copy['paginas'][0]['frames'][$index], $geometry));
+        }
+    }
+
 }
