@@ -413,7 +413,12 @@ class PeriodicoController extends Controller
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'image' => ['bail', 'required', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:10240', function ($attribute, $value, $fail) {
+                $size = @getimagesize($value->getRealPath());
+                if ($size && $size[0] * $size[1] > (int)config('periodico.pdf_image_max_pixels', 24000000)) {
+                    $fail('La imagen supera los 24 megapíxeles. Reduce sus dimensiones antes de subirla.');
+                }
+            }],
         ]);
 
         if ($request->hasFile('image')) {

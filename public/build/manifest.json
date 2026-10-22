@@ -1,6 +1,6 @@
 {
-  "_vendor-ZF5XZ3KS.js": {
-    "file": "js/chunks/vendor-ZF5XZ3KS.js",
+  "_vendor-CZeXTcnd.js": {
+    "file": "js/chunks/vendor-CZeXTcnd.js",
     "name": "vendor"
   },
   "public/images/banner.png": {
@@ -8,42 +8,66 @@
     "src": "public/images/banner.png"
   },
   "resources/css/app.css": {
-    "file": "css/core/app-BI8FNLPZ.css",
+    "file": "css/core/app-CvUnh2pP.css",
     "src": "resources/css/app.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
   },
   "resources/css/browser-compatibility.css": {
-    "file": "css/compatibility/browser-compat-B-Qk_zdV.css",
+    "file": "css/compatibility/browser-compat-CHyM2COP.css",
     "src": "resources/css/browser-compatibility.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "browser-compatibility",
+    "names": [
+      "browser-compatibility.css"
+    ]
   },
   "resources/css/dark-mode.css": {
-    "file": "css/themes/dark-mode-BFkuSO7S.css",
+    "file": "css/themes/dark-mode-C7X61JjI.css",
     "src": "resources/css/dark-mode.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "dark-mode",
+    "names": [
+      "dark-mode.css"
+    ]
   },
   "resources/css/main-layout.css": {
-    "file": "css/main-layout-CrZISM4J.css",
+    "file": "css/main-layout-BBbnckgu.css",
     "src": "resources/css/main-layout.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "main-layout",
+    "names": [
+      "main-layout.css"
+    ]
   },
   "resources/css/portada.css": {
-    "file": "css/portada-BWxlReSt.css",
+    "file": "css/portada-T7paECqZ.css",
     "src": "resources/css/portada.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "portada",
+    "names": [
+      "portada.css"
+    ]
   },
   "resources/css/show-dark-mode.css": {
     "file": "css/pages/show-dark-mode-g0MjTuKc.css",
     "src": "resources/css/show-dark-mode.css",
-    "isEntry": true
+    "isEntry": true,
+    "name": "show-dark-mode",
+    "names": [
+      "show-dark-mode.css"
+    ]
   },
   "resources/js/app.js": {
-    "file": "js/app-B4hVz3Vk.js",
+    "file": "js/app-CvqcYtES.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_vendor-ZF5XZ3KS.js"
+      "_vendor-CZeXTcnd.js"
     ]
   }
 }

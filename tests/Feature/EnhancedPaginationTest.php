@@ -18,7 +18,7 @@ class EnhancedPaginationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create admin user
         $this->admin = User::factory()->create([
             'email' => 'admin@test.com',
@@ -27,7 +27,8 @@ class EnhancedPaginationTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_pagination_with_correct_information()
     {
         // Create test data
@@ -42,7 +43,8 @@ class EnhancedPaginationTest extends TestCase
         $response->assertSee('pagination');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_handles_per_page_parameter_correctly()
     {
         $category = Category::factory()->create();
@@ -63,13 +65,15 @@ class EnhancedPaginationTest extends TestCase
         $response->assertSee('Mostrando 1 - 15 de 30 noticias');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_preserves_filters_in_pagination_urls()
     {
         $category = Category::factory()->create(['name' => 'Test Category']);
         Noticia::factory()->count(20)->create([
             'category_id' => $category->id,
-            'titulo' => 'Test News Title'
+            'titulo' => 'Test News Title',
+            'publicada' => true
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -80,7 +84,7 @@ class EnhancedPaginationTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        
+
         // Check that pagination links preserve filters
         $content = $response->getContent();
         $this->assertStringContainsString('search=Test', $content);
@@ -88,7 +92,8 @@ class EnhancedPaginationTest extends TestCase
         $this->assertStringContainsString('status=1', $content);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_correct_pagination_controls()
     {
         $category = Category::factory()->create();
@@ -98,16 +103,17 @@ class EnhancedPaginationTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // Check for pagination controls
         $response->assertSee('Mostrar:'); // Page size selector
         $response->assertSee('por página');
         $response->assertSee('Ir a página:'); // Page jump
-        $response->assertSee('Primera'); // First page link
-        $response->assertSee('Última'); // Last page link
+        $response->assertSee('Página anterior'); // Disabled on the first page
+        $response->assertSee('Página siguiente'); // Next page available
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_handles_page_navigation_correctly()
     {
         $category = Category::factory()->create();
@@ -128,12 +134,13 @@ class EnhancedPaginationTest extends TestCase
         $response->assertSee('Mostrando 46 - 50 de 50 noticias');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_shows_correct_pagination_for_filtered_results()
     {
         $category1 = Category::factory()->create(['name' => 'Category 1']);
         $category2 = Category::factory()->create(['name' => 'Category 2']);
-        
+
         Noticia::factory()->count(10)->create(['category_id' => $category1->id]);
         Noticia::factory()->count(5)->create(['category_id' => $category2->id]);
 
@@ -143,13 +150,14 @@ class EnhancedPaginationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Mostrando 1 - 5 de 5 noticias');
-        
+
         // Should not show pagination controls for single page
         $response->assertDontSee('Primera');
         $response->assertDontSee('Última');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_handles_empty_results_correctly()
     {
         $response = $this->actingAs($this->admin)
@@ -157,10 +165,11 @@ class EnhancedPaginationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('No se encontraron noticias');
-        $response->assertDontSee('pagination');
+        $response->assertDontSee('<nav class="enhanced-pagination"', false);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pagination_includes_required_css_and_js_files()
     {
         $category = Category::factory()->create();
@@ -171,10 +180,11 @@ class EnhancedPaginationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('enhanced-pagination.css');
-        $response->assertSee('enhanced-pagination.js');
+        $response->assertSee('simple-pagination.js');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_per_page_parameter_security()
     {
         $category = Category::factory()->create();
@@ -185,7 +195,7 @@ class EnhancedPaginationTest extends TestCase
         foreach ($allowedValues as $value) {
             $response = $this->actingAs($this->admin)
                 ->get(route('admin.noticias.index', ['per_page' => $value]));
-            
+
             $response->assertStatus(200);
         }
 
@@ -194,7 +204,7 @@ class EnhancedPaginationTest extends TestCase
         foreach ($disallowedValues as $value) {
             $response = $this->actingAs($this->admin)
                 ->get(route('admin.noticias.index', ['per_page' => $value]));
-            
+
             $response->assertStatus(200);
             // Should default to 15 items per page
             $content = $response->getContent();

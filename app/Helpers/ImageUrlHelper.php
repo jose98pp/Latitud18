@@ -68,6 +68,8 @@ class ImageUrlHelper
         $normalizedPath = preg_replace('#^(storage|public)/#', '', $normalizedPath) ?? $normalizedPath;
         $normalizedPath = ltrim($normalizedPath, '/');
 
+        if (str_contains($normalizedPath, "\0") || in_array('..', explode('/', $normalizedPath), true)) return null;
+
         if (empty($normalizedPath)) {
             return null;
         }
@@ -90,7 +92,15 @@ class ImageUrlHelper
             }
         }
 
-        return null;
+        // Old records may still refer to noticias/file.jpg after category migration.
+        // Resolve only an unambiguous match; never substitute another category's photo.
+        $matches = [];
+        foreach (Storage::disk('public')->directories('noticias') as $directory) {
+            $candidate = $directory.'/'.$basename;
+            if (Storage::disk('public')->exists($candidate)) $matches[] = $candidate;
+            if (count($matches) > 1) return null;
+        }
+        return $matches[0] ?? null;
     }
 
     /**
@@ -114,13 +124,13 @@ class ImageUrlHelper
     private static function getCdnUrl(string $imagePath, ?string $size = null): string
     {
         $cdnBaseUrl = Config::get('images.cdn.base_url');
-        
+
         if (!$cdnBaseUrl) {
             return asset('storage/' . $imagePath);
         }
 
         $url = rtrim($cdnBaseUrl, '/') . '/' . ltrim($imagePath, '/');
-        
+
         // Agregar parámetros de tamaño si se especifica
         if ($size && Config::get('images.performance.responsive_images')) {
             $sizes = Config::get('images.performance.thumbnail_sizes', []);
@@ -168,13 +178,13 @@ class ImageUrlHelper
     public static function getSrcSet(?string $imagePath): string
     {
         $urls = self::getResponsiveImageUrls($imagePath);
-        
+
         $srcset = [];
         $srcset[] = $urls['small'] . ' 150w';
         $srcset[] = $urls['medium'] . ' 300w';
         $srcset[] = $urls['large'] . ' 600w';
         $srcset[] = $urls['original'] . ' 1200w';
-        
+
         return implode(', ', $srcset);
     }
 
@@ -190,7 +200,7 @@ class ImageUrlHelper
     {
         $url = self::getImageUrl($imagePath);
         $srcset = self::getSrcSet($imagePath);
-        
+
         $defaultAttributes = [
             'src' => $url,
             'alt' => $alt,
@@ -204,7 +214,7 @@ class ImageUrlHelper
         }
 
         $attributes = array_merge($defaultAttributes, $attributes);
-        
+
         $attributeString = '';
         foreach ($attributes as $key => $value) {
             $attributeString .= ' ' . $key . '="' . htmlspecialchars($value) . '"';
@@ -250,7 +260,7 @@ class ImageUrlHelper
 
         $resolvedPath = self::resolveImagePath($imagePath);
         $exists = !empty($resolvedPath);
-        
+
         return [
             'path' => $imagePath,
             'resolved_path' => $resolvedPath,

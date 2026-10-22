@@ -29,7 +29,7 @@ class NewsService
             $nextUrgency = Noticia::publicadaActiva()->where('es_urgente', true)->where('urgente_hasta', '>', $now)->min('urgente_hasta');
             $ttl = 300;
             foreach (array_filter([$nextPublication, $nextUrgency]) as $date) {
-                $ttl = min($ttl, max(1, (int) ceil($now->floatDiffInSeconds(\Carbon\Carbon::parse($date)))));
+                $ttl = min($ttl, max(1, (int) ceil($now->diffInSeconds(\Carbon\Carbon::parse($date)))));
             }
             return Cache::remember('homepage_data', $ttl, function () {
             // 1. Obtener noticias para el carrusel principal (priorizar marcadas como destacada_hero)
@@ -69,7 +69,7 @@ class NewsService
                 ->orderBy('created_at', 'desc')
                 ->take(8)
                 ->get();
-            
+
             $excludeTickerIds = $urgentes->pluck('id')->toArray();
             $recientes = Noticia::publicadaActiva()
                 ->whereNotIn('id', $excludeTickerIds)
@@ -217,26 +217,26 @@ class NewsService
         }
 
         $categoryId = $categoria->id;
-        
+
         // Obtener noticias de la categoría con paginación
         $noticiasCategoria = Noticia::where('category_id', $categoryId)
             ->publicadaActiva()
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
-        
+
         // Procesar noticias de la categoría con contenido sanitizado e imágenes seguras
         $noticiasCategoria->getCollection()->transform(function ($noticia) {
             return $this->processNewsItem($noticia);
         });
-        
+
         // Obtener noticias relacionadas (otras categorías)
         $noticias = $this->noticiaRepository->getNewsExcludingCategory($categoryId, 6);
-        
+
         // Procesar noticias relacionadas con contenido sanitizado e imágenes seguras
         $noticias = $noticias->map(function ($noticia) {
             return $this->processNewsItem($noticia);
         });
-        
+
         // Obtener todas las categorías para navegación
         $categorias = Cache::remember('all_categories', 600, function () {
             return Category::all();
@@ -271,17 +271,17 @@ class NewsService
     public function getNewsDetailData($newsId)
     {
         $noticia = $this->noticiaRepository->getPublishedNewsById($newsId);
-        
+
         // Procesar noticia principal con contenido sanitizado e imagen segura
         $noticia = $this->processNewsItem($noticia);
         $imagenUrl = $noticia->imagenUrl;
-        
+
         // Obtener y procesar noticias relacionadas
         $noticias = $this->noticiaRepository->getRelatedNews($newsId, 5);
         $noticias = $noticias->map(function ($noticia) {
             return $this->processNewsItem($noticia);
         });
-        
+
         $categorias = Cache::remember('all_categories', 600, function () {
             return Category::all();
         });
@@ -293,7 +293,7 @@ class NewsService
 
     /**
      * Obtener URL segura de imagen (método legacy - usa ImageValidationService internamente)
-     * 
+     *
      * @deprecated Usar ImageValidationService::getImageUrlOrDefault() directamente
      */
     public function getSecureImageUrl($imagePath)
@@ -352,10 +352,10 @@ class NewsService
         if (empty($content)) {
             return '';
         }
-        
+
         return $this->contentSanitizationService->processRichTextContent($content);
     }
-    
+
     /**
      * Get clean excerpt for previews
      */
@@ -364,10 +364,10 @@ class NewsService
         if (empty($content)) {
             return '';
         }
-        
+
         return $this->contentSanitizationService->getCleanExcerpt($content, $length);
     }
-    
+
     /**
      * Process news item with sanitized content and secure image URL
      */
@@ -378,7 +378,7 @@ class NewsService
         $noticia->excerptLimpio = $this->getCleanExcerpt($noticia->contenido ?? '', 120);
         return $noticia;
     }
-    
+
     /**
      * Limpiar caché relacionado con noticias
      */
@@ -387,7 +387,7 @@ class NewsService
         Cache::forget('homepage_data');
         Cache::forget('all_categories');
         Cache::forget('dashboard_stats');
-        
+
         // Limpiar caché de categorías específicas si es necesario
         $categories = Category::all();
         foreach ($categories as $category) {

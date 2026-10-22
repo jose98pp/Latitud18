@@ -25,7 +25,7 @@
 <!-- Schema.org NewsArticle JSON-LD -->
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "NewsArticle",
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -237,7 +237,7 @@
 
       <!-- Columna Principal -->
       <div class="article-main-column" style="background:var(--color-card-bg);border:1px solid var(--color-border);border-radius:2px;padding:36px;min-width:0;">
-        
+
         <!-- Badge de CategorÃ­a + Tiempo de Lectura -->
         <div class="article-top-badge-row" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--color-border);">
           <span class="card-cat-tag" style="background:var(--color-red);color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:0.65rem;text-transform:uppercase;padding:3px 10px;border-radius:2px;">{{ $noticia->category->name ?? 'General' }}</span>
@@ -775,7 +775,7 @@ if ('speechSynthesis' in window) {
 // --- REACCIONES INTERACTIVAS CON AJAX ---
 function submitReaction(tipo) {
     const btns = document.querySelectorAll('.reaction-card-btn');
-    
+
     fetch("{{ route('noticias.react', $noticia->id) }}", {
         method: 'POST',
         headers: {

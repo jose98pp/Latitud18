@@ -10,14 +10,14 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_public_registration_screen_is_disabled(): void
     {
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertNotFound();
     }
 
-    public function test_new_users_can_register(): void
+    public function test_public_registration_cannot_create_accounts(): void
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -26,7 +26,8 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $response->assertNotFound();
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email'=>'test@example.com']);
     }
 }

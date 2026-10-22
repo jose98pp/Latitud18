@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\NoticiaRepository::class
         );
 
+        $this->app->scoped(\App\Services\PeriodicoPdfService::class);
+
         // Registrar Service
         $this->app->bind(
             \App\Services\NewsService::class,
@@ -58,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
                         ->orderBy('position')
                         ->get()
                         ->groupBy('location');
-                    
+
                     \Illuminate\Support\Facades\View::share('banners', $banners);
                 }
 

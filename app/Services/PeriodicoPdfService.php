@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class PeriodicoPdfService
 {
+    private array $imageCache = [];
+    private int $imageDimension = 2400;
     /**
      * Devuelve un response de descarga con el PDF real de la edición.
      *
@@ -40,6 +42,7 @@ class PeriodicoPdfService
             throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
         }
 
+        $this->prepararImagenes($edicion);
         $this->prepararCacheFuentes();
         $pdf = Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
             ->setOptions([
@@ -71,6 +74,7 @@ class PeriodicoPdfService
             throw new \App\Exceptions\EdicionSinPaginasException($edicion['id'] ?? 'desconocida');
         }
 
+        $this->prepararImagenes($edicion);
         $this->prepararCacheFuentes();
         return Pdf::loadView('periodico.pdf', ['edicion' => $edicion])
             ->setOptions([
@@ -79,6 +83,26 @@ class PeriodicoPdfService
                 'defaultFont'          => 'DejaVu Serif',
             ], true)
             ->output();
+    }
+
+    private function prepararImagenes(array $edicion): void
+    {
+        $sources = [];
+        $visit = function ($value, $key = '') use (&$visit, &$sources) {
+            if (is_array($value)) { foreach ($value as $k => $v) $visit($v, (string)$k); }
+            elseif (is_string($value)) {
+                if (in_array($key, ['src', 'advertiser_image_url', 'logo_src'], true) && $value !== '') $sources[$value] = true;
+                if (str_contains($value, '<img')) {
+                    preg_match_all('/<img[^>]+src=["\']([^"\']+)/i', $value, $matches);
+                    foreach ($matches[1] as $url) $sources[$url] = true;
+                }
+            }
+        };
+        $visit($edicion['paginas'] ?? []);
+        $configured = max(1200, (int)config('periodico.pdf_image_max_dimension', 2400));
+        // Bound memory and download size for editions with many different photographs.
+        $this->imageDimension = min($configured, count($sources) > 16 ? 1600 : (count($sources) > 8 ? 2000 : $configured));
+        $this->imageCache = [];
     }
 
     private function prepararCacheFuentes(): void
@@ -111,10 +135,49 @@ class PeriodicoPdfService
             if (!$resolved || !is_file($resolved)) continue;
             foreach ($roots as $root) {
                 $root = realpath($root);
-                if ($root && str_starts_with($resolved, $root.DIRECTORY_SEPARATOR)) return $resolved;
+                if ($root && str_starts_with($resolved, $root.DIRECTORY_SEPARATOR)) return $this->optimizarImagenLocal($resolved);
             }
         }
         return preg_match('#^https?://#i', $url) ? $url : '';
+    }
+
+    /** Reduce only the PDF copy; uploaded originals remain unchanged. */
+    private function optimizarImagenLocal(string $source): string
+    {
+        if (isset($this->imageCache[$source])) return $this->imageCache[$source];
+        $info = @getimagesize($source);
+        if (!$info) return $source;
+        if ($info[0] * $info[1] > (int)config('periodico.pdf_image_max_pixels', 24000000)) {
+            throw new \RuntimeException('Una imagen supera los 24 megapíxeles. Redúcela antes de exportar el periódico.');
+        }
+        if (!in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) return $source;
+        $limit = min($this->imageDimension, max(1200, (int)config('periodico.pdf_image_max_dimension', 2400)));
+        if (max($info[0], $info[1]) <= $limit) return $source;
+        $extension = $info[2] === IMAGETYPE_PNG ? 'png' : 'jpg';
+        $directory = storage_path('framework/cache/periodico-images');
+        \Illuminate\Support\Facades\File::ensureDirectoryExists($directory);
+        $hash = hash('sha256', hash_file('sha256', $source).':'.$limit.':pdf-v1');
+        $destination = $directory.'/'.$hash.'.'.$extension;
+        if (is_file($destination)) return $this->imageCache[$source] = $destination;
+        $load = match ($info[2]) { IMAGETYPE_JPEG=>'imagecreatefromjpeg', IMAGETYPE_PNG=>'imagecreatefrompng', IMAGETYPE_WEBP=>'imagecreatefromwebp' };
+        $original = @$load($source);
+        if (!$original) throw new \RuntimeException('No se pudo preparar una imagen de la edición.');
+        $ratio = $limit / max($info[0], $info[1]);
+        $width = max(1, (int)round($info[0] * $ratio));
+        $height = max(1, (int)round($info[1] * $ratio));
+        $scaled = imagecreatetruecolor($width, $height);
+        $temporary = $destination.'.'.bin2hex(random_bytes(6)).'.tmp';
+        try {
+            if ($extension === 'png') {
+                imagealphablending($scaled, false); imagesavealpha($scaled, true);
+                imagefill($scaled, 0, 0, imagecolorallocatealpha($scaled, 0, 0, 0, 127));
+            } else imagefill($scaled, 0, 0, imagecolorallocate($scaled, 255, 255, 255));
+            imagecopyresampled($scaled, $original, 0, 0, 0, 0, $width, $height, $info[0], $info[1]);
+            $written = $extension === 'png' ? imagepng($scaled, $temporary, 6) : imagejpeg($scaled, $temporary, 85);
+            if (!$written || !rename($temporary, $destination)) throw new \RuntimeException('No se pudo guardar la copia optimizada para el PDF.');
+            chmod($destination, 0644);
+        } finally { imagedestroy($original); imagedestroy($scaled); @unlink($temporary); }
+        return $this->imageCache[$source] = $destination;
     }
 
     public function estiloTextoParaPdf(array $styles, float $scale): string

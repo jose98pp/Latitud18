@@ -23,13 +23,13 @@ class RichTextEditorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create admin user
         $this->user = User::factory()->create([
             'role' => 'admin',
             'is_active' => true
         ]);
-        
+
         // Create test category
         $this->category = Category::create([
             'name' => 'Test Category',
@@ -38,12 +38,13 @@ class RichTextEditorTest extends TestCase
 
         // Initialize sanitization service
         $this->sanitizationService = new ContentSanitizationService();
-        
+
         // Setup storage for testing
         Storage::fake('public');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_noticias_create_view_loads_successfully()
     {
         $response = $this->actingAs($this->user)
@@ -54,7 +55,8 @@ class RichTextEditorTest extends TestCase
         $response->assertViewHas('categories');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_noticias_edit_view_loads_successfully()
     {
         $noticia = Noticia::create([
@@ -72,11 +74,12 @@ class RichTextEditorTest extends TestCase
         $response->assertViewHas(['noticia', 'categories']);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_create_noticia_with_rich_content()
     {
         $richContent = '<p>This is <strong>bold</strong> and <em>italic</em> text with enough real news content to validate.</p><ul><li>Item 1</li><li>Item 2</li></ul>';
-        
+
         $response = $this->actingAs($this->user)
             ->post(route('admin.noticias.store'), [
                 'titulo' => 'Test News with Rich Content',
@@ -101,7 +104,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<em>italic</em>', $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_update_noticia_with_rich_content()
     {
         $noticia = Noticia::create([
@@ -130,7 +134,8 @@ class RichTextEditorTest extends TestCase
         $this->assertEquals(1, $noticia->publicada);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_create_categoria_with_rich_description()
     {
         $richDescription = '<p>Category description with <strong>formatting</strong></p>';
@@ -153,7 +158,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<strong>formatting</strong>', $category->descripcion);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_update_categoria_with_rich_description()
     {
         $category = Category::create([
@@ -177,7 +183,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<em>emphasis</em>', $category->descripcion);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_sanitization_removes_dangerous_scripts()
     {
         $dangerousContent = '<p>Safe content</p><p>Enough real text for a complete editorial publication.</p><script>alert("xss")</script><p onclick="alert(\'click\')">Click me</p>';
@@ -195,17 +202,18 @@ class RichTextEditorTest extends TestCase
 
         $noticia = Noticia::where('titulo', 'Test XSS Protection')->first();
         $this->assertNotNull($noticia);
-        
+
         // Should not contain script tags
         $this->assertStringNotContainsString('<script>', $noticia->contenido);
         $this->assertStringNotContainsString('alert(', $noticia->contenido);
         $this->assertStringNotContainsString('onclick=', $noticia->contenido);
-        
+
         // Should still contain safe content
         $this->assertStringContainsString('<p>Safe content</p>', $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_length_validation()
     {
         $longContent = str_repeat('<p>Very long content. </p>', 2000); // Exceeds limit
@@ -220,13 +228,14 @@ class RichTextEditorTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHasErrors('contenido');
-        
+
         $this->assertDatabaseMissing('noticias', [
             'titulo' => 'Test Long Content'
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_image_upload_api_success()
     {
         // Create a fake image file without using GD
@@ -245,13 +254,14 @@ class RichTextEditorTest extends TestCase
         $responseData = $response->json();
         $this->assertArrayHasKey('url', $responseData);
         $this->assertArrayHasKey('filename', $responseData);
-        
+
         // Check if file was stored
         $filename = $responseData['filename'];
         Storage::disk('public')->assertExists('images/' . $filename);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_image_upload_api_file_too_large()
     {
         // Create a fake large image file
@@ -268,7 +278,8 @@ class RichTextEditorTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_image_upload_api_invalid_file_type()
     {
         $file = UploadedFile::fake()->create('document.pdf', 1024);
@@ -284,7 +295,8 @@ class RichTextEditorTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_image_upload_api_no_file()
     {
         $response = $this->actingAs($this->user)
@@ -297,36 +309,40 @@ class RichTextEditorTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_sanitization_service_basic_functionality()
     {
         $content = '<p>Normal content with <strong>bold</strong> text</p>';
         $sanitized = $this->sanitizationService->sanitizeContent($content);
-        
+
         $this->assertEquals($content, $sanitized);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_sanitization_service_removes_scripts()
     {
         $content = '<p>Safe content</p><script>alert("xss")</script>';
         $sanitized = $this->sanitizationService->sanitizeContent($content);
-        
+
         $this->assertStringNotContainsString('<script>', $sanitized);
         $this->assertStringContainsString('<p>Safe content</p>', $sanitized);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_sanitization_service_removes_event_handlers()
     {
         $content = '<p onclick="alert(\'click\')">Click me</p>';
         $sanitized = $this->sanitizationService->sanitizeContent($content);
-        
+
         $this->assertStringNotContainsString('onclick=', $sanitized);
         $this->assertStringContainsString('<p>Click me</p>', $sanitized);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_length_validation_service()
     {
         $shortContent = 'Short';
@@ -342,17 +358,19 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('excede el límite máximo', $error);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_dangerous_content_detection()
     {
         $dangerousContent = '<script>alert("xss")</script><p onclick="alert()">Click</p>';
         $warnings = $this->sanitizationService->hasDangerousContent($dangerousContent);
-        
+
         $this->assertNotEmpty($warnings);
         $this->assertCount(2, $warnings);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_noticias_form_validation_requires_content()
     {
         $response = $this->actingAs($this->user)
@@ -365,13 +383,14 @@ class RichTextEditorTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHasErrors('contenido');
-        
+
         $this->assertDatabaseMissing('noticias', [
             'titulo' => 'Test News'
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_categorias_can_have_empty_description()
     {
         $response = $this->actingAs($this->user)
@@ -389,11 +408,12 @@ class RichTextEditorTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_rich_content_preserves_formatting_on_edit()
     {
         $originalContent = '<h2>Heading</h2><p>Paragraph with <strong>bold</strong> and <em>italic</em> text.</p><ul><li>List item 1</li><li>List item 2</li></ul>';
-        
+
         $noticia = Noticia::create([
             'titulo' => 'Formatted News',
             'contenido' => $originalContent,
@@ -411,7 +431,7 @@ class RichTextEditorTest extends TestCase
             ]);
 
         $response->assertRedirect(route('admin.noticias.index'));
-        
+
         $noticia->refresh();
         $this->assertStringContainsString('<h2>Heading</h2>', $noticia->contenido);
         $this->assertStringContainsString('<strong>bold</strong>', $noticia->contenido);
@@ -419,7 +439,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<ul><li>', $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_editor_views_contain_required_scripts_and_elements()
     {
         // Test noticias create view
@@ -467,7 +488,8 @@ class RichTextEditorTest extends TestCase
         $response->assertSee('rich-text-editor-init.js', false);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_complex_html_content_handling()
     {
         $complexContent = '
@@ -501,7 +523,7 @@ class RichTextEditorTest extends TestCase
 
         $noticia = Noticia::where('titulo', 'Complex HTML Test')->first();
         $this->assertNotNull($noticia);
-        
+
         // Verify various HTML elements are preserved
         $this->assertStringContainsString('<h1>Main Title</h1>', $noticia->contenido);
         $this->assertStringContainsString('<h2>Subtitle</h2>', $noticia->contenido);
@@ -512,7 +534,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<blockquote>', $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_image_insertion_in_content()
     {
         // Create a fake image file
@@ -548,7 +571,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString($imageUrl, $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_with_special_characters()
     {
         $specialContent = '<p>Content with special characters: áéíóú ñ ¿¡ & < > " \' €</p>';
@@ -566,14 +590,15 @@ class RichTextEditorTest extends TestCase
 
         $noticia = Noticia::where('titulo', 'Special Characters Test')->first();
         $this->assertNotNull($noticia);
-        
+
         // Verify special characters are preserved
         $this->assertStringContainsString('áéíóú', $noticia->contenido);
         $this->assertStringContainsString('ñ', $noticia->contenido);
         $this->assertStringContainsString('¿¡', $noticia->contenido);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_empty_content_handling()
     {
         // Test with completely empty content
@@ -601,7 +626,8 @@ class RichTextEditorTest extends TestCase
         $response->assertSessionHasErrors('contenido');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_large_content_handling()
     {
         // Create content that's within limits
@@ -624,7 +650,8 @@ class RichTextEditorTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_categorias_with_rich_content_workflow()
     {
         // Create category with rich description
@@ -662,7 +689,8 @@ class RichTextEditorTest extends TestCase
         $this->assertStringContainsString('<u>underlined</u>', $category->descripcion);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_concurrent_image_uploads()
     {
         // Test multiple image uploads don't interfere with each other
@@ -690,7 +718,8 @@ class RichTextEditorTest extends TestCase
         Storage::disk('public')->assertExists('images/' . $data2['filename']);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function test_content_sanitization_comprehensive()
     {
         $maliciousContent = '

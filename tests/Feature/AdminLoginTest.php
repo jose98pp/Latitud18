@@ -14,7 +14,7 @@ class AdminLoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create admin user
         $this->admin = User::create([
             'name' => 'Admin Test',
@@ -26,17 +26,19 @@ class AdminLoginTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_login_page_loads()
     {
         $response = $this->get(route('admin.login'));
-        
+
         $response->assertStatus(200);
         $response->assertSee('Latitud 18 Admin');
         $response->assertSee('Iniciar Sesión');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_login_with_correct_credentials()
     {
         $response = $this->post(route('admin.login.store'), [
@@ -48,7 +50,8 @@ class AdminLoginTest extends TestCase
         $this->assertAuthenticatedAs($this->admin);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_cannot_login_with_incorrect_credentials()
     {
         $response = $this->post(route('admin.login.store'), [
@@ -60,7 +63,8 @@ class AdminLoginTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function non_admin_user_cannot_access_admin_dashboard()
     {
         $user = User::create([
@@ -73,15 +77,16 @@ class AdminLoginTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->get(route('admin.dashboard'));
-        
+
         $response->assertRedirect(route('portada'));
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function unauthenticated_user_redirected_to_login()
     {
         $response = $this->get(route('admin.dashboard'));
-        
+
         $response->assertRedirect(route('admin.login'));
     }
 }

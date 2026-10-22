@@ -1,11 +1,12 @@
-@if($news->hasPages())
+@if($news->total() > 0)
     <div class="enhanced-pagination-wrapper">
         <div class="pagination-info">
             <span class="pagination-text">
                 Mostrando {{ $news->firstItem() }} - {{ $news->lastItem() }} de {{ $news->total() }} noticias
             </span>
         </div>
-        
+
+        @if($news->hasPages())
         <nav class="enhanced-pagination" aria-label="Navegación de páginas">
             <ul class="pagination pagination-lg justify-content-center">
                 {{-- First Page Link --}}
@@ -39,7 +40,7 @@
                 @php
                     $start = max(1, $news->currentPage() - 2);
                     $end = min($news->lastPage(), $news->currentPage() + 2);
-                    
+
                     // Ensure we always show at least 5 pages when possible
                     if ($end - $start < 4) {
                         if ($start == 1) {
@@ -118,6 +119,7 @@
                 @endif
             </ul>
         </nav>
+        @endif
 
         {{-- Page Size Selector --}}
         <div class="pagination-controls">
@@ -136,11 +138,11 @@
             <div class="page-jump">
                 <label for="page-jump-input" class="form-label">Ir a página:</label>
                 <div class="input-group input-group-sm">
-                    <input type="number" 
-                           id="page-jump-input" 
-                           class="form-control" 
-                           min="1" 
-                           max="{{ $news->lastPage() }}" 
+                    <input type="number"
+                           id="page-jump-input"
+                           class="form-control"
+                           min="1"
+                           max="{{ $news->lastPage() }}"
                            placeholder="{{ $news->currentPage() }}"
                            style="width: 80px;">
                     <button class="btn btn-outline-primary" type="button" onclick="jumpToPage()">

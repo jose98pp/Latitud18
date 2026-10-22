@@ -578,6 +578,10 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
   overflow: hidden;
 }
 
+.id-frame.id-frame-overflow { outline: 3px solid #f59e0b; outline-offset: 2px; }
+#layoutAuditSummary { font-size:.8rem; padding:12px; background:#17382b; color:#d1fae5; border-radius:6px; margin-bottom:14px; }
+#layoutAuditSummary[data-warning="true"] { background:#4a3210; color:#fef3c7; }
+
 .frame-text-inner {
   width: 100%;
   height: 100%;
@@ -2172,6 +2176,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
 {{-- ═══════════════════════════════════════════════════════
      MODAL: EXPORTAR A PDF
 ═══════════════════════════════════════════════════════ --}}
+<script src="{{ asset('js/periodico/layout-audit.js') }}?v=1" defer></script>
 <div class="id-modal-overlay" id="pdfExportModal">
   <div class="id-modal" style="max-width:500px;">
     <div class="id-modal-header">
@@ -2183,6 +2188,7 @@ body.editor-fullscreen .content-wrapper > .content-header { display: none !impor
         El PDF de <strong>{{ $currentEdicion['numero_edicion'] ?? '' }}</strong> se genera en el servidor
         con todas las páginas compuestas. Es el mismo archivo que descarga el público.
       </p>
+      <p id="layoutAuditSummary" role="status" aria-live="polite"></p>
       <div style="display:flex;flex-direction:column;gap:10px;">
         <a class="insp-full-btn" href="{{ !empty($currentEdicion['id']) ? route('admin.periodico.pdf', $currentEdicion['id']) : '#' }}"
            onclick="event.preventDefault(); downloadEditionPdf(this.href)"
@@ -2470,7 +2476,7 @@ function changePaperFormat(formatKey) {
     const f = PAPER_FORMATS[formatKey] || PAPER_FORMATS.tabloid;
     document.documentElement.style.setProperty('--paper-w', f.w + 'px');
     document.documentElement.style.setProperty('--paper-h', f.h + 'px');
-    
+
     (currentEdicion.paginas || []).forEach(page => {
         page.ancho = f.w; page.alto = f.h;
         if (formatKey === 'tabloid') page.configuracion = { ...(page.configuracion || {}), page_width_px:f.w, page_height_px:f.h, page_width_mm:280, page_height_mm:430, margin_px:31 };
@@ -3293,9 +3299,9 @@ function uploadImageForFrame(input) {
             if (selectedFrame) {
                 selectedFrame.querySelector('.upload-spinner-overlay')?.remove();
             }
-            if (d.url) { 
+            if (d.url) {
                 applyImageSrc(d.url, targetFrameId);
-                closeModal('imagePickerModal'); 
+                closeModal('imagePickerModal');
                 showToast('Imagen cargada con éxito', 'success');
             } else {
                 showToast(d.message || 'Error al subir imagen', 'error');
@@ -3762,7 +3768,7 @@ function renderTemplateCards(templates) {
         filtered = filtered.filter(t => {
             const cat = (t.category || '').toLowerCase();
             const filter = currentFilterCat.toLowerCase();
-            return cat === filter || 
+            return cat === filter ||
                    (filter === 'portada' && (cat === 'portadas' || cat === 'portada')) ||
                    (filter === 'editorial' && (cat === 'editorial' || cat === 'opinion')) ||
                    (filter === 'deportes' && (cat === 'deportes' || cat === 'contraataque'));
@@ -3770,7 +3776,7 @@ function renderTemplateCards(templates) {
     }
 
     if (query) {
-        filtered = filtered.filter(t => 
+        filtered = filtered.filter(t =>
             (t.name && t.name.toLowerCase().includes(query)) ||
             (t.description && t.description.toLowerCase().includes(query)) ||
             (t.category && t.category.toLowerCase().includes(query))
@@ -5100,7 +5106,7 @@ function filterDrawerNews() {
     });
 }
 
-function openPdfExportModal() { openModal('pdfExportModal'); }
+function openPdfExportModal() { window.PeriodicoLayoutAudit?.audit(); openModal('pdfExportModal'); }
 
 // La descarga del PDF se hace contra la ruta real (server-side DomPDF).
 // No se usa window.print() para evitar una segunda vía de exportación.
@@ -5190,6 +5196,11 @@ async function downloadEditionPdf(url) {
 }
 
 async function togglePublishEdition() {
+    if (!currentEdicion.publicada && window.PeriodicoLayoutAudit?.audit().length) {
+        openPdfExportModal();
+        showToast('Revisa los avisos de maquetación antes de publicar.', 'error');
+        if (!window.confirm('Se detectaron elementos fuera de página o texto que puede recortarse. ¿Publicar esta edición de todas formas?')) return;
+    }
     if (!await ensureEditionSaved()) return;
     const isPub = !currentEdicion.publicada;
     return fetch(`{{ url('/admin/periodico') }}/${currentEdicion.id}/publish`, {

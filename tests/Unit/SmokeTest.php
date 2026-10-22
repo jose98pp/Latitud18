@@ -11,6 +11,12 @@ class SmokeTest extends TestCase
 {
     use DatabaseTransactions;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(\Database\Seeders\PeriodicoPlantillasSeeder::class);
+    }
+
     /**
      * Test: Factory seeders crean plantillas para las 8 categorías con is_custom = false
      * Validates: Req 1.1
@@ -83,19 +89,11 @@ class SmokeTest extends TestCase
             $this->assertNotEmpty($fmt['label']);
         }
 
-        // Exact dimensions check
-        $this->assertEquals(932, $formats['A1']['w_px']);
-        $this->assertEquals(227, $formats['A1']['h_px']);
-        $this->assertEquals(499, $formats['B1']['w_px']);
-        $this->assertEquals(983, $formats['B1']['h_px']);
-        $this->assertEquals(1006, $formats['C1']['w_px']);
-        $this->assertEquals(484, $formats['C1']['h_px']);
-        $this->assertEquals(242, $formats['D1']['w_px']);
-        $this->assertEquals(492, $formats['D1']['h_px']);
-        $this->assertEquals(499, $formats['E1']['w_px']);
-        $this->assertEquals(235, $formats['E1']['h_px']);
-        $this->assertEquals(1006, $formats['F1']['w_px']);
-        $this->assertEquals(182, $formats['F1']['h_px']);
+        // Physical ad sizes must fit the current 720px / 28cm newspaper scale.
+        foreach ($formats as $format) {
+            $this->assertEqualsWithDelta($format['w_cm'] * 720 / 28, $format['w_px'], 1);
+            $this->assertEqualsWithDelta($format['h_cm'] * 720 / 28, $format['h_px'], 1);
+        }
     }
 
     /**

@@ -42,7 +42,7 @@ class AssetValidationTest extends TestCase
 
         foreach ($cssFiles as $cssFile) {
             $fullPath = base_path($cssFile);
-            
+
             if (File::exists($fullPath)) {
                 $content = File::get($fullPath);
                 $this->assertNotEmpty(
@@ -62,7 +62,7 @@ class AssetValidationTest extends TestCase
         $this->assertFileExists($layoutPath, 'Main layout file does not exist');
 
         $content = File::get($layoutPath);
-        
+
         $requiredCssFiles = [
             'resources/css/app.css',
             'resources/css/browser-compatibility.css',
@@ -70,12 +70,10 @@ class AssetValidationTest extends TestCase
             'resources/css/show-dark-mode.css'
         ];
 
+        $this->assertStringContainsString('AssetHelper::getAllCssFiles()', $content);
+        \Illuminate\Support\Facades\Route::shouldReceive('currentRouteName')->andReturn('show');
         foreach ($requiredCssFiles as $cssFile) {
-            $this->assertStringContainsString(
-                $cssFile,
-                $content,
-                "Main layout does not reference CSS file: {$cssFile}"
-            );
+            $this->assertContains($cssFile, \App\Helpers\AssetHelper::getAllCssFiles());
         }
     }
 
@@ -115,26 +113,26 @@ class AssetValidationTest extends TestCase
     {
         $cssFiles = [
             'resources/css/app.css',
-            'resources/css/browser-compatibility.css', 
+            'resources/css/browser-compatibility.css',
             'resources/css/dark-mode.css',
             'resources/css/show-dark-mode.css'
         ];
 
         foreach ($cssFiles as $cssFile) {
             $fullPath = base_path($cssFile);
-            
+
             if (File::exists($fullPath)) {
                 $content = File::get($fullPath);
-                
+
                 // Should not contain obvious syntax errors
                 $this->assertStringNotContainsString('undefined', $content);
                 $this->assertStringNotContainsString('null', $content);
-                
+
                 // Should contain CSS-like content
                 $hasCssContent = (
                     str_contains($content, '{') && str_contains($content, '}')
                 ) || str_contains($content, '@');
-                
+
                 $this->assertTrue(
                     $hasCssContent,
                     "CSS file does not contain valid CSS content: {$cssFile}"

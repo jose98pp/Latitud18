@@ -22,16 +22,18 @@ class SecurityHeadersMiddleware
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
+
         // Content Security Policy mejorado para soportar todas las librerías necesarias
+        // PDF.js/DearFlip renders page textures and the PDF fallback as local Blob URLs.
+        $readerSources = $request->routeIs('periodico.public.*') ? 'blob: ' : '';
         $csp = "default-src 'self' *; " .
                "script-src 'self' 'unsafe-inline' 'unsafe-eval' *; " .
                "style-src 'self' 'unsafe-inline' *; " .
-               "img-src 'self' data: https: http: *; " .
+               "img-src 'self' ".$readerSources."data: https: http: *; " .
                "font-src 'self' data: https: http: *; " .
-               "frame-src 'self' *; " .
+               "frame-src 'self' ".$readerSources."*; " .
                "connect-src 'self' * ws: wss:;";
-        
+
         $response->headers->set('Content-Security-Policy', $csp);
 
         return $response;

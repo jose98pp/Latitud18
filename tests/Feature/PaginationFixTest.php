@@ -15,15 +15,15 @@ class PaginationFixTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create admin user
         $this->admin = User::factory()->create([
             'role' => 'admin'
         ]);
-        
+
         // Create category
         $this->category = Category::factory()->create();
-        
+
         // Create multiple news items for pagination testing
         Noticia::factory()->count(50)->create([
             'category_id' => $this->category->id,
@@ -32,7 +32,8 @@ class PaginationFixTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pagination_loads_correctly_on_admin_news_index()
     {
         $response = $this->actingAs($this->admin)
@@ -44,7 +45,8 @@ class PaginationFixTest extends TestCase
         $response->assertSee('de 50 noticias');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pagination_works_with_page_parameter()
     {
         $response = $this->actingAs($this->admin)
@@ -54,7 +56,8 @@ class PaginationFixTest extends TestCase
         $response->assertSee('enhanced-pagination-wrapper');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pagination_works_with_per_page_parameter()
     {
         $response = $this->actingAs($this->admin)
@@ -65,7 +68,8 @@ class PaginationFixTest extends TestCase
         $response->assertSee('de 50 noticias');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function pagination_preserves_filters()
     {
         $response = $this->actingAs($this->admin)
@@ -78,7 +82,8 @@ class PaginationFixTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function simple_pagination_script_loads()
     {
         $response = $this->actingAs($this->admin)

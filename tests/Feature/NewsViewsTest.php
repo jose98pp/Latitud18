@@ -18,7 +18,7 @@ class NewsViewsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->admin = User::factory()->create([
             'email' => 'admin@test.com',
             'password' => bcrypt('password'),
@@ -26,7 +26,8 @@ class NewsViewsTest extends TestCase
         ]);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_news_in_card_format_by_default()
     {
         $category = Category::factory()->create(['name' => 'Test Category']);
@@ -47,7 +48,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('Test Category');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_includes_required_css_and_js_files()
     {
         $response = $this->actingAs($this->admin)
@@ -60,7 +62,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('performance-optimization.js');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_view_toggle_buttons()
     {
         $response = $this->actingAs($this->admin)
@@ -74,7 +77,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('Lista');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_shows_correct_news_card_elements()
     {
         $category = Category::factory()->create(['name' => 'Technology']);
@@ -90,7 +94,7 @@ class NewsViewsTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // Check card elements
         $response->assertSee('news-card-image');
         $response->assertSee('news-card-content');
@@ -98,25 +102,26 @@ class NewsViewsTest extends TestCase
         $response->assertSee('news-card-description');
         $response->assertSee('category-badge');
         $response->assertSee('actions-dropdown');
-        
+
         // Check content
         $response->assertSee('Breaking Tech News');
         $response->assertSee('Technology');
         $response->assertSee('Publicada');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_status_badges_correctly()
     {
         $category = Category::factory()->create();
-        
+
         // Published news
         $publishedNews = Noticia::factory()->create([
             'category_id' => $category->id,
             'titulo' => 'Published News',
             'publicada' => true
         ]);
-        
+
         // Draft news
         $draftNews = Noticia::factory()->create([
             'category_id' => $category->id,
@@ -132,7 +137,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('Borrador');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_shows_action_buttons_for_each_news_item()
     {
         $category = Category::factory()->create();
@@ -145,19 +151,20 @@ class NewsViewsTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // Check for action elements
         $response->assertSee('actions-dropdown');
         $response->assertSee('actions-trigger');
         $response->assertSee('actions-menu');
-        
+
         // Check for action links
         $response->assertSee('Ver noticia');
         $response->assertSee('Editar');
         $response->assertSee('Eliminar');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_handles_news_without_images_correctly()
     {
         $category = Category::factory()->create();
@@ -174,7 +181,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('fa-image'); // Default image icon
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_news_metadata_correctly()
     {
         $category = Category::factory()->create(['name' => 'Sports']);
@@ -188,19 +196,20 @@ class NewsViewsTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // Check metadata
         $response->assertSee('Sports');
         $response->assertSee($noticia->created_at->format('d/m/Y'));
         $response->assertSee('ID: ' . $noticia->id);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_truncates_long_content_appropriately()
     {
         $category = Category::factory()->create();
         $longContent = str_repeat('This is a very long news article content that should be truncated in the card view. ', 20);
-        
+
         $noticia = Noticia::factory()->create([
             'category_id' => $category->id,
             'titulo' => 'News with Long Content',
@@ -211,13 +220,14 @@ class NewsViewsTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // Should see truncated content, not the full content
         $response->assertSee('News with Long Content');
         $response->assertDontSee($longContent); // Full content should not be visible
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_shows_empty_state_when_no_news_exist()
     {
         $response = $this->actingAs($this->admin)
@@ -229,7 +239,8 @@ class NewsViewsTest extends TestCase
         $response->assertSee('Limpiar Filtros');
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_includes_lazy_loading_attributes_for_images()
     {
         \Illuminate\Support\Facades\Storage::fake('public');
@@ -250,11 +261,12 @@ class NewsViewsTest extends TestCase
         $response->assertSee('loading="lazy"', false);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_displays_image_validation_indicators()
     {
         $category = Category::factory()->create();
-        
+
         // Create news with image info
         $noticia = Noticia::factory()->create([
             'category_id' => $category->id,
@@ -265,7 +277,7 @@ class NewsViewsTest extends TestCase
             ->get(route('admin.noticias.index'));
 
         $response->assertStatus(200);
-        
+
         // The response should include image validation elements
         // Note: Actual validation depends on the ImageStorageService
         $content = $response->getContent();

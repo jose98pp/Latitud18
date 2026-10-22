@@ -43,7 +43,7 @@
 <!-- Schema.org NewsArticle JSON-LD -->
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "NewsArticle",
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -263,7 +263,7 @@
                             <i class="far fa-clock me-1 text-success"></i> {{ $minLectura }} min de lectura
                         </span>
                     </div>
-                    
+
                     <!-- Botones de Compartir Rápido -->
                     <div class="d-flex align-items-center gap-1">
                         <a href="https://twitter.com/intent/tweet?text={{ urlencode($titulo) }}&url={{ urlencode($url) }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm text-white" style="background: #1DA1F2; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px;" title="Compartir en X"><i class="fab fa-x-twitter"></i></a>
@@ -272,7 +272,7 @@
                         <button type="button" onclick="copySportsLink('{{ $url }}')" class="btn btn-sm text-white" style="background: #334155; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; border: none;" title="Copiar enlace"><i class="fas fa-link"></i></button>
                     </div>
                 </div>
-                
+
                 <!-- Título Principal -->
                 <h1 class="ca-title-hero" style="font-size: 2.3rem; line-height: 1.15; margin-bottom: 16px; letter-spacing: -0.5px;">
                     {{ $titulo }}
@@ -394,10 +394,10 @@
                             <span class="badge bg-danger text-white fw-bold" style="font-family: var(--ca-font-display);">HD 1080p</span>
                         </div>
                         <div style="position: relative; padding-bottom: 56.25%; border-radius: 6px; overflow: hidden; border: 1px solid var(--ca-border);">
-                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                                    src="https://www.youtube.com/embed/{{ $noticia->youtube_id }}?rel=0&enablejsapi=1" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                    src="https://www.youtube.com/embed/{{ $noticia->youtube_id }}?rel=0&enablejsapi=1"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen>
                             </iframe>
                         </div>
@@ -576,10 +576,10 @@
                             <div class="ca-card p-3 d-flex gap-3 h-100">
                                 <div style="width: 88px; height: 88px; min-width: 88px; border-radius: 6px; overflow: hidden; border: 1px solid var(--ca-border);">
                                     <a href="{{ $rUrl }}">
-                                        <img loading="lazy" decoding="async" src="{{ $rImg ?: '/images/default-news.svg' }}" 
-                                             alt="{{ $rTitulo }}" 
+                                        <img loading="lazy" decoding="async" src="{{ $rImg ?: '/images/default-news.svg' }}"
+                                             alt="{{ $rTitulo }}"
                                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
-                                             onmouseover="this.style.transform='scale(1.05)'" 
+                                             onmouseover="this.style.transform='scale(1.05)'"
                                              onmouseout="this.style.transform='scale(1)'"
                                              onerror="this.onerror=null;this.src='/images/default-news.svg'">
                                     </a>

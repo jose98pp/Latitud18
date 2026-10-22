@@ -6,11 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 class PerformanceOptimizationTest extends TestCase
 {
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_lazy_loading_attributes()
     {
         $imageHtml = '<img data-src="test.jpg" src="placeholder.svg" class="lazy-image" loading="lazy" alt="Test">';
-        
+
         // Check for lazy loading attributes
         $this->assertStringContainsString('data-src="test.jpg"', $imageHtml);
         $this->assertStringContainsString('loading="lazy"', $imageHtml);
@@ -18,12 +19,13 @@ class PerformanceOptimizationTest extends TestCase
         $this->assertStringContainsString('src="placeholder.svg"', $imageHtml);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_responsive_image_classes()
     {
         $responsiveClasses = [
             'img-mobile',
-            'img-tablet', 
+            'img-tablet',
             'img-desktop'
         ];
 
@@ -33,7 +35,8 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_performance_css_classes()
     {
         $performanceClasses = [
@@ -54,14 +57,15 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_pagination_per_page_values()
     {
         $allowedPerPage = [15, 25, 50, 100];
         $testValue = 25;
-        
+
         $this->assertContains($testValue, $allowedPerPage);
-        
+
         // Test invalid values
         $invalidValues = [1, 5, 200, 1000];
         foreach ($invalidValues as $value) {
@@ -69,18 +73,20 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_image_fallback_logic()
     {
         $defaultImagePath = '/images/default-news.svg';
-        
+
         // Test that default image path is valid
         $this->assertStringStartsWith('/images/', $defaultImagePath);
         $this->assertStringEndsWith('.svg', $defaultImagePath);
         $this->assertStringContainsString('default-news', $defaultImagePath);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_responsive_breakpoints()
     {
         $breakpoints = [
@@ -93,13 +99,14 @@ class PerformanceOptimizationTest extends TestCase
         $this->assertEquals(576, $breakpoints['mobile']);
         $this->assertEquals(768, $breakpoints['tablet']);
         $this->assertEquals(1024, $breakpoints['desktop']);
-        
+
         // Validate breakpoint order
         $this->assertLessThan($breakpoints['tablet'], $breakpoints['mobile']);
         $this->assertLessThan($breakpoints['desktop'], $breakpoints['tablet']);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_animation_duration_values()
     {
         $animationDurations = [
@@ -111,7 +118,7 @@ class PerformanceOptimizationTest extends TestCase
         foreach ($animationDurations as $speed => $duration) {
             $this->assertStringEndsWith('s', $duration);
             $this->assertIsString($duration);
-            
+
             // Extract numeric value
             $numericValue = floatval($duration);
             $this->assertGreaterThan(0, $numericValue);
@@ -119,7 +126,8 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_css_grid_template_values()
     {
         $gridTemplates = [
@@ -131,7 +139,7 @@ class PerformanceOptimizationTest extends TestCase
         foreach ($gridTemplates as $device => $template) {
             $this->assertIsString($template);
             $this->assertNotEmpty($template);
-            
+
             if ($device === 'mobile') {
                 $this->assertEquals('1fr', $template);
             } elseif ($device === 'tablet') {
@@ -144,7 +152,8 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_intersection_observer_options()
     {
         $observerOptions = [
@@ -154,14 +163,15 @@ class PerformanceOptimizationTest extends TestCase
 
         $this->assertArrayHasKey('rootMargin', $observerOptions);
         $this->assertArrayHasKey('threshold', $observerOptions);
-        
+
         $this->assertStringContainsString('px', $observerOptions['rootMargin']);
         $this->assertIsFloat($observerOptions['threshold']);
         $this->assertGreaterThan(0, $observerOptions['threshold']);
         $this->assertLessThan(1, $observerOptions['threshold']);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_performance_monitoring_thresholds()
     {
         $performanceThresholds = [
@@ -172,25 +182,27 @@ class PerformanceOptimizationTest extends TestCase
 
         $this->assertIsInt($performanceThresholds['lcp_slow']);
         $this->assertGreaterThan(0, $performanceThresholds['lcp_slow']);
-        
+
         $this->assertIsFloat($performanceThresholds['cls_high']);
         $this->assertGreaterThan(0, $performanceThresholds['cls_high']);
         $this->assertLessThan(1, $performanceThresholds['cls_high']);
-        
+
         $this->assertIsInt($performanceThresholds['fid_slow']);
         $this->assertGreaterThan(0, $performanceThresholds['fid_slow']);
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_touch_target_minimum_sizes()
     {
         $minTouchSize = 44; // pixels
-        
+
         $this->assertIsInt($minTouchSize);
         $this->assertGreaterThanOrEqual(44, $minTouchSize); // WCAG AA standard
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_debounce_timing_values()
     {
         $debounceTimings = [
@@ -206,7 +218,8 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_image_aspect_ratios()
     {
         $aspectRatios = [
@@ -218,7 +231,7 @@ class PerformanceOptimizationTest extends TestCase
         foreach ($aspectRatios as $type => $ratio) {
             $this->assertIsString($ratio);
             $this->assertStringContainsString('/', $ratio);
-            
+
             $parts = explode('/', $ratio);
             $this->assertCount(2, $parts);
             $this->assertIsNumeric($parts[0]);
@@ -226,7 +239,8 @@ class PerformanceOptimizationTest extends TestCase
         }
     }
 
-    /** @test */
+
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_validates_css_custom_properties()
     {
         $cssProperties = [
