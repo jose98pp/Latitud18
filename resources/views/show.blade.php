@@ -57,6 +57,20 @@
 @section('content')
 <!-- Breadcrumb -->
 <style>
+  .article-rich-body { display: flow-root; line-height: 1.75; overflow-wrap: anywhere; }
+  .article-rich-body p { margin: 0 0 1em; }
+  .article-rich-body img { max-width: 100%; height: auto; }
+  .article-rich-body ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
+  .article-rich-body ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+  .article-rich-body h1, .article-rich-body h2, .article-rich-body h3,
+  .article-rich-body h4, .article-rich-body h5, .article-rich-body h6 { font-weight: 700; margin: 1em 0 .5em; }
+  .article-rich-body h1 { font-size: 2em; }
+  .article-rich-body h2 { font-size: 1.5em; }
+  .article-rich-body h3 { font-size: 1.25em; }
+  .article-rich-body blockquote { border-left: 3px solid #d71920; padding-left: 1em; margin: 1em 0; }
+  .article-rich-body table { border-collapse: collapse; max-width: 100%; }
+  .article-rich-body th, .article-rich-body td { border: 1px solid #cbd5e1; padding: .4em; }
+
   .article-page-grid {
     display: grid;
     grid-template-columns: 2.6fr 1fr;

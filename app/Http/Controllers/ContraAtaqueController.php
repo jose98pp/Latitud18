@@ -225,7 +225,7 @@ class ContraAtaqueController extends Controller
      */
     public function show($id, $slug = null)
     {
-        $noticia = Noticia::with(['category', 'galeria', 'comentariosAprobados', 'reacciones'])->find($id);
+        $noticia = Noticia::publicadaActiva()->with(['category', 'galeria', 'comentariosAprobados', 'reacciones'])->find($id);
 
         if (!$noticia) {
             return redirect()->route('contraataque.index')->with('error', 'La noticia deportiva solicitada no fue encontrada o ya no está disponible.');

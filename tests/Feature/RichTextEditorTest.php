@@ -75,7 +75,7 @@ class RichTextEditorTest extends TestCase
     /** @test */
     public function test_create_noticia_with_rich_content()
     {
-        $richContent = '<p>This is <strong>bold</strong> and <em>italic</em> text.</p><ul><li>Item 1</li><li>Item 2</li></ul>';
+        $richContent = '<p>This is <strong>bold</strong> and <em>italic</em> text with enough real news content to validate.</p><ul><li>Item 1</li><li>Item 2</li></ul>';
         
         $response = $this->actingAs($this->user)
             ->post(route('admin.noticias.store'), [
@@ -111,7 +111,7 @@ class RichTextEditorTest extends TestCase
             'publicada' => false
         ]);
 
-        $updatedContent = '<p>Updated content with <strong>formatting</strong></p>';
+        $updatedContent = '<p>Updated content with <strong>formatting</strong> and enough real text for an editorial publication.</p>';
 
         $response = $this->actingAs($this->user)
             ->put(route('admin.noticias.update', $noticia->id), [
@@ -180,7 +180,7 @@ class RichTextEditorTest extends TestCase
     /** @test */
     public function test_content_sanitization_removes_dangerous_scripts()
     {
-        $dangerousContent = '<p>Safe content</p><script>alert("xss")</script><p onclick="alert(\'click\')">Click me</p>';
+        $dangerousContent = '<p>Safe content</p><p>Enough real text for a complete editorial publication.</p><script>alert("xss")</script><p onclick="alert(\'click\')">Click me</p>';
 
         $response = $this->actingAs($this->user)
             ->post(route('admin.noticias.store'), [
@@ -529,7 +529,7 @@ class RichTextEditorTest extends TestCase
         $imageUrl = $responseData['url'];
 
         // Create content with the uploaded image
-        $contentWithImage = '<p>Text before image</p><img src="' . $imageUrl . '" alt="Test image"><p>Text after image</p>';
+        $contentWithImage = '<p>Text before image with enough real news content for editorial validation.</p><img src="' . $imageUrl . '" alt="Test image"><p>Text after image</p>';
 
         $response = $this->actingAs($this->user)
             ->post(route('admin.noticias.store'), [
@@ -694,7 +694,7 @@ class RichTextEditorTest extends TestCase
     public function test_content_sanitization_comprehensive()
     {
         $maliciousContent = '
-            <p>Safe content</p>
+            <p>Safe content</p><p>Additional real news content for a valid editorial publication.</p>
             <script>alert("xss")</script>
             <iframe src="javascript:alert(1)"></iframe>
             <img src="x" onerror="alert(1)">

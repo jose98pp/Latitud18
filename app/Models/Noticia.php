@@ -36,6 +36,20 @@ class Noticia extends Model
         'views' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        // Invalidate immediately when an editor creates, changes or removes a story.
+        static::saved(static function (self $noticia) {
+            $changes = array_diff(array_keys($noticia->getChanges()), ['views', 'updated_at']);
+            if ($noticia->wasRecentlyCreated || $changes) {
+                app(\App\Services\NewsService::class)->clearNewsCache();
+            }
+        });
+        static::deleted(static function () {
+            app(\App\Services\NewsService::class)->clearNewsCache();
+        });
+    }
+
     public function scopePublicadaActiva($query)
     {
         return $query->where('publicada', true)

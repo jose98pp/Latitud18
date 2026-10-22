@@ -23,7 +23,15 @@ class NewsService
     public function getHomePageData()
     {
         try {
-            return Cache::remember('homepage_data', 300, function () {
+            // Expire before the next scheduled story or urgent badge changes visibility.
+            $now = now();
+            $nextPublication = Noticia::where('publicada', true)->where('publicar_en', '>', $now)->min('publicar_en');
+            $nextUrgency = Noticia::publicadaActiva()->where('es_urgente', true)->where('urgente_hasta', '>', $now)->min('urgente_hasta');
+            $ttl = 300;
+            foreach (array_filter([$nextPublication, $nextUrgency]) as $date) {
+                $ttl = min($ttl, max(1, (int) ceil($now->floatDiffInSeconds(\Carbon\Carbon::parse($date)))));
+            }
+            return Cache::remember('homepage_data', $ttl, function () {
             // 1. Obtener noticias para el carrusel principal (priorizar marcadas como destacada_hero)
             $heroNoticias = Noticia::hero()
                 ->orderBy('created_at', 'desc')
@@ -49,6 +57,7 @@ class NewsService
             // 2. Noticia de Investigación (LATITUD 18 INVESTIGA)
             $noticiaInvestigacion = Noticia::investigacion()
                 ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->first();
 
             if ($noticiaInvestigacion) {

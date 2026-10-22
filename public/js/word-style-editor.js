@@ -8,13 +8,71 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
     const [activeTab, setActiveTab] = React.useState('home');
     const [showColorPicker, setShowColorPicker] = React.useState(false);
     const [showFontColorPicker, setShowFontColorPicker] = React.useState(false);
-    const [undoStack, setUndoStack] = React.useState([initialContent]);
-    const [undoIndex, setUndoIndex] = React.useState(0);
     const [isUploading, setIsUploading] = React.useState(false);
     const [uploadError, setUploadError] = React.useState('');
     const [validationError, setValidationError] = React.useState('');
     const editorRef = React.useRef(null);
-    const autoSaveTimerRef = React.useRef(null);
+    const selectionRef = React.useRef(null);
+    const imageRef = React.useRef(null);
+    const dragImageRef = React.useRef(null);
+    const [imageAlt, setImageAlt] = React.useState('');
+    const [selectedImage, setSelectedImage] = React.useState(false);
+    const historyRef = React.useRef({ entries: [initialContent], index: 0 });
+
+    const rememberSelection = () => {
+        const selection = window.getSelection();
+        if (selection.rangeCount && editorRef.current?.contains(selection.anchorNode)) {
+            selectionRef.current = selection.getRangeAt(0).cloneRange();
+        }
+    };
+    React.useEffect(() => {
+        document.addEventListener('selectionchange', rememberSelection);
+        return () => document.removeEventListener('selectionchange', rememberSelection);
+    }, []);
+    const restoreSelection = (range = selectionRef.current) => {
+        editorRef.current.focus();
+        if (range && editorRef.current.contains(range.commonAncestorContainer)) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    };
+    const syncContent = (record = true) => {
+        const html = editorRef.current.innerHTML;
+        setContent(html);
+        if (record) {
+            const h = historyRef.current;
+            if (h.entries[h.index] !== html) {
+                h.entries = h.entries.slice(0, h.index + 1).concat(html).slice(-100);
+                h.index = h.entries.length - 1;
+            }
+        }
+        if (onChange) onChange(html);
+        rememberSelection();
+    };
+    const updateImage = (action, value) => {
+        const image = imageRef.current;
+        if (!image || !editorRef.current.contains(image)) return;
+        if (action === 'width') { image.style.width = value + '%'; image.style.height = 'auto'; image.removeAttribute('width'); image.removeAttribute('height'); }
+        if (action === 'align') {
+            image.style.float = value === 'center' ? 'none' : value;
+            image.style.display = value === 'center' ? 'block' : 'inline';
+            image.style.marginLeft = value === 'left' ? '0' : 'auto';
+            image.style.marginRight = value === 'right' ? '0' : 'auto';
+        }
+        if (action === 'before' || action === 'after') {
+            // Move the image across paragraph boundaries, including its containing paragraph.
+            let block = image;
+            while (block.parentElement !== editorRef.current) block = block.parentElement;
+            const target = action === 'before' ? block.previousElementSibling : block.nextElementSibling;
+            if (target) {
+                if (action === 'before') target.before(image); else target.after(image);
+            }
+        }
+        if (action === 'alt') image.alt = value;
+        if (action === 'remove') { image.remove(); imageRef.current = null; setSelectedImage(false); }
+        syncContent();
+    };
 
     // Colores predefinidos para el picker
     const colors = [
@@ -40,59 +98,41 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
         }
     }, [initialContent]);
 
-    // Función para el guardado automático
-    React.useEffect(() => {
-        if (autoSaveTimerRef.current) {
-            clearTimeout(autoSaveTimerRef.current);
-        }
-
-        autoSaveTimerRef.current = setTimeout(() => {
-            if (onAutoSave) {
-                onAutoSave(content);
-            }
-        }, 3000);
-
-        return () => {
-            if (autoSaveTimerRef.current) {
-                clearTimeout(autoSaveTimerRef.current);
-            }
-        };
-    }, [content, onAutoSave]);
-
-    // Funciones de deshacer/rehacer
-    const addToUndoStack = (newContent) => {
-        const newStack = undoStack.slice(0, undoIndex + 1);
-        newStack.push(newContent);
-        setUndoStack(newStack);
-        setUndoIndex(newStack.length - 1);
-    };
-
     const undo = () => {
-        if (undoIndex > 0) {
-            setUndoIndex(undoIndex - 1);
-            editorRef.current.innerHTML = undoStack[undoIndex - 1];
-            setContent(undoStack[undoIndex - 1]);
+        const h = historyRef.current;
+        if (h.index > 0) {
+            editorRef.current.innerHTML = h.entries[--h.index];
+            imageRef.current = null; setSelectedImage(false); selectionRef.current = null;
+            syncContent(false);
         }
     };
-
     const redo = () => {
-        if (undoIndex < undoStack.length - 1) {
-            setUndoIndex(undoIndex + 1);
-            editorRef.current.innerHTML = undoStack[undoIndex + 1];
-            setContent(undoStack[undoIndex + 1]);
+        const h = historyRef.current;
+        if (h.index < h.entries.length - 1) {
+            editorRef.current.innerHTML = h.entries[++h.index];
+            imageRef.current = null; setSelectedImage(false); selectionRef.current = null;
+            syncContent(false);
         }
     };
-
-    // Función para ejecutar comandos de formato
     const handleCommand = (command, value = null) => {
-        document.execCommand(command, false, value);
-        editorRef.current?.focus();
-        const newContent = editorRef.current.innerHTML;
-        setContent(newContent);
-        addToUndoStack(newContent);
-        if (onChange) {
-            onChange(newContent);
+        if (command === 'undo') return undo();
+        if (command === 'redo') return redo();
+        restoreSelection();
+        document.execCommand('styleWithCSS', false, true);
+        if (command === 'fontSize') {
+            // execCommand accepts 1–7, not point sizes. Convert its temporary font nodes.
+            document.execCommand('styleWithCSS', false, false);
+            document.execCommand('fontSize', false, '7');
+            editorRef.current.querySelectorAll('font[size="7"]').forEach(font => {
+                const span = document.createElement('span');
+                span.style.fontSize = value + 'pt';
+                while (font.firstChild) span.append(font.firstChild);
+                font.replaceWith(span);
+            });
+        } else {
+            document.execCommand(command, false, value);
         }
+        syncContent();
     };
 
     // Función para subir imágenes
@@ -115,6 +155,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
             return;
         }
 
+        const insertionRange = selectionRef.current?.cloneRange();
         setIsUploading(true);
         
         const formData = new FormData();
@@ -125,14 +166,29 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
                 }
             });
 
             const data = await response.json();
 
-            if (data.success) {
-                handleCommand('insertImage', data.url);
+            if (response.ok && data.success) {
+                restoreSelection(insertionRange);
+                const image = document.createElement('img');
+                image.src = data.url;
+                image.alt = '';
+                image.style.width = '100%';
+                image.style.height = 'auto';
+                const selection = window.getSelection();
+                if (selection.rangeCount && editorRef.current.contains(selection.anchorNode)) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents(); range.insertNode(image);
+                    range.setStartAfter(image); range.collapse(true);
+                    selection.removeAllRanges(); selection.addRange(range);
+                } else editorRef.current.append(image);
+                imageRef.current = image; setImageAlt(image.alt); setSelectedImage(true);
+                syncContent();
                 setUploadError('');
             } else {
                 throw new Error(data.message || 'Error al subir la imagen');
@@ -148,6 +204,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
 
     // Función para insertar enlaces
     const insertLink = () => {
+        restoreSelection();
         const selection = window.getSelection();
         const selectedText = selection.toString();
         
@@ -175,6 +232,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                             link.setAttribute('rel', 'noopener noreferrer');
                         }
                     });
+                    syncContent();
                 }, 100);
             } catch (e) {
                 alert('Por favor, ingrese una URL válida (ejemplo: https://www.ejemplo.com)');
@@ -197,11 +255,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                 linkElement.parentNode.replaceChild(textNode, linkElement);
                 
                 const newContent = editorRef.current.innerHTML;
-                setContent(newContent);
-                addToUndoStack(newContent);
-                if (onChange) {
-                    onChange(newContent);
-                }
+                syncContent();
             } else {
                 alert('No hay ningún enlace seleccionado para quitar.');
             }
@@ -211,13 +265,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
     };
 
     // Manejar cambios en el contenido
-    const handleChange = (e) => {
-        const newContent = e.currentTarget.innerHTML;
-        setContent(newContent);
-        if (onChange) {
-            onChange(newContent);
-        }
-    };
+    const handleChange = () => syncContent();
 
     // Manejar atajos de teclado
     const handleKeyDown = (e) => {
@@ -240,9 +288,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                     break;
                 case 's':
                     e.preventDefault();
-                    if (onAutoSave) {
-                        onAutoSave(content);
-                    }
+                    // The manager submits this editor's own form, with validation.
                     break;
             }
         }
@@ -259,6 +305,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
             'button',
             {
                 className: 'word-button',
+                onMouseDown: e => e.preventDefault(),
                 onClick: () => value ? handleCommand(command, value) : handleCommand(command),
                 title: title,
                 type: 'button',
@@ -312,6 +359,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                                 'button',
                                 {
                                     className: `ribbon-tab ${activeTab === 'home' ? 'active' : ''}`,
+                                    type: 'button',
                                     onClick: () => setActiveTab('home'),
                                     key: 'home-tab'
                                 },
@@ -321,6 +369,7 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                                 'button',
                                 {
                                     className: `ribbon-tab ${activeTab === 'insert' ? 'active' : ''}`,
+                                    type: 'button',
                                     onClick: () => setActiveTab('insert'),
                                     key: 'insert-tab'
                                 },
@@ -480,6 +529,14 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                 ]
             ),
             
+            React.createElement('p', {key: 'save-help', className: 'editor-save-help'},
+                'Para guardar la noticia en el servidor, pulsa Guardar o Actualizar noticia al final del formulario.'),
+            selectedImage && React.createElement('div', {key: 'image-tools', className: 'editor-image-tools', role: 'group', 'aria-label': 'Ajustes de imagen'}, [
+                React.createElement('strong', {key:'label'}, 'Imagen seleccionada: '),
+                ...[25, 50, 75, 100].map(width => React.createElement('button', {type:'button', key:'w'+width, onMouseDown:e=>e.preventDefault(), onClick:()=>updateImage('width',width)}, width+'%')),
+                ...[['left','Izquierda'],['center','Centrada'],['right','Derecha'],['before','Mover antes'],['after','Mover después'],['remove','Quitar imagen']].map(([action,label]) => React.createElement('button', {type:'button', key:action, onMouseDown:e=>e.preventDefault(), onClick:()=>updateImage(['left','center','right'].includes(action)?'align':action,action)}, label)),
+                React.createElement('label', {key:'alt'}, ['Descripción de imagen ', React.createElement('input', {key:'input', type:'text', value:imageAlt, onChange:e=>{setImageAlt(e.target.value);updateImage('alt',e.target.value);}})])
+            ]),
             // Área editable
             React.createElement(
                 'div',
@@ -489,6 +546,25 @@ const WordStyleEditor = ({ initialContent = '', onChange, onAutoSave }) => {
                     className: 'word-editor-content',
                     contentEditable: true,
                     onInput: handleChange,
+                    onClick: e => {
+                        imageRef.current = e.target.tagName === 'IMG' ? e.target : null;
+                        setSelectedImage(!!imageRef.current);
+                        setImageAlt(imageRef.current?.alt || '');
+                    },
+                    onDragStart: e => {
+                        dragImageRef.current = e.target.tagName === 'IMG' ? e.target : null;
+                    },
+                    onDragEnd: () => { dragImageRef.current = null; },
+                    onDrop: e => {
+                        const image = dragImageRef.current;
+                        if (!image || !editorRef.current.contains(image)) return;
+                        const range = document.caretRangeFromPoint?.(e.clientX, e.clientY);
+                        if (!range || !editorRef.current.contains(range.startContainer) || image.contains(range.startContainer)) return;
+                        e.preventDefault();
+                        range.insertNode(image);
+                        imageRef.current = image; dragImageRef.current = null;
+                        setImageAlt(image.alt); setSelectedImage(true); syncContent();
+                    },
                     onKeyDown: handleKeyDown,
                     role: 'textbox',
                     'aria-label': 'Editor de texto enriquecido estilo Microsoft Word',

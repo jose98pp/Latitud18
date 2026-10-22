@@ -33,7 +33,14 @@ class NoticiaRequest extends FormRequest
                 'required',
                 'string',
                 'max:' . config('uhtv.security.max_content_length', 250000),
-                'min:50'
+                function ($attribute, $value, $fail) {
+                    $safe = app(\App\Services\ContentSanitizationService::class)->sanitizeContent($value);
+                    $text = html_entity_decode(strip_tags($safe), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    $text = preg_replace('/[\s\x{00A0}]+/u', ' ', $text);
+                    if (mb_strlen(trim($text)) < 50) {
+                        $fail('El contenido debe tener al menos 50 caracteres de texto real.');
+                    }
+                }
             ],
             'category_id' => 'required|exists:categories,id',
             'video_youtube' => [

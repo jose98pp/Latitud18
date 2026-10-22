@@ -16,7 +16,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $noticias = Noticia::with('category')
-            ->where('publicada', true)
+            ->publicadaActiva()
             ->orderBy('updated_at', 'desc')
             ->get();
 

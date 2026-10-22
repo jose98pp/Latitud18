@@ -169,11 +169,11 @@ class NoticiaController extends Controller
             'user_id' => auth()->id(), // Asignar el usuario actual
             'imagen' => $imagePath,
             'video_youtube' => $this->getYouTubeVideoID($validatedData['video_youtube'] ?? null),
-            'publicada' => $request->has('publicada'),
-            'destacada_hero' => $request->has('destacada_hero'),
-            'es_investigacion' => $request->has('es_investigacion'),
-            'es_urgente' => $request->has('es_urgente'),
-            'urgente_hasta' => $request->has('es_urgente') ? $request->input('urgente_hasta') : null,
+            'publicada' => $request->boolean('publicada'),
+            'destacada_hero' => $request->boolean('destacada_hero'),
+            'es_investigacion' => $request->boolean('es_investigacion'),
+            'es_urgente' => $request->boolean('es_urgente'),
+            'urgente_hasta' => $request->boolean('es_urgente') ? $request->input('urgente_hasta') : null,
             'publicar_en' => $request->filled('publicar_en') ? $request->input('publicar_en') : null,
         ]);
 
@@ -285,11 +285,11 @@ class NoticiaController extends Controller
                 'category_id' => $validatedData['category_id'],
                 'user_id' => auth()->id(), // Mantener el usuario actual
                 'video_youtube' => $this->getYouTubeVideoID($validatedData['video_youtube'] ?? null),
-                'publicada' => $request->has('publicada'),
-                'destacada_hero' => $request->has('destacada_hero'),
-                'es_investigacion' => $request->has('es_investigacion'),
-                'es_urgente' => $request->has('es_urgente'),
-                'urgente_hasta' => $request->has('es_urgente') ? $request->input('urgente_hasta') : null,
+                'publicada' => $request->boolean('publicada'),
+                'destacada_hero' => $request->boolean('destacada_hero'),
+                'es_investigacion' => $request->boolean('es_investigacion'),
+                'es_urgente' => $request->boolean('es_urgente'),
+                'urgente_hasta' => $request->boolean('es_urgente') ? $request->input('urgente_hasta') : null,
                 'publicar_en' => $request->filled('publicar_en') ? $request->input('publicar_en') : null,
             ]);
 

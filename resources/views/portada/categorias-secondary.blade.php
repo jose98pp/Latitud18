@@ -42,7 +42,7 @@
 
   {{-- Columna 4: Tarjeta Especial LATITUD 18 INVESTIGA / EDICIÓN ESPECIAL --}}
   @php
-    $investigaNoticia = $noticiaInvestigacion ?? $noticias->slice(3, 1)->first() ?? $noticias->first();
+    $investigaNoticia = $noticiaInvestigacion ?? null;
   @endphp
   <div class="investiga-special-card">
     <div>

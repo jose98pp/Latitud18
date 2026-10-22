@@ -144,25 +144,25 @@ class ContentSanitizationService
         // Allow specific HTML elements and attributes
         $config->set('HTML.Allowed', implode(',', [
             // Text formatting
-            'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'sub', 'sup',
+            'p[style]', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'sub', 'sup',
             
             // Headings
-            'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'h1[style]', 'h2[style]', 'h3[style]', 'h4[style]', 'h5[style]', 'h6[style]',
             
             // Lists
-            'ul', 'ol', 'li',
+            'ul[style]', 'ol[style]', 'li[style]',
             
             // Links
             'a[href|title|target]',
             
             // Images
-            'img[src|alt|title|width|height|class]',
+            'img[src|alt|title|width|height|class|style]',
             
             // Tables
             'table[class]', 'thead', 'tbody', 'tr', 'th[colspan|rowspan]', 'td[colspan|rowspan]',
             
             // Divs and spans for styling
-            'div[class|style]', 'span[class|style]',
+            'div[class|style]', 'span[class|style]', 'font[face|size|color]',
             
             // Block quotes
             'blockquote', 'cite'
@@ -170,6 +170,7 @@ class ContentSanitizationService
         
         // Allow specific CSS properties for styling
         $config->set('CSS.AllowedProperties', [
+            'font-family', 'width', 'height', 'max-width', 'float', 'display', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom',
             'color', 'background-color', 'font-size', 'font-weight', 'font-style',
             'text-align', 'text-decoration', 'margin', 'padding',
             'border', 'border-color', 'border-style', 'border-width'
@@ -181,7 +182,8 @@ class ContentSanitizationService
         
         // Image configuration
         $config->set('HTML.MaxImgLength', 1200);
-        $config->set('CSS.MaxImgLength', '1200px');
+        $config->set('CSS.MaxImgLength', null); // Allow responsive percentage widths.
+        $config->set('CSS.AllowTricky', true); // display is restricted by CSS.AllowedProperties.
         
         // Security settings
         $config->set('HTML.Nofollow', true); // Add rel="nofollow" to external links

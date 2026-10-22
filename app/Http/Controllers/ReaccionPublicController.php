@@ -13,7 +13,7 @@ class ReaccionPublicController extends Controller
      */
     public function react(Request $request, $id)
     {
-        $noticia = Noticia::where('publicada', true)->findOrFail($id);
+        $noticia = Noticia::publicadaActiva()->findOrFail($id);
 
         $tipo = $request->input('tipo') ?: $request->json('tipo');
         if (!in_array($tipo, ['me_informa', 'interesante', 'me_indigna', 'recomiendo'])) {

@@ -70,7 +70,7 @@ class ImageUploadController extends Controller
             }
 
             // Generate a unique filename
-            $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            $filename = time() . '_' . Str::random(10) . '.' . $file->extension();
             
             // Store the file in storage/app/public/images directory
             $path = $file->storeAs('images', $filename, 'public');
@@ -91,7 +91,7 @@ class ImageUploadController extends Controller
             }
             
             // Generate the public URL
-            $url = Storage::url($path);
+            $url = Storage::disk('public')->url($path);
             
             \Log::info('Image uploaded successfully', [
                 'filename' => $filename,

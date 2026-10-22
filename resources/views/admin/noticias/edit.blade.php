@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/word-style-editor.css') }}">
+<link rel="stylesheet" href="{{ asset('css/word-style-editor.css') }}?v={{ filemtime(public_path('css/word-style-editor.css')) }}">
 <style>
     /* Estilos específicos para el editor en la vista de editar */
     #editor-container {
@@ -471,13 +471,13 @@
     </div>
 @push('scripts')
 <!-- React libraries (carga tradicional para mayor estabilidad) -->
-<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script crossorigin src="{{ asset('vendor/react/react.production.min.js') }}"></script>
+<script crossorigin src="{{ asset('vendor/react/react-dom.production.min.js') }}"></script>
 
 <!-- Rich Text Editor -->
 <script src="{{ asset('js/rich-text-editor.js') }}"></script>
-<script src="{{ asset('js/word-style-editor.js') }}"></script>
-<script src="{{ asset('js/rich-text-editor-init.js') }}"></script>
+<script src="{{ asset('js/word-style-editor.js') }}?v={{ filemtime(public_path('js/word-style-editor.js')) }}"></script>
+<script src="{{ asset('js/rich-text-editor-init.js') }}?v={{ filemtime(public_path('js/rich-text-editor-init.js')) }}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -535,10 +535,12 @@
             
             // Validate content from rich text editor
             const contenidoHidden = document.getElementById('contenido-hidden');
-            const textContent = contenidoHidden.value.replace(/<[^>]*>/g, '').trim();
-            if (textContent.length < 30) {
+            const contentCheck = document.createElement('div');
+            contentCheck.innerHTML = contenidoHidden.value;
+            const textContent = contentCheck.textContent.replace(/\s+/g, ' ').trim();
+            if (textContent.length < 50) {
                 isValid = false;
-                alert('El contenido debe tener al menos 30 caracteres de texto real.');
+                alert('El contenido debe tener al menos 50 caracteres de texto real.');
             }
             
             if (!isValid) {

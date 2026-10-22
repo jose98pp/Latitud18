@@ -24,13 +24,13 @@ class PortadaController extends Controller
 
     public function show($id)
     {
-        $noticia = Noticia::with('category')->where('id', $id)->where('publicada', true)->firstOrFail();
+        $noticia = Noticia::with('category')->where('id', $id)->publicadaActiva()->firstOrFail();
         return redirect()->to($noticia->url, 301);
     }
 
     public function showBySlug($categoria, $slug, $id)
     {
-        $noticia = Noticia::with('category')->where('id', $id)->where('publicada', true)->firstOrFail();
+        $noticia = Noticia::with('category')->where('id', $id)->publicadaActiva()->firstOrFail();
 
         // Si la noticia es de la sección Deportes, redirigir a Contra Ataque para que tenga su diseño deportivo especializado
         $catName = strtolower($noticia->category->name ?? '');

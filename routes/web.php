@@ -11,6 +11,8 @@ use App\Http\Controllers\OpinionPublicController;
 use App\Http\Controllers\ContraAtaqueController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
+Route::middleware(['auth', 'admin'])->post('/api/upload-image', [\App\Http\Controllers\Api\ImageUploadController::class, 'upload'])->name('admin.editor.upload-image');
+
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NoticiaController;

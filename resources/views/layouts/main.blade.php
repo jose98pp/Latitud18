@@ -14,6 +14,7 @@
       <meta property="og:description" content="{{ setting('footer_about', 'Portal de noticias 24/7. Periodismo independiente.') }}">
       <meta property="og:url" content="{{ url()->current() }}">
       <meta name="twitter:card" content="summary_large_image">
+    @show
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0B1F3A">

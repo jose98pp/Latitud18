@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Image upload endpoint for rich text editor
-Route::middleware(['auth', 'admin'])->post('/upload-image', [ImageUploadController::class, 'upload']);
+// The editor upload uses the session-protected route in web.php.

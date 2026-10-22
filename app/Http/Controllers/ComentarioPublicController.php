@@ -13,7 +13,7 @@ class ComentarioPublicController extends Controller
      */
     public function store(Request $request, $noticiaId)
     {
-        $noticia = Noticia::where('publicada', true)->findOrFail($noticiaId);
+        $noticia = Noticia::publicadaActiva()->findOrFail($noticiaId);
 
         // Protección anti-spam con honeypot
         if (!empty($request->input('website_hp'))) {

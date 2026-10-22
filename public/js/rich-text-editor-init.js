@@ -92,12 +92,12 @@ class RichTextEditorManager {
 
                 // Load React
                 if (typeof React === 'undefined') {
-                    await this.loadScript('https://unpkg.com/react@17/umd/react.production.min.js');
+                    await this.loadScript('/vendor/react/react.production.min.js');
                 }
 
                 // Load ReactDOM
                 if (typeof ReactDOM === 'undefined') {
-                    await this.loadScript('https://unpkg.com/react-dom@17/umd/react-dom.production.min.js');
+                    await this.loadScript('/vendor/react/react-dom.production.min.js');
                 }
 
                 // Load Rich Text Editor
@@ -226,7 +226,8 @@ class RichTextEditorManager {
      */
     setupFormValidation(config) {
         const { containerId, hiddenInputId, validationErrorId, required } = config;
-        const form = document.querySelector('form');
+        const editorContainer = document.getElementById(containerId);
+        const form = editorContainer.closest('form');
         
         if (!form) return;
 
@@ -282,7 +283,7 @@ class RichTextEditorManager {
             // Ctrl/Cmd + S for save (prevent default browser save)
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault();
-                const form = document.querySelector('form');
+                const form = editorContainer.closest('form');
                 if (form) {
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn && !submitBtn.disabled) {
@@ -477,7 +478,7 @@ class RichTextEditorManager {
                                 
                                 <h6 class="mt-4"><i class="fas fa-save me-2"></i>Guardado</h6>
                                 <ul class="list-unstyled">
-                                    <li>• Guardado automático cada 3 segundos</li>
+                                    <li>• Guarde con el botón Guardar o Actualizar noticia</li>
                                     <li>• Use Ctrl+S para guardar manualmente</li>
                                     <li>• Siempre guarde antes de salir</li>
                                 </ul>

@@ -54,7 +54,7 @@
                     Consejos
                 </h6>
                 <ul class="list-unstyled small">
-                    <li>💾 Guardado automático cada 3s</li>
+                    <li>💾 Guarda con Guardar / Actualizar noticia</li>
                     <li>👁️ Use vista previa antes de guardar</li>
                     <li>📝 Mínimo 10 caracteres</li>
                     <li>🚫 Evite copiar desde Word</li>

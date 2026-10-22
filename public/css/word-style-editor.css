@@ -551,3 +551,8 @@
         background: #464647;
     }
 }
+/* Image formatting stays in the article HTML and survives save/reload. */
+.word-editor-content img { max-width: 100%; height: auto; cursor: move; }
+.editor-image-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; background: #eef3f8; color: #16263b; }
+.editor-image-tools button { padding: 5px 9px; background: white; border: 1px solid #94a3b8; border-radius: 4px; color: #16263b; }
+.editor-save-help { padding: 8px 12px; font-size: 13px; margin: 0; }
