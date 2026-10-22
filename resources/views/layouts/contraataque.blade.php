@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,13 @@
     
     <!-- Meta tags SEO -->
     <meta name="description" content="@yield('meta_description', 'Contra Ataque: La sección de deportes más completa de Bolivia. Fútbol Boliviano, Selección La Verde, Champions League, Liga Profesional, estadísticas en vivo y opinión.')">
+    @hasSection('meta')
+        @yield('meta')
+    @else
     <meta property="og:title" content="@yield('title', 'Contra Ataque — Deportes')">
     <meta property="og:description" content="@yield('meta_description', 'Portal oficial de deportes Contra Ataque.')">
     <meta property="og:image" content="{{ asset('images/contraataque-oficial.png') }}">
+    @endif
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
     
@@ -21,8 +25,8 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Tailwind CDN unificado -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap supplies the grid and controls used by the sports views. -->
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}">
     
     <style>
         :root {
@@ -345,12 +349,15 @@
 </head>
 <body>
 
+    @if($esSeccionFutbol ?? true)
     <!-- 1. LIVE SCORES TICKER -->
     <div class="ca-live-ticker-wrap">
         <div class="ca-ticker-container" id="caTickerContainer" aria-live="off">
             @include('contraataque.partials.ticker', ['partidos' => $partidosVivo ?? [], 'feed' => $matchFeed ?? []])
         </div>
     </div>
+
+    @endif
 
     <!-- 2. MAIN SPORTS HEADER -->
     <header class="ca-header">
@@ -384,22 +391,11 @@
                 <a href="{{ route('contraataque.index') }}" class="ca-nav-item {{ request()->routeIs('contraataque.index') ? 'active' : '' }}">
                     <i class="fas fa-home me-1"></i> Portada
                 </a>
-                <a href="{{ route('contraataque.seccion', 'futbol-boliviano') }}" class="ca-nav-item {{ request()->is('*futbol-boliviano*') ? 'active' : '' }}">
-                    ⚽ Fútbol Boliviano
-                </a>
-                <a href="{{ route('contraataque.seccion', 'la-verde') }}" class="ca-nav-item {{ request()->is('*la-verde*') ? 'active' : '' }}">
-                    🇧🇴 Selección La Verde
-                </a>
-                <a href="{{ route('contraataque.seccion', 'internacional') }}" class="ca-nav-item {{ request()->is('*internacional*') ? 'active' : '' }}">
-                    🏆 Internacional
-                </a>
-                <a href="{{ route('contraataque.seccion', 'motores') }}" class="ca-nav-item {{ request()->is('*motores*') ? 'active' : '' }}">
-                    🏁 Motores / Dakar
-                </a>
-                <a href="{{ route('contraataque.seccion', 'polideportivo') }}" class="ca-nav-item {{ request()->is('*polideportivo*') ? 'active' : '' }}">
-                    🏀 Polideportivo
-                </a>
-                <a href="{{ route('contraataque.seccion', 'opinion') }}" class="ca-nav-item {{ request()->is('*opinion*') ? 'active' : '' }}">
+                @foreach(\App\Support\SportsSections::LABELS as $key => $label)
+                    @php $active = request()->route('seccion') === $key || (isset($noticia) && $noticia->seccion_deportiva === $key); @endphp
+                    <a href="{{ route('contraataque.seccion', $key) }}" class="ca-nav-item {{ $active ? 'active' : '' }}" @if($active) aria-current="page" @endif>{{ $label }}</a>
+                @endforeach
+                <a href="{{ route('contraataque.seccion', 'opinion') }}" class="ca-nav-item {{ request()->route('seccion') === 'opinion' ? 'active' : '' }}">
                     ✍️ El Ojo de Contraataque
                 </a>
             </nav>
@@ -439,11 +435,11 @@
                 <div class="col-6 col-lg-3">
                     <h5 class="text-white fw-bold mb-3" style="font-family:var(--ca-font-display); letter-spacing:1px;">EQUIPOS DESTACADOS</h5>
                     <ul class="list-unstyled" style="font-size:0.82rem;">
-                        <li class="mb-2"><a href="#">Oriente Petrolero</a></li>
-                        <li class="mb-2"><a href="#">Blooming</a></li>
-                        <li class="mb-2"><a href="#">The Strongest</a></li>
-                        <li class="mb-2"><a href="#">Bolívar</a></li>
-                        <li class="mb-2"><a href="#">Always Ready / Wilstermann</a></li>
+                        <li class="mb-2"><a href="{{ route('contraataque.seccion', ['seccion' => 'futbol-boliviano', 'q' => 'Oriente Petrolero']) }}">Oriente Petrolero</a></li>
+                        <li class="mb-2"><a href="{{ route('contraataque.seccion', ['seccion' => 'futbol-boliviano', 'q' => 'Blooming']) }}">Blooming</a></li>
+                        <li class="mb-2"><a href="{{ route('contraataque.seccion', ['seccion' => 'futbol-boliviano', 'q' => 'The Strongest']) }}">The Strongest</a></li>
+                        <li class="mb-2"><a href="{{ route('contraataque.seccion', ['seccion' => 'futbol-boliviano', 'q' => 'Bolívar']) }}">Bolívar</a></li>
+                        <li class="mb-2"><a href="{{ route('contraataque.seccion', ['seccion' => 'futbol-boliviano', 'q' => 'Always Ready']) }}">Always Ready</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">

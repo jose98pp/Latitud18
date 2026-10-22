@@ -59,6 +59,7 @@
               <span style="width:6px;height:6px;background:var(--color-red);border-radius:50%;animation:pulse 1.5s infinite"></span> TV & Radio en Vivo
             </a>
           </li>
+          <li style="margin-bottom:8px"><a href="{{ route('reportajes.index') }}" style="color:#94A3B8;text-decoration:none;font-size:.82rem">Investigación y reportajes</a></li>
           <li style="margin-bottom:8px"><a href="/#tvSection" style="color:#94A3B8;text-decoration:none;font-size:.82rem">Reportajes en Video</a></li>
         </ul>
         <p style="font-size:.75rem;color:#64748B;line-height:1.4;margin-top:8px">Transmisión digital continua para toda Bolivia.</p>

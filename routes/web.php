@@ -67,6 +67,8 @@ Route::get('/', [PortadaController::class, 'index'])->name('portada');
 // Búsqueda en tiempo real
 Route::get('/buscar', [PortadaController::class, 'search'])->name('search');
 
+Route::get('/reportajes', [PortadaController::class, 'reportajes'])->name('reportajes.index');
+
 // Sitemap XML para buscadores (Google, Bing)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 

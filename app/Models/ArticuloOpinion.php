@@ -17,11 +17,13 @@ class ArticuloOpinion extends Model
         'titulo',
         'contenido',
         'publicado',
+        'es_deportiva',
         'vistas',
     ];
 
     protected $casts = [
         'publicado' => 'boolean',
+        'es_deportiva' => 'boolean',
         'vistas' => 'integer',
     ];
 

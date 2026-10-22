@@ -5,8 +5,8 @@
     $bajada = $noticia->bajada ?? $noticia->resumen ?? '';
     $contenido = $noticia->contenido ?? '';
     $img = method_exists($noticia, 'getImageUrl') ? $noticia->getImageUrl() : ($noticia->imagen ?? $noticia->foto ?? '');
-    $cat = $noticia->category->name ?? 'DEPORTES';
-    $catSlug = \Illuminate\Support\Str::slug($cat);
+    $cat = $noticia->seccion_deportiva_label;
+    $catSlug = $noticia->seccion_deportiva;
     $autor = $noticia->autor ?? ($noticia->user->name ?? 'Redacción Contra Ataque');
     $fechaIso = $noticia->created_at ? $noticia->created_at->toIso8601String() : '';
     $fechaHuman = $noticia->created_at ? $noticia->created_at->locale('es')->isoFormat('D [de] MMMM [de] YYYY, HH:mm') : 'Hoy';
@@ -241,7 +241,7 @@
             <i class="fas fa-bolt text-warning me-1"></i> Contra Ataque
         </a>
         <span>/</span>
-        <a href="{{ route('contraataque.seccion', $catSlug) }}" class="text-success fw-bold ca-bc-cat" style="color: var(--ca-volt) !important;">
+        <a href="{{ $catSlug ? route('contraataque.seccion', $catSlug) : route('contraataque.index') }}" class="text-success fw-bold ca-bc-cat" style="color: var(--ca-volt) !important;">
             {{ $cat }}
         </a>
         <span>/</span>
@@ -608,55 +608,10 @@
         <!-- Columna Lateral: Marcadores, Posiciones y Widget -->
         <div class="col-lg-4">
 
-            <!-- Partidos de la Fecha / Marcadores en Tiempo Real -->
-            <div class="ca-card p-3 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                    <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem;">PARTIDOS EN DIRECTO</span>
-                    <span class="badge bg-danger text-white small" style="font-family: var(--ca-font-display);">EN VIVO</span>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo])
-                </div>
-            </div>
-
-            <!-- Tabla de Posiciones Compacta -->
-            <div class="ca-card p-3 mb-4">
-                <div class="ca-sec-header mb-3">
-                    <span class="ca-sec-title" style="font-size: 1.05rem;">POSICIONES LIGA BOLIVIANA</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-dark table-sm mb-0" style="font-size: 0.75rem;">
-                        <thead>
-                            <tr style="color: #94A3B8; border-bottom: 1px solid var(--ca-volt); font-family: var(--ca-font-display);">
-                                <th>#</th>
-                                <th>Club</th>
-                                <th class="text-center">PJ</th>
-                                <th class="text-center" style="color: var(--ca-volt);">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(array_slice($tablaPosiciones ?? [], 0, 6) as $r)
-                                <tr>
-                                    <td>{{ $r['pos'] }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if(!empty($r['logo']))
-                                                <img loading="lazy" decoding="async" src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
-                                            @endif
-                                            <strong class="text-white">{{ $r['club'] }}</strong>
-                                        </div>
-                                    </td>
-                                    <td class="text-center text-muted">{{ $r['pj'] }}</td>
-                                    <td class="text-center fw-bold" style="color: var(--ca-volt);">{{ $r['pts'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="text-center mt-2">
-                    <a href="{{ route('contraataque.index') }}#tablaPosiciones" class="btn btn-sm btn-outline-secondary w-100" style="font-size: 0.75rem; font-family: var(--ca-font-display);">VER TABLA COMPLETA</a>
-                </div>
-            </div>
+            @if($esSeccionFutbol)
+            <div class="ca-card p-3 mb-4"><h2 class="h5 text-white">Partidos y resultados · Bolivia</h2>@include('contraataque.partials.matches-list', ['partidos' => $partidosVivo, 'feed' => $matchFeed])</div>
+            <div class="ca-card p-3 mb-4"><h2 class="h5 text-white">Posiciones Liga Boliviana</h2>@include('contraataque.partials.standings')<a href="{{ route('contraataque.index') }}#tablaPosiciones" class="btn btn-sm btn-outline-light mt-3">Ver marcador y ligas</a></div>
+            @endif
 
             <!-- Widget Redes Sociales Contra Ataque -->
             <div class="ca-card p-4 text-center">

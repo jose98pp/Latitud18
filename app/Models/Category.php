@@ -13,6 +13,19 @@ class Category extends Model
     
     protected $fillable = ['name', 'descripcion'];
 
+    public function getEsDeportivaAttribute(): bool
+    {
+        return Str::contains(Str::lower(Str::ascii($this->name ?? '')), ['deport', 'futbol', 'contra ataque', 'contraataque']);
+    }
+
+    public function scopeDeportivas($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('name', 'LIKE', '%deport%')->orWhere('name', 'LIKE', '%futbol%')
+                ->orWhere('name', 'LIKE', '%fútbol%')->orWhere('name', 'LIKE', '%contra ataque%')->orWhere('name', 'LIKE', '%contraataque%');
+        });
+    }
+
     public function getSlugAttribute(): string
     {
         return Str::slug($this->name) ?: (string) $this->id;
@@ -20,7 +33,7 @@ class Category extends Model
 
     public function getUrlAttribute(): string
     {
-        return route('categoria.noticias', $this->slug);
+        return $this->es_deportiva ? route('contraataque.index') : route('categoria.noticias', $this->slug);
     }
 
     public function noticias()

@@ -3,75 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use App\Models\Noticia;
 use App\Models\Category;
 use App\Models\Banner;
 use App\Models\ArticuloOpinion;
-use App\Models\Columnista;
 use App\Services\SportsDataService;
 
 class ContraAtaqueController extends Controller
 {
-    /**
-     * Palabras clave por subseccion deportiva.
-     * 'incluir' = debe coincidir alguna. 'excluir' = descarta falsos positivos
-     * (terminos genericos que tambien aparecen en otra disciplina).
-     */
-    public const SUBSECCIONES = [
-        'futbol-boliviano' => [
-            'incluir' => [
-                'división profesional', 'liga boliviana', 'clausura', 'apertura',
-                'oriente Petrolero', 'blooming', 'bolívar', 'the strongest', 'strongest',
-                'always ready', 'wilstermann', 'aurora', 'blooming', 'petrolero',
-                'independiente', 'real potosí', 'real potosi', 'guabirá', 'guabira',
-                'banguato', 'san josé', 'san jose', 'bulo bulo', 'universidad',
-                'tahuichi', 'municipal de yacuiba',
-            ],
-            'excluir' => ['selección', 'seleccion', 'mundial', 'champions', 'libertadores', 'sudamericana', 'copa simón', 'copa simon'],
-        ],
-        'la-verde' => [
-            'incluir' => [
-                'la verde', 'selección boliviana', 'seleccion boliviana', 'eliminatorias',
-                'copa américa', 'copa america', 'preliminar', 'fbf', 'villegas',
-                'félix ramírez', 'felix ramirez', 'martins', 'robín', 'robin',
-                'cuauhtémoc', 'cuauhtemoc', 'blooming', 'entrenador de la verde',
-            ],
-            'excluir' => [],
-        ],
-        'internacional' => [
-            'incluir' => [
-                'champions', 'libertadores', 'sudamericana', 'conmebol', 'fifa',
-                'premier league', 'la liga', 'laliga', 'serie a', 'bundesliga',
-                'real madrid', 'barcelona', 'atlético', 'atletico', 'manchester',
-                'messi', 'cristiano ronaldo', 'cr7', 'mbappé', 'mbappe', 'haaland',
-                'mundial de fútbol', 'copa del mundo', 'mundial 2026',
-            ],
-            'excluir' => [],
-        ],
-        'motores' => [
-            'incluir' => [
-                'dakar', 'rally', 'fórmula 1', 'formula 1', 'f1', 'motogp',
-                'moto gp', 'nascar', 'automovilismo', 'automotriz', 'volkswagen',
-                'toyota', 'ferrari', 'bmx', 'motocross', 'vehículo', 'vehiculo',
-                'autódromo', 'autodromo', 'monoplaza', 'camoto', 'autoes',
-            ],
-            'excluir' => [],
-        ],
-        'polideportivo' => [
-            'incluir' => [
-                'básquet', 'basquet', 'basketball', 'vóley', 'voleibol', 'handball',
-                'atletismo', 'tenis', 'natación', 'natacion', 'swimming', 'ciclis',
-                'ciclismo', 'maratón', 'maraton', 'gimnasia', 'boxeo', 'karate',
-                'judo', 'taekwondo', 'ajedrez', 'golf', 'surf', 'escalada',
-                'olímpicos', 'panamericanos', 'medallas',
-            ],
-            // 'campamento' y 'amputadas' suelen ser de fútbol; 'olímpico' también
-            // aparece en nombres de estadios (Estadio Olímpico Patria).
-            'excluir' => ['fútbol', 'futbol', 'selección', 'seleccion', 'liga profesional'],
-        ],
-    ];
-
     protected SportsDataService $sportsService;
 
     public function __construct(SportsDataService $sportsService)
@@ -80,22 +19,11 @@ class ContraAtaqueController extends Controller
     }
 
     /**
-     * Obtener IDs de categorías relacionadas estrictamente a deportes (Categoría 9 Deportes)
+     * Obtener categorías deportivas por su nombre, sin depender de un ID fijo.
      */
     private function getSportsCategoryIds()
     {
-        // Cacheado: la taxonomia cambia muy rara vez y se consulta en cada request
-        // de la portada, secciones y detalle.
-        return Cache::remember('contraataque.deportes.cat_ids', 600, function () {
-            $catIds = Category::where(function ($q) {
-                $q->where('id', 9)
-                  ->orWhere('name', 'LIKE', '%deport%')
-                  ->orWhere('name', 'LIKE', '%futbol%')
-                  ->orWhere('name', 'LIKE', '%contra%');
-            })->pluck('id');
-
-            return $catIds->isEmpty() ? collect([9]) : $catIds;
-        });
+        return Category::deportivas()->pluck('id');
     }
 
     /**
@@ -116,28 +44,10 @@ class ContraAtaqueController extends Controller
     {
         try {
             $categorias = Category::all();
-            $categoriaDeportes = Category::where('id', 9)
-                ->orWhere('name', 'LIKE', '%deport%')
-                ->first();
-
+            $categoriaDeportes = Category::deportivas()->first();
             $sportsCatIds = $this->getSportsCategoryIds();
-
-            // Obtener noticias de deportes de la BD (Exclusivamente de la categoría Deportes)
-            $noticiasDB = $this->getSportsNewsQuery()
-                ->with(['category', 'galeria'])
-                ->orderBy('created_at', 'desc')
-                ->take(24)
-                ->get();
-
-            // Respaldo de seguridad si aún no cargara
-            if ($noticiasDB->isEmpty()) {
-                $noticiasDB = Noticia::publicadaActiva()
-                    ->where('category_id', 9)
-                    ->with(['category', 'galeria'])
-                    ->orderBy('created_at', 'desc')
-                    ->take(24)
-                    ->get();
-            }
+            $noticiasDB = $this->getSportsNewsQuery()->with(['category', 'galeria'])
+                ->orderByDesc('created_at')->orderByDesc('id')->take(24)->get();
 
             $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
         } catch (\Throwable $e) {
@@ -145,7 +55,7 @@ class ContraAtaqueController extends Controller
             $categoriaDeportes = null;
             $noticiasDB = collect([]);
             $banners = collect([]);
-            $sportsCatIds = collect([9]);
+            $sportsCatIds = collect();
         }
 
         $heroNews = $noticiasDB->first();
@@ -231,6 +141,9 @@ class ContraAtaqueController extends Controller
             return redirect()->route('contraataque.index')->with('error', 'La noticia deportiva solicitada no fue encontrada o ya no está disponible.');
         }
 
+        // Preserve old links that were wrongly routed here by the category-ID heuristic.
+        if (!$noticia->category?->es_deportiva) return redirect()->to($noticia->url, 301);
+
         $expectedSlug = \Illuminate\Support\Str::slug($noticia->titulo) ?: 'noticia';
 
         // Redirección canónica SEO 301 si falta el slug en la URL o no coincide
@@ -242,8 +155,11 @@ class ContraAtaqueController extends Controller
         $noticia->increment('views');
 
         $categorias = Category::all();
-        $partidosVivo = $this->sportsService->getMatches('bolivia');
-        $tablaPosiciones = $this->sportsService->getBolivianStandings();
+        $esSeccionFutbol = !in_array($noticia->seccion_deportiva, ['motores', 'polideportivo'], true);
+        $matchFeed = $esSeccionFutbol ? $this->sportsService->getMatchFeed('bolivia') : [];
+        $standingsFeed = $esSeccionFutbol ? $this->sportsService->getStandingsFeed('bolivia') : [];
+        $partidosVivo = $matchFeed['matches'] ?? [];
+        $tablaPosiciones = $standingsFeed['standings'] ?? [];
         $ligasDisponibles = $this->sportsService->getLeagues();
         $ligaActiva = 'bolivia';
 
@@ -252,6 +168,7 @@ class ContraAtaqueController extends Controller
         // Noticias relacionadas estrictamente de la categoría Deportes
         $relacionadas = Noticia::publicadaActiva()
             ->where('id', '!=', $id)
+            ->when($noticia->seccion_deportiva, fn ($q) => $q->where('seccion_deportiva', $noticia->seccion_deportiva))
             ->whereIn('category_id', $catIds)
             ->with('category')
             ->orderBy('created_at', 'desc')
@@ -266,6 +183,9 @@ class ContraAtaqueController extends Controller
             'partidosVivo',
             'tablaPosiciones',
             'relacionadas',
+            'esSeccionFutbol',
+            'matchFeed',
+            'standingsFeed',
             'banners',
             'ligasDisponibles',
             'ligaActiva'
@@ -275,80 +195,33 @@ class ContraAtaqueController extends Controller
     /**
      * Subsecciones de Contra Ataque (Fútbol Boliviano, La Verde, Internacional, Motores, Polideportivo)
      */
-    public function seccion($seccion)
+    public function seccion(Request $request, string $seccion)
     {
+        if ($seccion === 'deportes') return redirect()->route('contraataque.index', [], 301);
+        $labels = \App\Support\SportsSections::LABELS;
+        abort_unless(isset($labels[$seccion]) || $seccion === 'opinion', 404);
+        $filters = $request->validate(['q' => 'nullable|string|max:150']);
+        $search = trim($filters['q'] ?? '');
         $categorias = Category::all();
-        $partidosVivo = $this->sportsService->getMatches('bolivia');
-        $tablaPosiciones = $this->sportsService->getBolivianStandings();
         $ligasDisponibles = $this->sportsService->getLeagues();
         $ligaActiva = 'bolivia';
-
-        $seccionTitulo = match($seccion) {
-            'futbol-boliviano' => 'Fútbol Boliviano — División Profesional',
-            'la-verde' => 'La Verde — Selección Boliviana',
-            'internacional' => 'Fútbol Internacional & Champions',
-            'motores' => 'Motores & Rally Dakar',
-            'polideportivo' => 'Polideportivo & Básquetbol',
-            'opinion' => 'El Ojo de Contraataque — Opinión Deportiva',
-            default => 'Noticias de ' . ucwords(str_replace('-', ' ', $seccion))
-        };
-
-        $catIds = $this->getSportsCategoryIds();
-        $query = Noticia::publicadaActiva()
-            ->whereIn('category_id', $catIds)
-            ->with(['category', 'galeria']);
-
-        // Filtrar según la subsección deportiva.
-        // 'excluir' evita que un término genérico capture noticias de otra disciplina
-        // (ej: "campamento" de fútbol no debe caer en polideportivo).
-        $filtros = self::SUBSECCIONES[$seccion] ?? null;
-        $usadoFiltro = false;
-
-        if ($filtros) {
-            $query->where(function ($q) use ($filtros) {
-                $q->where(function ($sub) use ($filtros) {
-                    foreach ($filtros['incluir'] as $k) {
-                        $sub->orWhere('titulo', 'LIKE', "%{$k}%");
-                    }
-                });
-                if (!empty($filtros['excluir'])) {
-                    $q->whereNot(function ($sub) use ($filtros) {
-                        foreach ($filtros['excluir'] as $k) {
-                            $sub->orWhere('titulo', 'LIKE', "%{$k}%");
-                        }
-                    });
-                }
-            });
-            $usadoFiltro = true;
-        }
-
-        $noticias = $query->orderBy('created_at', 'desc')->paginate(12);
-
-        // Si el filtro especifico no arroja resultados, mostrar Ultimas de deportes
-        // pero avisar en la UI que no hay contenido especifico de esa disciplina.
-        $filtroSinResultados = $usadoFiltro && $noticias->isEmpty();
-        if ($filtroSinResultados) {
-            $noticias = Noticia::publicadaActiva()
-                ->whereIn('category_id', $catIds)
-                ->with(['category', 'galeria'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(12);
-        }
-
+        $esSeccionFutbol = in_array($seccion, ['futbol-boliviano', 'la-verde', 'internacional'], true);
+        $matchFeed = $esSeccionFutbol ? $this->sportsService->getMatchFeed($ligaActiva) : [];
+        $standingsFeed = $esSeccionFutbol ? $this->sportsService->getStandingsFeed($ligaActiva) : [];
+        $partidosVivo = $matchFeed['matches'] ?? [];
+        $tablaPosiciones = $standingsFeed['standings'] ?? [];
         $banners = Banner::where('active', true)->orderBy('position')->get()->groupBy('location');
-
-        return view('contraataque.seccion', compact(
-            'seccion',
-            'seccionTitulo',
-            'noticias',
-            'categorias',
-            'partidosVivo',
-            'tablaPosiciones',
-            'banners',
-            'ligasDisponibles',
-            'ligaActiva',
-            'filtroSinResultados'
-        ));
+        $seccionTitulo = $labels[$seccion] ?? 'El Ojo de Contraataque';
+        if ($seccion === 'opinion') {
+            $query = ArticuloOpinion::with('columnista')->where('publicado', true)->where('es_deportiva', true)
+                ->whereHas('columnista', fn ($q) => $q->where('activo', true));
+        } else {
+            $query = $this->getSportsNewsQuery()->where('seccion_deportiva', $seccion)->with('category');
+        }
+        if ($search !== '') $query->where(fn ($q) => $q->where('titulo', 'LIKE', '%'.$search.'%')->orWhere('contenido', 'LIKE', '%'.$search.'%'));
+        $noticias = $query->orderByDesc('created_at')->orderByDesc('id')->paginate(12)->withQueryString();
+        return view('contraataque.seccion', compact('seccion', 'seccionTitulo', 'noticias', 'categorias', 'partidosVivo',
+            'tablaPosiciones', 'banners', 'ligasDisponibles', 'ligaActiva', 'esSeccionFutbol', 'matchFeed', 'standingsFeed', 'search'));
     }
 
     /**
@@ -409,6 +282,8 @@ class ContraAtaqueController extends Controller
         try {
             $articulosDB = ArticuloOpinion::with('columnista')
                 ->publicado()
+                ->where('es_deportiva', true)
+                ->whereHas('columnista', fn ($q) => $q->where('activo', true))
                 ->take(2)
                 ->get();
 
@@ -421,6 +296,7 @@ class ContraAtaqueController extends Controller
                         // La columna real es 'avatar' (no 'avatar_url')
                         'foto' => $a->columnista->avatar
                             ?: 'https://ui-avatars.com/api/?name=' . rawurlencode(mb_substr($nombre, 0, 2)) . '&background=0B1F3A&color=ffffff&bold=true',
+                        'url' => route('opinion.articulo', $a->id),
                         'titulo' => $a->titulo,
                         'extracto' => \Illuminate\Support\Str::limit(strip_tags($a->contenido ?? ''), 140),
                     ];

@@ -166,6 +166,7 @@ class NoticiaController extends Controller
             'titulo' => strip_tags($validatedData['titulo']), // Sanitizar título
             'contenido' => $this->sanitizationService->sanitizeContent($validatedData['contenido']), // Sanitizar contenido
             'category_id' => $validatedData['category_id'],
+            'seccion_deportiva' => Category::find($validatedData['category_id'])?->es_deportiva ? ($validatedData['seccion_deportiva'] ?? null) : null,
             'user_id' => auth()->id(), // Asignar el usuario actual
             'imagen' => $imagePath,
             'video_youtube' => $this->getYouTubeVideoID($validatedData['video_youtube'] ?? null),
@@ -283,6 +284,7 @@ class NoticiaController extends Controller
                 'titulo' => strip_tags($validatedData['titulo']), // Sanitizar título
                 'contenido' => $this->sanitizationService->sanitizeContent($validatedData['contenido']), // Sanitizar contenido
                 'category_id' => $validatedData['category_id'],
+                'seccion_deportiva' => Category::find($validatedData['category_id'])?->es_deportiva ? ($validatedData['seccion_deportiva'] ?? null) : null,
                 'user_id' => auth()->id(), // Mantener el usuario actual
                 'video_youtube' => $this->getYouTubeVideoID($validatedData['video_youtube'] ?? null),
                 'publicada' => $request->boolean('publicada'),

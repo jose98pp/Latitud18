@@ -126,7 +126,7 @@
                     <option value="">Selecciona una categoría</option>
                     @foreach($categories as $category)
                         <option 
-                            value="{{ $category->id }}" 
+                            value="{{ $category->id }}" data-sports="{{ $category->es_deportiva ? '1' : '0' }}"
                             {{ old('category_id', $noticia->category_id) == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
@@ -139,7 +139,9 @@
                 @enderror
             </div>
 
-            <div class="form-group mb-3">
+            @include('admin.noticias.partials.sports-section')
+
+        <div class="form-group mb-3">
                 <label for="imagen" class="form-label">Imagen:</label>
                 <input 
                     type="file" 
@@ -431,9 +433,9 @@
                 <div class="form-check mb-3">
                     <input type="checkbox" name="es_investigacion" id="es_investigacion" class="form-check-input" value="1" {{ old('es_investigacion', $noticia->es_investigacion) ? 'checked' : '' }}>
                     <label class="form-check-label fw-bold" for="es_investigacion">
-                        <i class="fas fa-search text-danger me-1"></i> Marcar como Reportaje de Investigación
+                        <i class="fas fa-search text-danger me-1"></i> Publicar en Investigación y reportajes
                     </label>
-                    <div class="form-text text-muted">Aparecerá en la tarjeta exclusiva azul marino "LATITUD 18 INVESTIGA".</div>
+                    <div class="form-text text-muted">Aparecerá en la página Investigación y reportajes; el más reciente se destaca en LATITUD 18 INVESTIGA.</div>
                 </div>
 
                 <div class="form-check mb-2">

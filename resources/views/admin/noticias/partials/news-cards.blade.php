@@ -39,6 +39,9 @@
 
                 <!-- Card Content -->
                 <div class="news-card-content p-4">
+                    @if($noticia->category?->es_deportiva)
+                        <div class="small mb-2 {{ $noticia->seccion_deportiva ? 'text-success' : 'text-warning' }}">Contra Ataque · {{ $noticia->seccion_deportiva ? $noticia->seccion_deportiva_label : 'Pendiente de clasificar' }}</div>
+                    @endif
                     <!-- Card Header -->
                     <div class="news-card-header flex items-center justify-between mb-2">
                         <span class="category-badge px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">

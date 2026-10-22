@@ -1,158 +1,48 @@
 @extends('layouts.contraataque')
-
 @section('title', $seccionTitulo . ' — Contra Ataque Deportes')
-
 @section('content')
+<style>
+.ca-section-header{background:linear-gradient(100deg,#111827,#162032);border:1px solid var(--ca-border);border-left:5px solid var(--ca-volt);padding:24px;border-radius:8px;margin-bottom:24px}.ca-section-header h1{font-family:var(--ca-font-display);font-weight:900;font-size:clamp(1.7rem,4vw,2.5rem);margin:14px 0 8px}.ca-section-search{display:flex;gap:8px;margin:20px 0;flex-wrap:wrap}.ca-section-search input{flex:1;min-width:180px;background:#111827;color:#fff;border:1px solid var(--ca-border);padding:10px 12px;border-radius:5px}.ca-section-search button{border:0;background:var(--ca-volt);color:#071322;font-weight:800;padding:10px 20px;border-radius:5px}.ca-section-card{overflow:hidden;border:1px solid var(--ca-border);height:100%;display:flex;flex-direction:column;background:var(--ca-bg-card);border-radius:8px}.ca-section-card img.cover{width:100%;aspect-ratio:16/10;object-fit:cover}.ca-section-card-body{padding:20px;display:flex;flex-direction:column;flex:1}.ca-section-card h2{font-family:var(--ca-font-display);font-size:1.25rem;line-height:1.35;font-weight:800;margin:12px 0}.ca-section-summary{font-size:.9rem;line-height:1.6;color:#cbd5e1}.ca-section-card a{color:inherit}.ca-section-read{color:var(--ca-volt)!important;font-weight:700;margin-top:auto;padding-top:14px}.ca-section-meta{font-size:.78rem;color:#94a3b8;display:flex;gap:10px;flex-wrap:wrap}.ca-section-author{display:flex;gap:10px;align-items:center;margin:8px 0}.ca-section-author img{width:40px;height:40px;border-radius:50%;object-fit:cover}.ca-section-empty{padding:40px 24px;border:1px dashed var(--ca-border);border-radius:8px;text-align:center}.ca-section-nav a{display:block;padding:12px 0;border-bottom:1px solid var(--ca-border);color:#e2e8f0}.ca-section-nav a[aria-current]{color:var(--ca-volt);font-weight:800}.ca-section-search input:focus-visible,.ca-section-search button:focus-visible{outline:3px solid var(--ca-volt);outline-offset:3px}
+</style>
 <div class="container py-2">
-
-    <!-- Header de Sección -->
-    <div class="p-3 p-md-4 mb-4 rounded" style="background: linear-gradient(90deg, #111827 0%, #162032 100%); border-left: 5px solid var(--ca-volt); border-top: 1px solid var(--ca-border); border-right: 1px solid var(--ca-border); border-bottom: 1px solid var(--ca-border);">
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <a href="{{ route('contraataque.index') }}" class="text-muted small"><i class="fas fa-arrow-left me-1"></i> Portada Contra Ataque</a>
-            <span class="text-muted small">/</span>
-            <span class="ca-kicker" style="font-size: 0.75rem;">SECCIÓN ESPECIAL</span>
+    <header class="ca-section-header">
+        <a href="{{ route('contraataque.index') }}" style="color:#94a3b8;font-size:.85rem">← Portada Contra Ataque</a>
+        <h1>{{ $seccionTitulo }}</h1>
+        <p class="mb-0" style="color:#cbd5e1">{{ $seccion === 'opinion' ? 'Columnas y análisis deportivos de nuestros autores.' : 'Actualidad y cobertura de ' . $seccionTitulo . '.' }}</p>
+    </header>
+    <div class="row g-4"><div class="col-lg-8">
+        <form class="ca-section-search" action="{{ route('contraataque.seccion', $seccion) }}" method="GET" role="search" aria-label="Buscar en esta sección">
+            <label for="section-search" class="visually-hidden">Buscar en {{ $seccionTitulo }}</label><input id="section-search" type="search" name="q" maxlength="150" value="{{ $search }}" placeholder="Buscar en esta sección"><button type="submit">Buscar</button>
+            @if($search !== '')<a class="btn btn-outline-light" href="{{ route('contraataque.seccion', $seccion) }}">Limpiar</a>@endif
+        </form>
+        <p class="ca-section-meta">{{ $noticias->total() }} {{ $seccion === 'opinion' ? 'artículos' : 'noticias' }}{{ $search !== '' ? ' con estos filtros' : ' en esta sección' }}</p>
+        <div class="row g-4">
+        @forelse($noticias as $noticia)
+            @php
+                $esOpinion = $seccion === 'opinion';
+                $url = $esOpinion ? route('opinion.articulo', $noticia->id) : $noticia->url;
+            @endphp
+            <div class="col-md-6"><article class="ca-section-card">
+                @unless($esOpinion)<a href="{{ $url }}" tabindex="-1" aria-hidden="true"><img class="cover" loading="lazy" src="{{ $noticia->getImageUrl() }}" alt="" onerror="this.onerror=null;this.src='/images/default-news.svg'"></a>@endunless
+                <div class="ca-section-card-body">
+                    <div class="ca-section-meta"><span>{{ $esOpinion ? $noticia->tipo : $seccionTitulo }}</span><time datetime="{{ $noticia->created_at->toAtomString() }}">{{ $noticia->created_at->format('d/m/Y') }}</time></div>
+                    @if($esOpinion)<div class="ca-section-author"><img src="{{ $noticia->columnista->avatar_url }}" alt="" onerror="this.onerror=null;this.src='/images/default-news.svg'"><span>{{ $noticia->columnista->nombre }}</span></div>@endif
+                    <h2><a href="{{ $url }}">{{ $noticia->titulo }}</a></h2>
+                    <p class="ca-section-summary">{{ app(\App\Services\ContentSanitizationService::class)->getCleanExcerpt($noticia->contenido, 150) }}</p>
+                    <a href="{{ $url }}" class="ca-section-read">{{ $esOpinion ? 'Leer análisis' : 'Leer noticia' }} →</a>
+                </div>
+            </article></div>
+        @empty
+            <div class="col-12"><div class="ca-section-empty"><h2 class="h4">{{ $search !== '' ? 'No encontramos resultados' : 'Todavía no hay publicaciones en esta sección' }}</h2><p style="color:#94a3b8">{{ $search !== '' ? 'Prueba otra palabra o limpia la búsqueda.' : 'Las nuevas coberturas aparecerán aquí cuando se publiquen.' }}</p><a class="btn btn-outline-light" href="{{ route('contraataque.index') }}">Ver todas las noticias deportivas</a></div></div>
+        @endforelse
         </div>
-        <h1 class="h3 fw-bold text-white mb-0" style="font-family: var(--ca-font-display); letter-spacing: 0.5px;">
-            {{ $seccionTitulo }}
-        </h1>
-    </div>
-
-    <div class="row g-4">
-        <!-- Listado de Noticias de la Sección -->
-        <div class="col-lg-8">
-            @if(!empty($filtroSinResultados))
-                <div class="ca-card p-3 mb-4" style="border-left:3px solid var(--ca-gold);">
-                    <div class="d-flex align-items-start gap-2">
-                        <i class="fas fa-info-circle" style="color:var(--ca-gold);font-size:1.05rem;"></i>
-                        <div>
-                            <strong class="d-block" style="font-family:var(--ca-font-display);text-transform:uppercase;letter-spacing:.5px;">
-                                Sin noticias espec&iacute;ficas de esta disciplina
-                            </strong>
-                            <span class="text-muted" style="font-size:.85rem;">
-                                Todav&iacute;a no hay notas publicadas en
-                                <em>{{ $seccionTitulo }}</em>.
-                                Te mostramos las &uacute;ltimas noticias de deportes.
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            @endif
-            <div class="row g-4">
-                @forelse($noticias as $noticia)
-                    @php
-                        $nId = is_object($noticia) ? ($noticia->id ?? 1) : ($noticia['id'] ?? 1);
-                        $nTitulo = is_object($noticia) ? ($noticia->titulo ?? '') : ($noticia['titulo'] ?? '');
-                        $nBajada = is_object($noticia) ? ($noticia->bajada ?? $noticia->resumen ?? '') : ($noticia['bajada'] ?? '');
-                        $nImg = '';
-                        if (is_object($noticia)) {
-                            $nImg = method_exists($noticia, 'getImageUrl') ? $noticia->getImageUrl() : ($noticia->imagen_url ?? $noticia->imagen ?? '');
-                        } else {
-                            $nImg = $noticia['imagen'] ?? $noticia['foto'] ?? '';
-                        }
-                        $nCat = is_object($noticia) ? ($noticia->category->name ?? 'DEPORTES') : ($noticia['category']->name ?? 'DEPORTES');
-                        $nFecha = is_object($noticia) && $noticia->created_at ? $noticia->created_at->diffForHumans() : 'Reciente';
-                        $nSlug = \Illuminate\Support\Str::slug($nTitulo) ?: 'noticia';
-                        $nUrl = is_object($noticia) && isset($noticia->url) ? $noticia->url : route('contraataque.show', ['id' => $nId, 'slug' => $nSlug]);
-                    @endphp
-                    <div class="col-md-6">
-                        <div class="ca-card h-100 d-flex flex-column">
-                            <div style="height: 180px; overflow: hidden; position: relative;">
-                                <a href="{{ $nUrl }}">
-                                    <img loading="lazy" decoding="async" src="{{ $nImg ?: '/images/default-news.svg' }}" 
-                                         alt="{{ $nTitulo }}" 
-                                         style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
-                                         onmouseover="this.style.transform='scale(1.05)'" 
-                                         onmouseout="this.style.transform='scale(1)'"
-                                         onerror="this.onerror=null;this.src='/images/default-news.svg'">
-                                </a>
-                                <span class="badge position-absolute top-2 start-2" style="background: rgba(0,0,0,0.85); color: var(--ca-volt); font-family: var(--ca-font-display);">
-                                    {{ $nCat }}
-                                </span>
-                            </div>
-                            <div class="p-3 d-flex flex-column flex-grow-1">
-                                <small class="text-muted mb-1" style="font-size: 0.72rem;">{{ $nFecha }}</small>
-                                <h3 class="ca-title-card" style="font-size: 1.05rem;">
-                                    <a href="{{ $nUrl }}">{{ $nTitulo }}</a>
-                                </h3>
-                                <p class="text-muted small mb-3" style="line-height: 1.4;">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($nBajada), 100) }}
-                                </p>
-                                <div class="mt-auto pt-2 border-top border-secondary">
-                                    <a href="{{ $nUrl }}" class="text-success fw-bold small">
-                                        Leer Cobertura <i class="fas fa-chevron-right ms-1"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-12 text-center py-5 text-muted">
-                        <i class="fas fa-futbol fs-1 mb-2 opacity-50"></i>
-                        <p>No se encontraron noticias en esta sección deportiva.</p>
-                        <a href="{{ route('contraataque.index') }}" class="btn btn-sm btn-outline-light">Volver a la portada</a>
-                    </div>
-                @endforelse
-            </div>
-
-            <!-- Paginación -->
-            @if($noticias instanceof \Illuminate\Pagination\LengthAwarePaginator && $noticias->hasPages())
-                <div class="mt-4 pt-3 border-top border-secondary d-flex justify-content-center">
-                    {{ $noticias->links('pagination::bootstrap-5') }}
-                </div>
-            @endif
-        </div>
-
-        <!-- Lateral -->
-        <div class="col-lg-4">
-            <!-- Partidos en Vivo -->
-            <div class="ca-card p-3 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                    <span class="ca-sec-title text-white mb-0" style="font-size: 1.05rem;">PARTIDOS EN DIRECTO</span>
-                    <span class="badge bg-danger text-white small" style="font-family: var(--ca-font-display);">EN VIVO</span>
-                </div>
-                <div class="d-flex flex-column gap-2">
-                    @include('contraataque.partials.matches-list', ['partidos' => $partidosVivo])
-                </div>
-            </div>
-
-            <!-- Tabla -->
-            <div class="ca-card p-3">
-                <div class="ca-sec-header mb-3">
-                    <span class="ca-sec-title" style="font-size: 1.05rem;">LÍDERES LIGA BOLIVIANA</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-dark table-sm mb-0" style="font-size: 0.75rem;">
-                        <thead>
-                            <tr style="color: #94A3B8;">
-                                <th>#</th>
-                                <th>Club</th>
-                                <th class="text-center" style="color: var(--ca-volt);">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(array_slice($tablaPosiciones ?? [], 0, 6) as $r)
-                                <tr>
-                                    <td>{{ $r['pos'] }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if(!empty($r['logo']))
-                                                <img loading="lazy" decoding="async" src="{{ $r['logo'] }}" alt="{{ $r['club'] }}" style="width: 18px; height: 18px; object-fit: contain;" class="me-1" onerror="this.style.display='none'">
-                                            @endif
-                                            <strong class="text-white">{{ $r['club'] }}</strong>
-                                        </div>
-                                    </td>
-                                    <td class="text-center fw-bold" style="color: var(--ca-volt);">{{ $r['pts'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="text-center mt-2">
-                    <a href="{{ route('contraataque.index') }}#tablaPosiciones" class="btn btn-sm btn-outline-secondary w-100" style="font-size: 0.72rem;">Ver Tabla Completa</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+        <nav class="mt-4" aria-label="Páginas de esta sección">{{ $noticias->links('pagination::bootstrap-5') }}</nav>
+    </div><aside class="col-lg-4">
+        <div class="ca-card p-3 mb-4"><h2 class="h5 fw-bold text-white">Explorar Contra Ataque</h2><nav class="ca-section-nav" aria-label="Más secciones deportivas">@foreach(\App\Support\SportsSections::LABELS as $key => $label)<a href="{{ route('contraataque.seccion', $key) }}" @if($seccion === $key) aria-current="page" @endif>{{ $label }}</a>@endforeach<a href="{{ route('contraataque.seccion', 'opinion') }}" @if($seccion === 'opinion') aria-current="page" @endif>El Ojo de Contraataque</a></nav></div>
+        @if($esSeccionFutbol)
+            <div class="ca-card p-3 mb-4"><h2 class="h5 text-white">Partidos y resultados · Bolivia</h2>@include('contraataque.partials.matches-list', ['partidos' => $partidosVivo, 'feed' => $matchFeed])</div>
+            <div class="ca-card p-3"><h2 class="h5 text-white">Liga Boliviana</h2>@include('contraataque.partials.standings')<a class="btn btn-outline-light btn-sm mt-3" href="{{ route('contraataque.index') }}#tablaPosiciones">Ver marcador y ligas</a></div>
+        @endif
+    </aside></div>
 </div>
 @endsection

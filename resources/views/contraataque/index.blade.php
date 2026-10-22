@@ -43,7 +43,7 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                 } else {
                     $heroImg = $heroNews['imagen'] ?? $heroNews['foto'] ?? '';
                 }
-                $heroCat = is_object($heroNews) ? ($heroNews->category->name ?? 'FÚTBOL BOLIVIANO') : ($heroNews['category']->name ?? 'FÚTBOL BOLIVIANO');
+                $heroCat = is_object($heroNews) ? ($heroNews->seccion_deportiva_label ?? 'Deportes') : ($heroNews['category']->name ?? 'FÚTBOL BOLIVIANO');
                 $heroFecha = is_object($heroNews) ? ($heroNews->created_at ? $heroNews->created_at->diffForHumans() : 'Hace 2 horas') : 'Hace 2 horas';
                 $heroSlug = \Illuminate\Support\Str::slug($heroTitulo) ?: 'noticia';
                 $heroUrl = is_object($heroNews) && isset($heroNews->url) ? $heroNews->url : route('contraataque.show', ['id' => $heroId, 'slug' => $heroSlug]);
@@ -156,7 +156,7 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                     } else {
                         $dImg = $d['imagen'] ?? $d['foto'] ?? '';
                     }
-                    $dCat = is_object($d) ? ($d->category->name ?? 'DEPORTES') : ($d['category']->name ?? 'DEPORTES');
+                    $dCat = is_object($d) ? ($d->seccion_deportiva_label ?? 'Deportes') : ($d['category']->name ?? 'DEPORTES');
                     $dFecha = is_object($d) ? ($d->created_at ? $d->created_at->diffForHumans() : 'Hace 3 horas') : 'Hace 3 horas';
                     $dSlug = \Illuminate\Support\Str::slug($dTitulo) ?: 'noticia';
                     $dUrl = is_object($d) && isset($d->url) ? $d->url : route('contraataque.show', ['id' => $dId, 'slug' => $dSlug]);
@@ -230,7 +230,7 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                                     <small class="text-muted" style="font-size: 0.7rem;">{{ $col['cargo'] }}</small>
                                 </div>
                             </div>
-                            <h5 class="ca-title-card" style="font-size: 1rem; color: var(--ca-volt);">"{{ $col['titulo'] }}"</h5>
+                            <h5 class="ca-title-card" style="font-size: 1rem; color: var(--ca-volt);"><a href="{{ $col['url'] }}">{{ $col['titulo'] }}</a></h5>
                             <p class="text-light small mb-0" style="line-height: 1.45; font-style: italic;">
                                 {{ $col['extracto'] }}
                             </p>
@@ -309,7 +309,7 @@ La secci&oacute;n deportiva no tiene noticias nuevas desde hace
                     } else {
                         $mImg = $m['imagen'] ?? $m['foto'] ?? '';
                     }
-                    $mCat = is_object($m) ? ($m->category->name ?? 'DEPORTES') : ($m['category']->name ?? 'DEPORTES');
+                    $mCat = is_object($m) ? ($m->seccion_deportiva_label ?? 'Deportes') : ($m['category']->name ?? 'DEPORTES');
                     $mFecha = is_object($m) ? ($m->created_at ? $m->created_at->diffForHumans() : 'Hace unas horas') : 'Hace unas horas';
                     $mSlug = \Illuminate\Support\Str::slug($mTitulo) ?: 'noticia';
                     $mUrl = is_object($m) && isset($m->url) ? $m->url : route('contraataque.show', ['id' => $mId, 'slug' => $mSlug]);

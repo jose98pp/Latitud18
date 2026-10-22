@@ -3,12 +3,16 @@
   <div class="container" style="display:flex;align-items:center;justify-content:space-between">
     <ul class="site-nav-categories">
       <li><a href="/" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fas fa-home" style="margin-right:4px"></i> INICIO</a></li>
+      <li><a href="{{ route('reportajes.index') }}" class="nav-item-link" @if(request()->routeIs('reportajes.index')) aria-current="page" @endif style="display:block;padding:12px 16px;color:#fff;font-weight:800;font-size:.72rem;text-decoration:none">REPORTAJES</a></li>
+      <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
+        <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
+      </li>
       @php
         $menuCats = $navCategorias ?? $categorias ?? \App\Models\Category::orderBy('name', 'asc')->get();
       @endphp
       @forelse($menuCats as $categoria)
         @php
-          $isSports = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
+          $isSports = $categoria->es_deportiva;
         @endphp
         @if(!$isSports)
           <li><a href="{{ route('categoria.noticias', $categoria->slug) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s">{{ strtoupper($categoria->name) }}</a></li>
@@ -18,9 +22,6 @@
           <li><a href="{{ route('categoria.noticias', $cSlug) }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fff;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent">{{ $cat }}</a></li>
         @endforeach
       @endforelse
-      <li style="background:linear-gradient(90deg, #090d16, #162032); border-left:1px solid #00FF87; border-right:1px solid #00FF87;">
-        <a href="{{ route('contraataque.index') }}" class="nav-item-link" style="display:flex;align-items:center;gap:5px;padding:12px 14px;color:#00FF87;font-family:var(--font-title-montserrat);font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:all .2s"><i class="fas fa-bolt" style="color:#FF3B30"></i> CONTRA ATAQUE</a>
-      </li>
       <li><a href="{{ route('opinion.index') }}" class="nav-item-link" style="display:block;padding:12px 16px;color:#fca5a5;font-family:var(--font-title-montserrat);font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;text-decoration:none;border-bottom:3px solid transparent;transition:border-color .2s"><i class="fa-solid fa-pen-nib" style="margin-right:4px"></i> OPINIÓN</a></li>
     </ul>
     <button id="mobileMenuToggle" onclick="openMobileMenu()" aria-label="Abrir Menú"><i class="fas fa-bars"></i></button>
@@ -62,7 +63,7 @@
       <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-text-muted);font-weight:800;margin-bottom:8px">Secciones</p>
       @forelse($menuCats as $categoria)
         @php
-          $isSportsMob = str_contains(strtolower($categoria->name), 'deporte') || str_contains(strtolower($categoria->name), 'futbol');
+          $isSportsMob = $categoria->es_deportiva;
         @endphp
         @if($isSportsMob)
           <a href="{{ route('contraataque.index') }}" style="display:flex;align-items:center;gap:8px;padding:11px 0;color:#00FF87;text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-weight:800"><i class="fas fa-bolt" style="font-size:.7rem;color:#FF3B30"></i> {{ $categoria->name }} (Contra Ataque)</a>
@@ -74,6 +75,7 @@
     </div>
     <div style="margin-top:14px;display:flex;flex-direction:column;gap:4px">
       <a href="{{ route('periodico.public.index') }}" style="display:flex;align-items:center;gap:8px;padding:11px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-weight:600"><i class="fas fa-newspaper" style="color:var(--color-red)"></i> Periódico Digital</a>
+      <a href="{{ route('reportajes.index') }}" style="display:block;padding:11px 0;color:var(--color-text-main);font-weight:700;text-decoration:none">Investigación y reportajes</a>
       <a href="{{ route('opinion.index') }}" style="display:flex;align-items:center;gap:8px;padding:11px 0;color:var(--color-text-main);text-decoration:none;border-bottom:1px solid var(--color-border);font-size:.88rem;font-weight:600"><i class="fa-solid fa-pen-nib" style="color:var(--color-red)"></i> Opinión & Análisis</a>
     </div>
     <div style="margin-top:16px">

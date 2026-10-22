@@ -33,7 +33,7 @@ La programación no sube archivos más tarde: el contenido y las imágenes se gu
 
 ## Investigación y reportajes
 
-Marcar **Reportaje de Investigación**, marcar Publicada y guardar. En la portada, la tarjeta **LATITUD 18 INVESTIGA** muestra la noticia marcada más reciente que ya pueda publicarse. El formulario usa una marca conjunta para reportajes de investigación; no existe un tipo independiente llamado Reportaje ni un archivo público específico de todos los reportajes. Los reportajes sin esa marca aparecen en su categoría habitual.
+Marcar **Publicar en Investigación y reportajes**, marcar Publicada y guardar. En la portada, la tarjeta **LATITUD 18 INVESTIGA** muestra la noticia marcada más reciente que ya pueda publicarse. El formulario usa una marca conjunta para investigación y reportajes. El archivo público `/reportajes` reúne todas las noticias marcadas y publicadas, con búsqueda y filtro por categoría. Las noticias sin esa marca aparecen en su categoría habitual.
 
 Se elimina la sustitución anterior que mostraba una noticia general como investigación cuando no había ninguna marcada. Los borradores y las investigaciones programadas para el futuro no aparecen en esa tarjeta.
 
@@ -43,4 +43,4 @@ Las pruebas PHP cubren subida autenticada y permisos, creación/edición, sanead
 
 La comprobación con Chromium recorre el formulario real: pestañas sin envío accidental, negrita, tamaño 18 pt, subida autenticada, ancho y alineación de imágenes, movimiento, deshacer/rehacer, creación, reapertura, Ctrl+S, el resultado del artículo público y su aparición en la tarjeta de investigación. Se ejecuta contra el entorno local con datos de prueba, sin acceder a producción.
 
-Al desplegar, incluir `public/vendor/react` y los archivos PHP, Blade, JavaScript y CSS modificados. Ejecutar `php artisan optimize:clear` y `php artisan view:cache`. No hay migraciones ni compilación de Node obligatoria para estos cambios. Comprobar también el formulario y el resultado público en cPanel.
+Al desplegar, incluir `public/vendor/react` y los archivos PHP, Blade, JavaScript y CSS modificados. Ejecutar `php artisan optimize:clear` y `php artisan view:cache`. La ampliación de secciones deportivas añade una migración; ejecutar `php artisan migrate --force` al actualizar. No necesita una compilación de Node. Comprobar también el formulario y el resultado público en cPanel.

@@ -14,6 +14,7 @@ class Noticia extends Model
         'titulo',
         'contenido',
         'category_id',
+        'seccion_deportiva',
         'user_id',
         'publicada',
         'destacada_hero',
@@ -48,6 +49,16 @@ class Noticia extends Model
         static::deleted(static function () {
             app(\App\Services\NewsService::class)->clearNewsCache();
         });
+    }
+
+    public function getSeccionDeportivaLabelAttribute(): string
+    {
+        return \App\Support\SportsSections::LABELS[$this->seccion_deportiva] ?? 'Deportes';
+    }
+
+    public function scopeDeportivas($query)
+    {
+        return $query->whereHas('category', fn ($category) => $category->deportivas());
     }
 
     public function scopePublicadaActiva($query)
@@ -92,8 +103,7 @@ class Noticia extends Model
     public function getUrlAttribute(): string
     {
         $newsSlug = \Illuminate\Support\Str::slug($this->titulo) ?: 'noticia';
-        $catName = strtolower($this->category->name ?? '');
-        if (str_contains($catName, 'deport') || str_contains($catName, 'futbol') || $this->category_id == 9) {
+        if ($this->category?->es_deportiva) {
             return route('contraataque.show', ['id' => $this->id, 'slug' => $newsSlug]);
         }
 

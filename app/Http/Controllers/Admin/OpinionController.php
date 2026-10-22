@@ -146,6 +146,7 @@ class OpinionController extends Controller
             'tipo' => 'required|string|in:EDITORIAL,COLUMNA,ANÁLISIS,COMENTARIO',
             'titulo' => 'required|string|max:255',
             'contenido' => 'required|string',
+            'es_deportiva' => 'sometimes|boolean',
         ]);
 
         ArticuloOpinion::create([
@@ -153,7 +154,8 @@ class OpinionController extends Controller
             'tipo' => $validated['tipo'],
             'titulo' => $validated['titulo'],
             'contenido' => $validated['contenido'],
-            'publicado' => $request->has('publicado'),
+            'publicado' => $request->boolean('publicado'),
+            'es_deportiva' => $request->boolean('es_deportiva'),
         ]);
 
         return redirect()->route('admin.opinion.index')->with('success', 'Artículo de opinión publicado con éxito.');
@@ -180,6 +182,7 @@ class OpinionController extends Controller
             'tipo' => 'required|string|in:EDITORIAL,COLUMNA,ANÁLISIS,COMENTARIO',
             'titulo' => 'required|string|max:255',
             'contenido' => 'required|string',
+            'es_deportiva' => 'sometimes|boolean',
         ]);
 
         $articulo->update([
@@ -187,7 +190,8 @@ class OpinionController extends Controller
             'tipo' => $validated['tipo'],
             'titulo' => $validated['titulo'],
             'contenido' => $validated['contenido'],
-            'publicado' => $request->has('publicado'),
+            'publicado' => $request->boolean('publicado'),
+            'es_deportiva' => $request->boolean('es_deportiva'),
         ]);
 
         return redirect()->route('admin.opinion.index')->with('success', 'Artículo de opinión actualizado.');

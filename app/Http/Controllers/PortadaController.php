@@ -33,9 +33,7 @@ class PortadaController extends Controller
         $noticia = Noticia::with('category')->where('id', $id)->publicadaActiva()->firstOrFail();
 
         // Si la noticia es de la sección Deportes, redirigir a Contra Ataque para que tenga su diseño deportivo especializado
-        $catName = strtolower($noticia->category->name ?? '');
-        $catSlug = strtolower($categoria ?? '');
-        if (str_contains($catName, 'deport') || str_contains($catName, 'futbol') || str_contains($catSlug, 'deport') || str_contains($catSlug, 'futbol') || $noticia->category_id == 9) {
+        if ($noticia->category?->es_deportiva) {
             $newsSlug = \Illuminate\Support\Str::slug($noticia->titulo) ?: 'noticia';
             return redirect()->route('contraataque.show', ['id' => $noticia->id, 'slug' => $newsSlug]);
         }
@@ -52,7 +50,7 @@ class PortadaController extends Controller
     public function noticiasPorCategoria($slug, Request $request)
     {
         $cleanSlug = strtolower(trim($slug));
-        if ($cleanSlug === 'deportes' || $cleanSlug === 'futbol' || str_contains($cleanSlug, 'deport')) {
+        if (\App\Models\Category::deportivas()->get()->contains(fn ($category) => $category->slug === $cleanSlug || (string) $category->id === $cleanSlug)) {
             return redirect()->route('contraataque.index');
         }
 
@@ -68,6 +66,22 @@ class PortadaController extends Controller
         }
         
         return view('categoria.noticias', $data);
+    }
+
+    public function reportajes(Request $request)
+    {
+        $filters = $request->validate(['q' => 'nullable|string|max:150', 'categoria' => 'nullable|integer|exists:categories,id']);
+        $query = Noticia::investigacion()->with('category');
+        $search = trim($filters['q'] ?? '');
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('titulo', 'LIKE', '%'.$search.'%')->orWhere('contenido', 'LIKE', '%'.$search.'%');
+            });
+        }
+        if (!empty($filters['categoria'])) $query->where('category_id', $filters['categoria']);
+        $reportajes = $query->orderByDesc('created_at')->orderByDesc('id')->paginate(12)->withQueryString();
+        $categorias = Category::whereHas('noticias', fn ($q) => $q->investigacion())->orderBy('name')->get();
+        return view('reportajes.index', compact('reportajes', 'categorias', 'search'));
     }
 
     public function search(Request $request)

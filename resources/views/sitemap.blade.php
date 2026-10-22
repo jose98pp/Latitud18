@@ -11,6 +11,8 @@
         <priority>1.0</priority>
     </url>
 
+    <url><loc>{{ route('reportajes.index') }}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+
     {{-- Periódico Digital --}}
     <url>
         <loc>{{ route('periodico.public.index') }}</loc>
@@ -26,6 +28,10 @@
         <changefreq>hourly</changefreq>
         <priority>0.9</priority>
     </url>
+
+    @foreach(array_merge(array_keys(\App\Support\SportsSections::LABELS), ['opinion']) as $section)
+    <url><loc>{{ route('contraataque.seccion', $section) }}</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+    @endforeach
 
     {{-- Sección de Opinión --}}
     <url>

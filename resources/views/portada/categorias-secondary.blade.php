@@ -61,11 +61,12 @@
     </div>
     @if($investigaNoticia)
       <a href="{{ $investigaNoticia->url }}" class="btn-investiga-action">
-        VER INVESTIGACIÓN &gt;
+        LEER INVESTIGACIÓN &gt;
       </a>
+      <a href="{{ route('reportajes.index') }}" style="display:block;color:inherit;font-size:.75rem;margin-top:12px">Todos los reportajes →</a>
     @else
-      <a href="{{ route('periodico.public.index') }}" class="btn-investiga-action">
-        VER EDICIÓN DIGITAL &gt;
+      <a href="{{ route('reportajes.index') }}" class="btn-investiga-action">
+        VER REPORTAJES &gt;
       </a>
     @endif
   </div>

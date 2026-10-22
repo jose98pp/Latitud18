@@ -43,6 +43,11 @@ class NoticiaRequest extends FormRequest
                 }
             ],
             'category_id' => 'required|exists:categories,id',
+            'seccion_deportiva' => [
+                \Illuminate\Validation\Rule::requiredIf(fn () => (bool) \App\Models\Category::find(filter_var($this->input('category_id'), FILTER_VALIDATE_INT) ?: 0)?->es_deportiva),
+                'nullable',
+                \Illuminate\Validation\Rule::in(array_keys(\App\Support\SportsSections::LABELS)),
+            ],
             'video_youtube' => [
                 'nullable',
                 'string',
@@ -110,6 +115,8 @@ class NoticiaRequest extends FormRequest
             'contenido.max' => 'El contenido no puede exceder ' . number_format(config('uhtv.security.max_content_length', 250000)) . ' caracteres.',
             
             // Category validation messages
+            'seccion_deportiva.required' => 'Selecciona una sección de Contra Ataque para la noticia deportiva.',
+            'seccion_deportiva.in' => 'La sección deportiva seleccionada no es válida.',
             'category_id.required' => 'La categoría es obligatoria.',
             'category_id.exists' => 'La categoría seleccionada no es válida.',
             

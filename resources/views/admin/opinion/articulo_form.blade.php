@@ -79,6 +79,11 @@
                                 </div>
                             </div>
 
+                            <div class="col-12 mb-3"><div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="es_deportiva" name="es_deportiva" value="1" @checked(old('es_deportiva', $articulo->es_deportiva ?? false))>
+                                <label class="form-check-label fw-bold" for="es_deportiva">Opinión deportiva — El Ojo de Contraataque</label>
+                                <div class="form-text">Si está publicado y el columnista está activo, aparecerá también en Contra Ataque.</div>
+                            </div></div>
                             <div class="col-12">
                                 <div class="form-check form-switch mb-3">
                                     <input type="checkbox" name="publicado" id="publicado" class="form-check-input" value="1" {{ old('publicado', $articulo->publicado ?? true) ? 'checked' : '' }}>
